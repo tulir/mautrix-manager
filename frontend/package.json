@@ -1,0 +1,36 @@
+{
+  "name": "mautrix-manager",
+  "version": "0.1.0",
+  "description": "A web interface for managing bridges",
+  "repository": "https://github.com/tulir/mautrix-manager",
+  "author": "Tulir Asokan <tulir@maunium.net>",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "dependencies": {
+    "htm": "^3.0.1",
+    "preact": "^10.2.1",
+    "preact-router": "^3.2.0",
+    "react-jss": "^10.0.3",
+    "snowpack": "^1.1.0"
+  },
+  "devDependencies": {
+    "es-dev-server": "^1.36.2",
+    "eslint": "^6.8.0",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-react-hooks": "^2.3.0"
+  },
+  "scripts": {
+    "postinstall": "ln -fs preact/compat node_modules/react",
+    "snowpack": "snowpack --optimize --no-source-map",
+    "prepare": "snowpack",
+    "start": "es-dev-server --app-index index.html --watch --compatibility=none"
+  },
+  "snowpack": {
+    "webDependencies": [
+      "preact",
+      "preact-router",
+      "htm/preact",
+      "react-jss"
+    ]
+  }
+}
