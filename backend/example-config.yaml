@@ -1,0 +1,59 @@
+# Homeserver details.
+homeserver:
+    # The server name of the homeserver.
+    domain: example.com
+    # Client-server API URL.
+    # Optional. If not set, the URL will be resolved using the client .well-known resolution.
+    client_url: http://localhost:8008
+    # Federation API URL. This is used for verifying OpenID tokens received from clients.
+    # Optional. If not set, the URL will be resolved using the standard federation resolution.
+    federation_url: http://localhost:8008
+
+docker:
+    # Docker API socket.
+    host: unix:///run/docker.sock
+
+# mautrix-manager server settings
+server:
+    # Hostname and port where mautrix-manager should listen.
+    host: 0.0.0.0
+    port: 29324
+    # Database URI. Currently only supports postgres://user:password@host/dbname
+    database: postgres:///mautrix-manager
+    # Override path from where to load UI resources.
+    # Set to false to using pkg_resources to find the path.
+    # Optionally, you can use another web server to serve the UI and only proxy /api to the backend.
+    override_resource_path: false
+
+# Permissions for the manager.
+# Currently only the `admin` role exists.
+# Permission keys may be user IDs or server names
+permissions:
+    '@user:example.com': admin
+
+logging:
+    version: 1
+    formatters:
+        colored:
+            (): mautrix.util.color_log.ColorFormatter
+            format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
+        normal:
+            format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
+    handlers:
+        file:
+            class: logging.handlers.RotatingFileHandler
+            formatter: normal
+            filename: ./mautrix-manager.log
+            maxBytes: 10485760
+            backupCount: 10
+        console:
+            class: logging.StreamHandler
+            formatter: colored
+    loggers:
+        mau:
+            level: DEBUG
+        aiohttp:
+            level: INFO
+    root:
+        level: DEBUG
+        handlers: [file, console]

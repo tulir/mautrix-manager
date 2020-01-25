@@ -1,5 +1,6 @@
 import setuptools
-import glob
+
+from mautrix_manager import __version__
 
 try:
     long_desc = open("../README.md").read()
@@ -8,7 +9,7 @@ except IOError:
 
 setuptools.setup(
     name="mautrix-manager",
-    version=version,
+    version=__version__,
     url="https://github.com/tulir/mautrix-manager",
 
     author="Tulir Asokan",
@@ -22,6 +23,12 @@ setuptools.setup(
 
     install_requires=[
         "aiohttp>=3,<4",
+        "mautrix>=0.4,<0.5",
+        "ruamel.yaml>=0.15.90,<0.17",
+        "yarl>=1,<2",
+        "aiosqlite>=0.11,<0.12",
+        "asyncpg>=0.20,<0.21",
+        "attrs>=18.1.0",
     ],
     python_requires="~=3.6",
 
@@ -40,11 +47,12 @@ setuptools.setup(
         mautrix-manager=mautrix_manager.__main__:main
     """,
     package_data={"mautrix_manager": [
-        "../frontend/index.*", "../frontend/views/*", "../frontend/res/*"
+        "frontend/index.*", "frontend/views/*", "frontend/res/*",
+        "frontend/web_modules/**/*"
     ]},
-#    data_files=[
-#        (".", ["example-config.yaml", "alembic.ini"]),
+    data_files=[
+        (".", ["example-config.yaml"]),
 #        ("alembic", ["alembic/env.py"]),
 #        ("alembic/versions", glob.glob("alembic/versions/*.py"))
-#    ],
+    ],
 )

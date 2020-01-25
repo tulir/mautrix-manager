@@ -5,3 +5,5 @@
 *.log
 *.pyc
 *.egg-info
+*.yaml
+!example-config.yaml

@@ -1,1 +1,7 @@
 aiohttp
+mautrix
+ruamel.yaml
+yarl
+aiosqlite
+asyncpg
+attrs
