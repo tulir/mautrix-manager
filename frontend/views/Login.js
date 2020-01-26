@@ -29,12 +29,17 @@ const useStyles = createUseStyles({
         backgroundColor: "white",
         width: "25rem",
         height: "22.5rem",
-        padding: "2.5rem",
+        padding: "2.5rem 2.5rem 2rem",
         marginTop: "3rem",
         borderRadius: ".25rem",
         boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
+        "&$hasError": {
+            minHeight: "27rem",
+            height: "auto",
+            marginBottom: "auto",
+        },
     },
     header: {
         color: "#00C853",
@@ -86,7 +91,7 @@ const useStyles = createUseStyles({
         backgroundColor: "#00C853",
         cursor: "pointer",
         height: "3rem",
-        margin: ".5rem 0 0",
+        margin: ".5rem 0",
         borderRadius: ".25rem",
         border: "none",
         color: "white",
@@ -95,9 +100,23 @@ const useStyles = createUseStyles({
         "&:hover": {
             backgroundColor: "#009624",
         },
+        "&:disabled": {
+            backgroundColor: "#ccc",
+            cursor: "default",
+        },
+    },
+    error: {
+        padding: "1rem",
+        borderRadius: ".25rem",
+        border: "2px solid #B71C1C",
+        backgroundColor: "rgba(240, 85, 69, .5)",
+        margin: ".5rem 0",
+        width: "100%",
+        boxSizing: "border-box",
     },
 
     focus: {},
+    hasError: {},
 })
 
 const resolveWellKnown = async (server) => {
@@ -107,13 +126,14 @@ const resolveWellKnown = async (server) => {
         return data["m.homeserver"].base_url
     } catch (err) {
         console.error("Resolution failed:", err)
-        return null
+        throw new Error(`Failed to resolve URL for ${server}`)
     }
 }
 
 const login = async (address, username, password) => {
+    let resp
     try {
-        const resp = await fetch(`${address}/_matrix/client/r0/login`, {
+        resp = await fetch(`${address}/_matrix/client/r0/login`, {
             method: "POST",
             body: JSON.stringify({
                 type: "m.login.password",
@@ -122,28 +142,41 @@ const login = async (address, username, password) => {
                     user: username,
                 },
                 password,
-                // eslint-disable-next-line camelcase
+                /* eslint-disable camelcase */
+                device_id: "mautrix-manager",
                 initial_device_display_name: "mautrix-manager",
+                /* eslint-enable camelcase */
             }),
             headers: {
                 "Content-Type": "application/json",
             },
         })
-        const data = await resp.json()
-        if (data.well_known && data.well_known["m.homeserver"]) {
-            address = data.well_known["m.homeserver"].base_url || address
-        }
-        return [data.access_token, data.user_id, address]
     } catch (err) {
         console.error("Login failed:", err)
-        return [null, address]
+        throw new Error(`Could not connect to ${address}`)
     }
+    let data
+    try {
+        data = await resp.json()
+    } catch (err) {
+        console.error("Login JSON parse failed:", err)
+        throw new Error(`Invalid login response from ${address}`)
+    }
+    if (resp.status !== 200) {
+        console.error("Unexpected login status", resp.status, data)
+        throw new Error(data.error || `Invalid login response from ${address}`)
+    }
+    if (data.well_known && data.well_known["m.homeserver"]) {
+        address = data.well_known["m.homeserver"].base_url || address
+    }
+    return [data.access_token, data.user_id, address]
 }
 
 const requestOpenIDToken = async (address, userID, accessToken) => {
+    let resp
     try {
         const url = `${address}/_matrix/client/r0/user/${userID}/openid/request_token`
-        const resp = await fetch(url, {
+        resp = await fetch(url, {
             method: "POST",
             body: "{}",
             headers: {
@@ -151,41 +184,70 @@ const requestOpenIDToken = async (address, userID, accessToken) => {
                 "Content-Type": "application/json",
             },
         })
-        return await resp.json()
     } catch (err) {
         console.error("OpenID token request failed:", err)
-        return null
+        throw new Error(`Failed to request OpenID token for ${userID}`)
     }
+    let data
+    try {
+        data = await resp.json()
+    } catch (err) {
+        console.error("OpenID token request JSON parse failed:", err)
+        throw new Error("Invalid OpenID response")
+    }
+    if (resp.status !== 200) {
+        console.error("Unexpected OpenID token request status", resp.status, data)
+        throw new Error(data.error || "Invalid OpenID response")
+    }
+    return data
 }
 
 const requestIntegrationToken = async (tokenData) => {
+    let resp
     try {
-        const resp = await fetch("/_matrix/integrations/v1/account/register", {
+        resp = await fetch("/_matrix/integrations/v1/account/register", {
             method: "POST",
             body: JSON.stringify(tokenData),
             headers: {
                 "Content-Type": "application/json",
             },
         })
-        return await resp.json()
     } catch (err) {
         console.error("Integration manager register failed:", err)
-        return null
+        throw new Error("Could not connect to mautrix-manager")
     }
+    let data
+    try {
+        data = await resp.json()
+    } catch (err) {
+        console.error("Integration register JSON parse failed:", err)
+        throw new Error("Invalid mautrix-manager registration response")
+    }
+    if (resp.status !== 200) {
+        console.error("Unexpected integration manager register status", resp.status, data)
+        throw new Error(data.error || "Invalid mautrix-manager registration response")
+    }
+    return data
 }
 
 const LoginView = ({ onLoggedIn }) => {
     const classes = useStyles()
 
     const serverRef = useRef()
+    const passwordRef = useRef()
     const [userIDFocused, setUserIDFocused] = useState(false)
     const [username, setUsername] = useState("")
     const [server, setServer] = useState("")
     const [password, setPassword] = useState("")
+    const [error, setError] = useState(null)
 
-    const usernameKeyDown = evt => {
-        if (evt.key === ":") {
-            serverRef.current.focus()
+    const keyDown = evt => {
+        if ((evt.target.name === "username" && evt.key === ":") || evt.key === "Enter") {
+            if (evt.target.name === "username") {
+                serverRef.current.focus()
+            } else if (evt.target.name === "server") {
+                passwordRef.current.focus()
+            }
             evt.preventDefault()
         }
     }
@@ -194,41 +256,47 @@ const LoginView = ({ onLoggedIn }) => {
     const onBlur = () => setUserIDFocused(false)
 
     const submit = async () => {
-        const url = await resolveWellKnown(server)
-        if (!url) return
-        const [accessToken, userID, realURL] = await login(url, username, password)
-        if (!accessToken) return
-        const openIDToken = await requestOpenIDToken(realURL, userID, accessToken)
-        if (!openIDToken) return
-        const integrationData = await requestIntegrationToken(openIDToken)
-        if (!integrationData) return
-        localStorage.accessToken = integrationData.token
-        localStorage.accessLevel = integrationData.level
-        onLoggedIn()
+        try {
+            const url = await resolveWellKnown(server)
+            const [accessToken, userID, realURL] = await login(url, username, password)
+            const openIDToken = await requestOpenIDToken(realURL, userID, accessToken)
+            const integrationData = await requestIntegrationToken(openIDToken)
+            localStorage.accessToken = integrationData.token
+            localStorage.accessLevel = integrationData.level
+            onLoggedIn()
+        } catch (err) {
+            setError(err.message)
+        }
     }
 
-    const trySubmit = evt => {
+    const onSubmit = evt => {
         evt.preventDefault()
         submit().catch(err => console.error("Fatal error:", err))
     }
 
     return html`<main class=${classes.root}>
-        <form class=${classes.loginBox} onSubmit=${trySubmit}>
+        <form class="${classes.loginBox} ${error ? classes.hasError : ""}" onSubmit=${onSubmit}>
             <h1 class=${classes.header}>mautrix-manager</h1>
             <div class="${classes.username} ${classes.input} ${userIDFocused ? classes.focus : ""}">
                 <span>@</span>
                 <input type="text" placeholder="username" name="username" value=${username}
                        onChange=${evt => setUsername(evt.target.value)}
-                       onKeyDown=${usernameKeyDown} onFocus=${onFocus} onBlur=${onBlur} />
+                       onKeyDown=${keyDown} onFocus=${onFocus} onBlur=${onBlur} />
                 <span>:</span>
                 <input type="text" placeholder="example.com" name="server" value=${server}
                        onChange=${evt => setServer(evt.target.value)} ref=${serverRef}
-                       onFocus=${onFocus} onBlur=${onBlur} />
+                       onKeyDown=${keyDown} onFocus=${onFocus} onBlur=${onBlur} />
             </div>
             <input type="password" placeholder="password" name="password" value=${password}
-                   class="${classes.password} ${classes.input}"
+                   class="${classes.password} ${classes.input}" ref=${passwordRef}
                    onChange=${evt => setPassword(evt.target.value)} />
-            <button type="submit" class=${classes.submit}>Log in</button>
+            <button type="submit" class=${classes.submit}
+                    disabled=${!username || !server || !password}>
+                Log in
+            </button>
+            ${error && html`<div class=${classes.error}>
+                ${error}
+            </div>`}
         </form>
     </main>`
 }
