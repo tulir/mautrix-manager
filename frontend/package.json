@@ -28,6 +28,7 @@
   "snowpack": {
     "webDependencies": [
       "preact",
+      "preact/hooks",
       "preact-router",
       "htm/preact",
       "react-jss"

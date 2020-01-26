@@ -1,5 +1,5 @@
 // mautrix-manager - A web interface for managing bridges
-// Copyright (C) <year>  <name of author>
+// Copyright (C) 2020 Tulir Asokan
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -13,19 +13,33 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import { useState } from "/web_modules/preact/hooks.js"
 import { html } from "/web_modules/htm/preact.js"
 import { createUseStyles } from "/web_modules/react-jss.js"
+import { Router } from "/web_modules/preact-router.js"
+
+import LoginView from "./Login.js"
 
 const useStyles = createUseStyles({
-	hello: {
-		color: "red",
-	},
+    hello: {
+        color: "red",
+    },
 })
 
 const Main = () => {
-	const classes = useStyles()
+    const classes = useStyles()
+    const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.accessToken))
 
-	return html`<div class=${classes.hello}>Hello!</div>`
+    if (!loggedIn) {
+        return html`<${LoginView}
+            onLoggedIn=${() => setLoggedIn(Boolean(localStorage.accessToken))}
+        />`
+    }
+
+    return html`<${Router}>
+        <div path="/">Hello? <a href="/hmm">link</a></div>
+        <div path="/hmm">Yay! <a href="/">back</a></div>
+    </Router>`
 }
 
 export default Main
