@@ -23,6 +23,27 @@ server:
     # Optionally, you can use another web server to serve the UI and only proxy /api to the backend.
     override_resource_path: false
 
+# Bridge API URLs and secrets. If secret or URL is null, the bridge is disabled.
+bridges:
+    mautrix-telegram:
+        url: http://localhost:29317
+        secret: null
+    mautrix-whatsapp:
+        url: http://localhost:29318
+        secret: null
+    mautrix-facebook:
+        url: http://localhost:29319
+        secret: null
+    mautrix-hangouts:
+        url: http://localhost:29320
+        secret: null
+    mx-puppet-slack:
+        url: http://localhost:8434
+        secret: null
+    mx-puppet-instagram:
+        url: http://localhost:8434
+        secret: null
+
 # Permissions for the manager.
 # Currently only the `admin` role exists.
 # Permission keys may be user IDs or server names

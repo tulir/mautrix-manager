@@ -16,7 +16,6 @@
 from typing import NamedTuple
 import random
 import string
-import re
 
 from mautrix.util.config import BaseFileConfig, ConfigUpdateHelper
 from mautrix.types import UserID
@@ -43,6 +42,11 @@ class Config(BaseFileConfig):
         copy("server.port")
         copy("server.database")
         copy("server.override_resource_path")
+
+        for bridge in ("mautrix-telegram", "mautrix-whatsapp", "mautrix-facebook",
+                       "mautrix-hangouts", "mx-puppet-slack", "mx-puppet-instagram"):
+            copy(f"bridges.{bridge}.url")
+            copy(f"bridges.{bridge}.secret")
 
         copy("permissions")
 
