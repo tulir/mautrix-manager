@@ -61,7 +61,10 @@ homeserver_mismatch = make_error("", "Request matrix_server_name and "
 
 
 async def get_token(request: web.Request) -> Token:
-    auth = request.headers["Authorization"]
+    try:
+        auth = request.headers["Authorization"]
+    except KeyError:
+        raise web.HTTPBadRequest(**invalid_auth_header)
     if not auth.startswith("Bearer "):
         raise web.HTTPBadRequest(**invalid_auth_header)
     token = await Token.get(auth[len("Bearer "):])

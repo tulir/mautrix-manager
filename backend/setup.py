@@ -47,7 +47,7 @@ setuptools.setup(
         mautrix-manager=mautrix_manager.__main__:main
     """,
     package_data={"mautrix_manager": [
-        "frontend/index.*", "frontend/views/*", "frontend/res/*",
+        "frontend/index.*", "frontend/views/*", "frontend/lib/*", "frontend/res/*",
         "frontend/web_modules/**/*"
     ]},
     data_files=[

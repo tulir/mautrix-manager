@@ -13,15 +13,19 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import { useState, useRef } from "/web_modules/preact/hooks.js"
+import { useState, useRef, useLayoutEffect } from "/web_modules/preact/hooks.js"
 import { html } from "/web_modules/htm/preact.js"
-import { createUseStyles } from "/web_modules/react-jss.js"
 
-const useStyles = createUseStyles({
+import {
+    resolveWellKnown, loginMatrix, requestOpenIDToken, requestIntegrationToken,
+} from "../lib/loginAPI.js"
+import { makeStyles } from "../lib/theme.js"
+
+const useStyles = makeStyles(({ theme }) => ({
     root: {
         position: "fixed",
         inset: "0 0 0 0",
-        backgroundColor: "#00C853",
+        backgroundColor: theme.color.primary,
         display: "flex",
         justifyContent: "space-around",
     },
@@ -42,16 +46,16 @@ const useStyles = createUseStyles({
         },
     },
     header: {
-        color: "#00C853",
+        color: theme.color.primary,
         margin: ".5rem auto 3rem",
     },
     input: {
         margin: ".5rem 0",
         borderRadius: ".25rem",
-        border: "1px solid #ddd",
+        border: `1px solid ${theme.color.border}`,
         padding: "1px",
         "&:hover, &:focus, &$focus": {
-            borderColor: "#00C853",
+            borderColor: theme.color.primary,
         },
         "&:focus, &$focus": {
             borderWidth: "2px",
@@ -63,7 +67,7 @@ const useStyles = createUseStyles({
         "& > input": {
             border: "none",
             padding: ".75rem .125rem",
-            color: "#212121",
+            color: theme.color.text,
             minWidth: 0,
             fontSize: "1rem",
             "&:last-of-type": {
@@ -74,7 +78,7 @@ const useStyles = createUseStyles({
         "& > span": {
             userSelect: "none",
             padding: ".75rem 0",
-            color: "#212121",
+            color: theme.color.text,
             "&:first-of-type": {
                 paddingLeft: ".5rem",
             },
@@ -88,7 +92,7 @@ const useStyles = createUseStyles({
         },
     },
     submit: {
-        backgroundColor: "#00C853",
+        backgroundColor: theme.color.primary,
         cursor: "pointer",
         height: "3rem",
         margin: ".5rem 0",
@@ -98,18 +102,18 @@ const useStyles = createUseStyles({
         fontSize: "1rem",
         padding: 0,
         "&:hover": {
-            backgroundColor: "#009624",
+            backgroundColor: theme.color.primaryDark,
         },
         "&:disabled": {
-            backgroundColor: "#ccc",
+            backgroundColor: theme.color.disabled,
             cursor: "default",
         },
     },
     error: {
         padding: "1rem",
         borderRadius: ".25rem",
-        border: "2px solid #B71C1C",
-        backgroundColor: "rgba(240, 85, 69, .5)",
+        border: `1px solid ${theme.color.errorDark}`,
+        backgroundColor: theme.color.error,
         margin: ".5rem 0",
         width: "100%",
         boxSizing: "border-box",
@@ -117,125 +121,15 @@ const useStyles = createUseStyles({
 
     focus: {},
     hasError: {},
-})
-
-const resolveWellKnown = async (server) => {
-    try {
-        const resp = await fetch(`https://${server}/.well-known/matrix/client`)
-        const data = await resp.json()
-        return data["m.homeserver"].base_url
-    } catch (err) {
-        console.error("Resolution failed:", err)
-        throw new Error(`Failed to resolve URL for ${server}`)
-    }
-}
-
-const login = async (address, username, password) => {
-    let resp
-    try {
-        resp = await fetch(`${address}/_matrix/client/r0/login`, {
-            method: "POST",
-            body: JSON.stringify({
-                type: "m.login.password",
-                identifier: {
-                    type: "m.id.user",
-                    user: username,
-                },
-                password,
-                /* eslint-disable camelcase */
-                device_id: "mautrix-manager",
-                initial_device_display_name: "mautrix-manager",
-                /* eslint-enable camelcase */
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-    } catch (err) {
-        console.error("Login failed:", err)
-        throw new Error(`Could not connect to ${address}`)
-    }
-    let data
-    try {
-        data = await resp.json()
-    } catch (err) {
-        console.error("Login JSON parse failed:", err)
-        throw new Error(`Invalid login response from ${address}`)
-    }
-    if (resp.status !== 200) {
-        console.error("Unexpected login status", resp.status, data)
-        throw new Error(data.error || `Invalid login response from ${address}`)
-    }
-    if (data.well_known && data.well_known["m.homeserver"]) {
-        address = data.well_known["m.homeserver"].base_url || address
-    }
-    return [data.access_token, data.user_id, address]
-}
-
-const requestOpenIDToken = async (address, userID, accessToken) => {
-    let resp
-    try {
-        const url = `${address}/_matrix/client/r0/user/${userID}/openid/request_token`
-        resp = await fetch(url, {
-            method: "POST",
-            body: "{}",
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-            },
-        })
-    } catch (err) {
-        console.error("OpenID token request failed:", err)
-        throw new Error(`Failed to request OpenID token for ${userID}`)
-    }
-    let data
-    try {
-        data = await resp.json()
-    } catch (err) {
-        console.error("OpenID token request JSON parse failed:", err)
-        throw new Error("Invalid OpenID response")
-    }
-    if (resp.status !== 200) {
-        console.error("Unexpected OpenID token request status", resp.status, data)
-        throw new Error(data.error || "Invalid OpenID response")
-    }
-    return data
-}
-
-const requestIntegrationToken = async (tokenData) => {
-    let resp
-    try {
-        resp = await fetch("/_matrix/integrations/v1/account/register", {
-            method: "POST",
-            body: JSON.stringify(tokenData),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-    } catch (err) {
-        console.error("Integration manager register failed:", err)
-        throw new Error("Could not connect to mautrix-manager")
-    }
-    let data
-    try {
-        data = await resp.json()
-    } catch (err) {
-        console.error("Integration register JSON parse failed:", err)
-        throw new Error("Invalid mautrix-manager registration response")
-    }
-    if (resp.status !== 200) {
-        console.error("Unexpected integration manager register status", resp.status, data)
-        throw new Error(data.error || "Invalid mautrix-manager registration response")
-    }
-    return data
-}
+}))
 
 const LoginView = ({ onLoggedIn }) => {
     const classes = useStyles()
 
+    const usernameRef = useRef()
     const serverRef = useRef()
     const passwordRef = useRef()
-    const [userIDFocused, setUserIDFocused] = useState(false)
+    const [userIDFocused, setUserIDFocused] = useState(true)
     const [username, setUsername] = useState("")
     const [server, setServer] = useState("")
     const [password, setPassword] = useState("")
@@ -252,15 +146,38 @@ const LoginView = ({ onLoggedIn }) => {
         }
     }
 
+    useLayoutEffect(() => usernameRef.current.addEventListener("paste", evt => {
+        if (usernameRef.current.value !== "" || serverRef.current.value !== "") {
+            return
+        }
+
+        let data = evt.clipboardData.getData("text")
+        if (data.startsWith("@")) {
+            data = data.substr(1)
+        }
+        const separator = data.indexOf(":")
+        if (separator === -1) {
+            setUsername(data)
+        } else {
+            setUsername(data.substr(0, separator))
+            setServer(data.substr(separator + 1))
+            serverRef.current.focus()
+        }
+        evt.preventDefault()
+    }), [usernameRef])
+
     const onFocus = () => setUserIDFocused(true)
     const onBlur = () => setUserIDFocused(false)
 
     const submit = async () => {
         try {
             const url = await resolveWellKnown(server)
-            const [accessToken, userID, realURL] = await login(url, username, password)
+            const [accessToken, userID, realURL] = await loginMatrix(url, username, password)
             const openIDToken = await requestOpenIDToken(realURL, userID, accessToken)
             const integrationData = await requestIntegrationToken(openIDToken)
+            localStorage.mxAccessToken = accessToken
+            localStorage.mxHomeserver = realURL
+            localStorage.mxUserID = userID
             localStorage.accessToken = integrationData.token
             localStorage.accessLevel = integrationData.level
             onLoggedIn()
@@ -280,8 +197,8 @@ const LoginView = ({ onLoggedIn }) => {
             <div class="${classes.username} ${classes.input} ${userIDFocused ? classes.focus : ""}">
                 <span>@</span>
                 <input type="text" placeholder="username" name="username" value=${username}
-                       onChange=${evt => setUsername(evt.target.value)}
-                       onKeyDown=${keyDown} onFocus=${onFocus} onBlur=${onBlur} />
+                       onChange=${evt => setUsername(evt.target.value)} ref=${usernameRef}
+                       onKeyDown=${keyDown} onFocus=${onFocus} onBlur=${onBlur} autoFocus />
                 <span>:</span>
                 <input type="text" placeholder="example.com" name="server" value=${server}
                        onChange=${evt => setServer(evt.target.value)} ref=${serverRef}

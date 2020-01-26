@@ -15,12 +15,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { useState } from "/web_modules/preact/hooks.js"
 import { html } from "/web_modules/htm/preact.js"
-import { createUseStyles } from "/web_modules/react-jss.js"
 import { Router } from "/web_modules/preact-router.js"
 
+import { makeStyles } from "../lib/theme.js"
 import LoginView from "./Login.js"
 
-const useStyles = createUseStyles({
+const useStyles = makeStyles({
     hello: {
         color: "red",
     },
@@ -36,10 +36,13 @@ const Main = () => {
         />`
     }
 
-    return html`<${Router}>
-        <div path="/">Hello? <a href="/hmm">link</a></div>
-        <div path="/hmm">Yay! <a href="/">back</a></div>
-    </Router>`
+    return html`
+        Logged in as ${localStorage.mxUserID}
+        <${Router}>
+            <div path="/">Hello? <a href="/hmm">link</a></div>
+            <div path="/hmm">Yay! <a href="/">back</a></div>
+        </Router>
+    `
 }
 
 export default Main

@@ -16,13 +16,8 @@
 from aiohttp import web
 
 from .auth import routes as auth_routes
-from ..config import Config
 
 api_app = web.Application()
 
 integrations_app = web.Application()
 integrations_app.add_routes(auth_routes)
-
-
-def init(config: Config) -> None:
-    pass

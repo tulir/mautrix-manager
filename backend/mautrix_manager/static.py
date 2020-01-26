@@ -74,7 +74,7 @@ class StaticResource(AbstractResource):
             return None, allowed_methods
 
         return UrlMappingMatchInfo({
-            "filename": URL.build(path=path[len(self._prefix) + 1:], encoded=True).path
+            "filename": URL.build(path=path[len(self._prefix):], encoded=True).path
         }, self._routes[method]), allowed_methods
 
     def __len__(self) -> int:

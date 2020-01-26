@@ -13,12 +13,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Optional
-
 from pkg_resources import resource_filename
 from aiohttp import web
 
-from .api import api_app, integrations_app, init as init_api
+from .api import api_app, integrations_app
 from .static import StaticResource
 from .config import Config
 
