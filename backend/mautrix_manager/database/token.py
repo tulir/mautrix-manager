@@ -37,8 +37,8 @@ class Token:
 
     @classmethod
     async def get(cls, secret: str) -> 'Token':
-        row: asyncpg.Record = await cls._db.fetchrow(
-            "SELECT user_id, secret FROM access_token WHERE secret=$1", secret)
+        row: asyncpg.Record = await cls._db.fetchrow("SELECT user_id, secret "
+                                                     "FROM access_token WHERE secret=$1", secret)
         return Token(**row)
 
     async def delete(self) -> None:

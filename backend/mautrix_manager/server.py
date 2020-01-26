@@ -18,20 +18,23 @@ from typing import Optional
 from pkg_resources import resource_filename
 from aiohttp import web
 
-from .api import api_app, integrations_app
+from .api import api_app, integrations_app, init as init_api
 from .static import StaticResource
 from .config import Config
 
 runner: web.AppRunner
 
 
-def _create_app(resource_path: Optional[str]) -> web.Application:
+def _create_app(config: Config) -> web.Application:
     app = web.Application()
 
     app.add_subapp("/_matrix/integrations/v1", integrations_app)
     app.add_subapp("/api", api_app)
+    integrations_app["config"] = config
+    api_app["config"] = config
 
-    resource_path = resource_path or resource_filename("mautrix_manager", "frontend")
+    resource_path = (config["server.override_resource_path"]
+                     or resource_filename("mautrix_manager", "frontend"))
     app.router.register_resource(StaticResource("/", resource_path, name="frontend"))
 
     return app
@@ -39,7 +42,7 @@ def _create_app(resource_path: Optional[str]) -> web.Application:
 
 async def start(config: Config) -> None:
     global runner
-    runner = web.AppRunner(_create_app(config["server.override_resource_path"]))
+    runner = web.AppRunner(_create_app(config))
     await runner.setup()
     site = web.TCPSite(runner, config["server.host"], config["server.port"])
     await site.start()

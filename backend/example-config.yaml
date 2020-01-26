@@ -3,10 +3,8 @@ homeserver:
     # The server name of the homeserver.
     domain: example.com
     # Client-server API URL.
-    # Optional. If not set, the URL will be resolved using the client .well-known resolution.
     client_url: http://localhost:8008
     # Federation API URL. This is used for verifying OpenID tokens received from clients.
-    # Optional. If not set, the URL will be resolved using the standard federation resolution.
     federation_url: http://localhost:8008
 
 docker:

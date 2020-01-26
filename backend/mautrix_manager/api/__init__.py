@@ -14,9 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from aiohttp import web
+
 from .auth import routes as auth_routes
+from ..config import Config
 
 api_app = web.Application()
 
 integrations_app = web.Application()
 integrations_app.add_routes(auth_routes)
+
+
+def init(config: Config) -> None:
+    pass

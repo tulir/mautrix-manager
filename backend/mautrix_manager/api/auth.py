@@ -13,11 +13,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING
 import json
 
 from mautrix.client import Client
-from aiohttp import web
+from mautrix.types import UserID
+from aiohttp import web, ClientSession, ClientError
+from yarl import URL
 
 from ..database import Token
 
@@ -37,19 +39,24 @@ if TYPE_CHECKING:
 
 routes = web.RouteTableDef()
 
-invalid_auth_header = {
-    "body": json.dumps({"error": "Invalid authorization header"}),
-    "content_type": "application/json",
-}
-invalid_auth_token = {
-    "body": json.dumps({"error": "Invalid authorization header"}),
-    "content_type": "application/json",
-}
-homeserver_mismatch = {
-    "body": json.dumps({"error": "Request matrix_server_name and "
-                                 "OpenID sub homeserver don't match"}),
-    "content_type": "application/json",
-}
+
+def make_error(errcode: str, error: str) -> Dict[str, str]:
+    return {
+        "body": json.dumps({
+            "error": error,
+            "errcode": errcode,
+        }),
+        "content_type": "application/json",
+    }
+
+
+invalid_auth_header = make_error("", "Malformed authorization header")
+invalid_auth_token = make_error("", "Invalid authorization token")
+invalid_openid_payload = make_error("", "Missing one or more fields in OpenID payload")
+invalid_openid_token = make_error("", "Invalid OpenID token")
+no_access = make_error("", "You are not authorized to access this mautrix-manager instance")
+homeserver_mismatch = make_error("", "Request matrix_server_name and "
+                                     "OpenID sub homeserver don't match")
 
 
 async def get_token(request: web.Request) -> Token:
@@ -68,17 +75,38 @@ async def get_auth(request: web.Request) -> web.Response:
     return web.json_response({"user_id": token.user_id})
 
 
+async def check_openid_token(federation_url: str, token: str) -> UserID:
+    async with ClientSession() as sess:
+        url = ((URL(federation_url) / "_matrix" / "federation" / "v1" / "openid" / "userinfo")
+               .with_query({"access_token": token}))
+        async with sess.get(url) as resp:
+            data: OpenIDResponse = await resp.json()
+            return UserID(data["sub"])
+
+
 @routes.post("/account/register")
 async def exchange_token(request: web.Request) -> web.Response:
+    config = request.app["config"]
     data: 'OpenIDPayload' = await request.json()
-    # TODO make OpenID request
-    user_id = ...
-    _, homeserver = Client.parse_user_id(user_id)
+    if "access_token" not in data or "matrix_server_name" not in data:
+        raise web.HTTPBadRequest(**invalid_openid_payload)
+    try:
+        user_id = await check_openid_token(config["homeserver.federation_url"],
+                                           data["access_token"])
+        _, homeserver = Client.parse_user_id(user_id)
+    except (ClientError, json.JSONDecodeError, KeyError, ValueError):
+        raise web.HTTPUnauthorized(**invalid_openid_token)
     if homeserver != data["matrix_server_name"]:
-        return web.HTTPUnauthorized(**homeserver_mismatch)
+        raise web.HTTPUnauthorized(**homeserver_mismatch)
+    permissions = config.get_permissions(user_id)
+    if not permissions.admin:
+        raise web.HTTPUnauthorized(**no_access)
     token = Token.random(user_id)
     await token.insert()
-    return web.json_response({"token": token.secret})
+    return web.json_response({
+        "token": token.secret,
+        "level": permissions.level,
+    })
 
 
 @routes.post("/account/logout")

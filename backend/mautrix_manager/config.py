@@ -49,17 +49,17 @@ class Config(BaseFileConfig):
         copy("logging")
 
     def _get_permissions(self, key: str) -> Permissions:
-        level = self["bridge.permissions"].get(key, "")
+        level = self["permissions"].get(key, "")
         admin = level == "admin"
         return Permissions(admin, level)
 
-    def has_access(self, mxid: UserID) -> bool:
-        permissions = self["bridge.permissions"]
+    def get_permissions(self, mxid: UserID) -> Permissions:
+        permissions = self["permissions"]
         if mxid in permissions:
-            return self._get_permissions(mxid).admin
+            return self._get_permissions(mxid)
 
         _, homeserver = Client.parse_user_id(mxid)
         if homeserver in permissions:
-            return self._get_permissions(homeserver).admin
+            return self._get_permissions(homeserver)
 
-        return self._get_permissions("*").admin
+        return self._get_permissions("*")
