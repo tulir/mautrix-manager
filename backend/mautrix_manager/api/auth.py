@@ -50,6 +50,7 @@ def make_error(errcode: str, error: str) -> Dict[str, str]:
     }
 
 
+request_not_json = make_error("M_NOT_JSON", "Request body is not valid JSON")
 invalid_auth_header = make_error("", "Malformed authorization header")
 invalid_auth_token = make_error("", "Invalid authorization token")
 invalid_openid_payload = make_error("", "Missing one or more fields in OpenID payload")
@@ -87,7 +88,10 @@ async def check_openid_token(federation_url: str, token: str) -> UserID:
 @routes.post("/account/register")
 async def exchange_token(request: web.Request) -> web.Response:
     config = request.app["config"]
-    data: 'OpenIDPayload' = await request.json()
+    try:
+        data: 'OpenIDPayload' = await request.json()
+    except json.JSONDecodeError:
+        raise web.HTTPBadRequest(**request_not_json)
     if "access_token" not in data or "matrix_server_name" not in data:
         raise web.HTTPBadRequest(**invalid_openid_payload)
     try:
