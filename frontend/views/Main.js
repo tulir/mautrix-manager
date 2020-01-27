@@ -18,6 +18,7 @@ import { html } from "/web_modules/htm/preact.js"
 import { Router } from "/web_modules/preact-router.js"
 
 import { makeStyles } from "../lib/theme.js"
+import TelegramBridge from "./bridges/Telegram.js"
 import LoginView from "./Login.js"
 
 const useStyles = makeStyles({
@@ -38,9 +39,14 @@ const Main = () => {
 
     return html`
         Logged in as ${localStorage.mxUserID}
+        <nav>
+            <a href="/">Home</a>
+            —
+            <a href="/telegram">Telegram</a>
+        </nav>
         <${Router}>
-            <div path="/">Hello? <a href="/hmm">link</a></div>
-            <div path="/hmm">Yay! <a href="/">back</a></div>
+            <div path="/">This is the home</div>
+            <${TelegramBridge} path="/telegram" />
         </Router>
     `
 }
