@@ -23,6 +23,7 @@ from yarl import URL
 
 from ..database import Token
 from ..config import Config
+from .errors import Error
 
 if TYPE_CHECKING:
     from typing import TypedDict
@@ -55,27 +56,16 @@ def make_error(errcode: str, error: str) -> Dict[str, str]:
     }
 
 
-request_not_json = make_error("M_NOT_JSON", "Request body is not valid JSON")
-missing_auth_header = make_error("", "Missing authorization header")
-invalid_auth_header = make_error("", "Malformed authorization header")
-invalid_auth_token = make_error("", "Invalid authorization token")
-invalid_openid_payload = make_error("", "Missing one or more fields in OpenID payload")
-invalid_openid_token = make_error("", "Invalid OpenID token")
-no_access = make_error("", "You are not authorized to access this mautrix-manager instance")
-homeserver_mismatch = make_error("", "Request matrix_server_name and "
-                                     "OpenID sub homeserver don't match")
-
-
 async def get_token(request: web.Request) -> Token:
     try:
         auth = request.headers["Authorization"]
     except KeyError:
-        raise web.HTTPBadRequest(**missing_auth_header)
+        raise Error.missing_auth_header
     if not auth.startswith("Bearer "):
-        raise web.HTTPBadRequest(**invalid_auth_header)
+        raise Error.invalid_auth_header
     token = await Token.get(auth[len("Bearer "):])
     if not token:
-        raise web.HTTPUnauthorized(**invalid_auth_token)
+        raise Error.invalid_auth_token
     return token
 
 
@@ -104,19 +94,19 @@ async def exchange_token(request: web.Request) -> web.Response:
     try:
         data: 'OpenIDPayload' = await request.json()
     except json.JSONDecodeError:
-        raise web.HTTPBadRequest(**request_not_json)
+        raise Error.request_not_json
     if "access_token" not in data or "matrix_server_name" not in data:
-        raise web.HTTPBadRequest(**invalid_openid_payload)
+        raise Error.invalid_openid_payload
     try:
         user_id = await check_openid_token(data["access_token"])
         _, homeserver = Client.parse_user_id(user_id)
     except (ClientError, json.JSONDecodeError, KeyError, ValueError):
-        raise web.HTTPUnauthorized(**invalid_openid_token)
+        raise Error.invalid_openid_token
     if homeserver != data["matrix_server_name"]:
-        raise web.HTTPUnauthorized(**homeserver_mismatch)
+        raise Error.homeserver_mismatch
     permissions = config.get_permissions(user_id)
     if not permissions.admin:
-        raise web.HTTPUnauthorized(**no_access)
+        raise Error.no_access
     token = Token.random(user_id)
     await token.insert()
     return web.json_response({

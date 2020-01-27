@@ -19,15 +19,19 @@ import aiohttp
 from aiohttp import web
 
 from ..config import Config
+from .errors import Error
 
 PROXY_CHUNK_SIZE = 32 * 1024
 routes = web.RouteTableDef()
+config: Config
 host: str
 http: aiohttp.ClientSession
 
 
 @routes.view("/docker/{path:.+}")
 async def proxy(request: web.Request) -> web.StreamResponse:
+    if not config.get_permissions(request["token"].user_id).admin:
+        raise Error.no_access_docker
     path = request.match_info.get("path", None)
     query = request.query.copy()
     headers = request.headers.copy()
@@ -44,9 +48,10 @@ async def proxy(request: web.Request) -> web.StreamResponse:
         return response
 
 
-def init(config: Config) -> None:
-    global http, host
-    host = config["docker.host"]
+def init(cfg: Config) -> None:
+    global http, host, config
+    config = cfg
+    host = cfg["docker.host"]
     if host.startswith("unix://"):
         http = aiohttp.ClientSession(connector=aiohttp.UnixConnector(path=host[len("unix://"):]),
                                      loop=asyncio.get_event_loop())
