@@ -79,6 +79,11 @@ class _ErrorMeta:
             "M_UNAUTHORIZED", "You are not authorized to impersonate other users"))
 
     @property
+    def bridge_disabled(self) -> web.HTTPException:
+        return web.HTTPNotImplemented(**self._make_error("NET_MAUNIUM_BRIDGE_DISABLED",
+                                                         "This bridge is disabled in the manager"))
+
+    @property
     def homeserver_mismatch(self) -> web.HTTPException:
         return web.HTTPUnauthorized(**self._make_error(
             "M_UNAUTHORIZED", "Request matrix_server_name and OpenID sub homeserver don't match"))

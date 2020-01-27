@@ -31,6 +31,8 @@ http: aiohttp.ClientSession
 
 
 async def _proxy(request: web.Request, path_prefix: str) -> web.Response:
+    if not secret:
+        raise Error.bridge_disabled
     query = request.query.copy()
     query["user_id"] = request["token"].user_id
     headers = request.headers.copy()
@@ -51,7 +53,7 @@ async def _proxy(request: web.Request, path_prefix: str) -> web.Response:
 
 @routes.view("/mautrix-telegram/user/{user_id}")
 @routes.view("/mautrix-telegram/user/{user_id}/{path:.+}")
-async def proxy(request: web.Request) -> web.Response:
+async def proxy_user(request: web.Request) -> web.Response:
     user_id = request.match_info.get("user_id", None)
     sender = request["token"].user_id
     if sender != user_id and not config.get_permissions(sender).admin:
@@ -61,18 +63,26 @@ async def proxy(request: web.Request) -> web.Response:
 
 
 @routes.view("/mautrix-telegram/portal/{path:.+}")
-async def proxy(request: web.Request) -> web.Response:
+async def proxy_portal(request: web.Request) -> web.Response:
     return await _proxy(request, "portal")
 
 
 @routes.view("/mautrix-telegram/bridge")
-async def proxy(request: web.Request) -> web.Response:
+async def proxy_bridge(request: web.Request) -> web.Response:
     return await _proxy(request, "bridge")
+
+
+@routes.get("/mautrix-telegram")
+async def check_status(request: web.Request) -> web.Response:
+    if not secret:
+        raise Error.bridge_disabled
+    return web.json_response({})
 
 
 def init(cfg: Config) -> None:
     global http, host, secret, config
     config = cfg
-    host = URL(cfg["bridges.mautrix-telegram.url"])
     secret = cfg["bridges.mautrix-telegram.secret"]
+    if secret:
+        host = URL(cfg["bridges.mautrix-telegram.url"])
     http = aiohttp.ClientSession(loop=asyncio.get_event_loop())
