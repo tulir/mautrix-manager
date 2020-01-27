@@ -21,7 +21,7 @@ import {
 } from "../lib/loginAPI.js"
 import { makeStyles } from "../lib/theme.js"
 
-const useStyles = makeStyles(({ theme }) => ({
+const useStyles = makeStyles(theme => ({
     root: {
         position: "fixed",
         inset: "0 0 0 0",
@@ -143,6 +143,8 @@ const LoginView = ({ onLoggedIn }) => {
                 passwordRef.current.focus()
             }
             evt.preventDefault()
+        } else if (evt.target.name === "server" && !evt.target.value && evt.key === "Backspace") {
+            usernameRef.current.focus()
         }
     }
 
