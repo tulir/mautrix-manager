@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Dict, TYPE_CHECKING
+from typing import Dict, Callable, Awaitable, TYPE_CHECKING
 import json
 
 from mautrix.client import Client
@@ -22,6 +22,7 @@ from aiohttp import web, ClientSession, ClientError
 from yarl import URL
 
 from ..database import Token
+from ..config import Config
 
 if TYPE_CHECKING:
     from typing import TypedDict
@@ -37,7 +38,11 @@ if TYPE_CHECKING:
     class OpenIDResponse(TypedDict):
         sub: str
 
+Handler = Callable[[web.Request], Awaitable[web.Response]]
+
 routes = web.RouteTableDef()
+config: Config
+userinfo_url: URL
 
 
 def make_error(errcode: str, error: str) -> Dict[str, str]:
@@ -51,6 +56,7 @@ def make_error(errcode: str, error: str) -> Dict[str, str]:
 
 
 request_not_json = make_error("M_NOT_JSON", "Request body is not valid JSON")
+missing_auth_header = make_error("", "Missing authorization header")
 invalid_auth_header = make_error("", "Malformed authorization header")
 invalid_auth_token = make_error("", "Invalid authorization token")
 invalid_openid_payload = make_error("", "Missing one or more fields in OpenID payload")
@@ -64,7 +70,7 @@ async def get_token(request: web.Request) -> Token:
     try:
         auth = request.headers["Authorization"]
     except KeyError:
-        raise web.HTTPBadRequest(**invalid_auth_header)
+        raise web.HTTPBadRequest(**missing_auth_header)
     if not auth.startswith("Bearer "):
         raise web.HTTPBadRequest(**invalid_auth_header)
     token = await Token.get(auth[len("Bearer "):])
@@ -73,24 +79,28 @@ async def get_token(request: web.Request) -> Token:
     return token
 
 
+@web.middleware
+async def token_middleware(request: web.Request, handler: Handler) -> web.Response:
+    token = await get_token(request)
+    request["token"] = token
+    return await handler(request)
+
+
 @routes.get("/account")
 async def get_auth(request: web.Request) -> web.Response:
     token = await get_token(request)
     return web.json_response({"user_id": token.user_id})
 
 
-async def check_openid_token(federation_url: str, token: str) -> UserID:
+async def check_openid_token(token: str) -> UserID:
     async with ClientSession() as sess:
-        url = ((URL(federation_url) / "_matrix" / "federation" / "v1" / "openid" / "userinfo")
-               .with_query({"access_token": token}))
-        async with sess.get(url) as resp:
+        async with sess.get(userinfo_url.with_query({"access_token": token})) as resp:
             data: OpenIDResponse = await resp.json()
             return UserID(data["sub"])
 
 
 @routes.post("/account/register")
 async def exchange_token(request: web.Request) -> web.Response:
-    config = request.app["config"]
     try:
         data: 'OpenIDPayload' = await request.json()
     except json.JSONDecodeError:
@@ -98,8 +108,7 @@ async def exchange_token(request: web.Request) -> web.Response:
     if "access_token" not in data or "matrix_server_name" not in data:
         raise web.HTTPBadRequest(**invalid_openid_payload)
     try:
-        user_id = await check_openid_token(config["homeserver.federation_url"],
-                                           data["access_token"])
+        user_id = await check_openid_token(data["access_token"])
         _, homeserver = Client.parse_user_id(user_id)
     except (ClientError, json.JSONDecodeError, KeyError, ValueError):
         raise web.HTTPUnauthorized(**invalid_openid_token)
@@ -121,3 +130,10 @@ async def logout(request: web.Request) -> web.Response:
     token = await get_token(request)
     await token.delete()
     return web.json_response({}, status=204)
+
+
+def init(cfg: Config) -> None:
+    global config, userinfo_url
+    config = cfg
+    userinfo_url = (URL(config["homeserver.federation_url"])
+                    / "_matrix" / "federation" / "v1" / "openid" / "userinfo")

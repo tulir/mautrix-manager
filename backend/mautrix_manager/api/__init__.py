@@ -15,9 +15,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from aiohttp import web
 
-from .auth import routes as auth_routes
-
-api_app = web.Application()
+from ..config import Config
+from .auth import routes as auth_routes, token_middleware
+from .docker_proxy import routes as proxy_routes, init as proxy_init
 
 integrations_app = web.Application()
 integrations_app.add_routes(auth_routes)
+
+api_app = web.Application(middlewares=[token_middleware])
+api_app.add_routes(proxy_routes)
+
+
+def init(config: Config) -> None:
+    proxy_init(config)

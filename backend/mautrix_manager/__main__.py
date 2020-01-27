@@ -21,7 +21,7 @@ import copy
 import sys
 
 from .config import Config
-from .server import start as start_web, stop as stop_web
+from .server import start as start_web, stop as stop_web, init as init_server
 from .database import Database
 from . import __version__
 
@@ -54,6 +54,8 @@ loop = asyncio.get_event_loop()
 signal.signal(signal.SIGINT, signal.default_int_handler)
 signal.signal(signal.SIGTERM, signal.default_int_handler)
 
+init_server(config)
+
 
 async def start():
     log.debug("Connecting to database")
@@ -71,9 +73,14 @@ async def stop():
 
 
 try:
-    # TODO startup actions
     loop.run_until_complete(start())
-    log.info("Startup actions complete, running forever")
+except Exception:
+    log.fatal("Fatal error during startup actions", exc_info=True)
+    sys.exit(11)
+
+log.info("Startup actions complete, running forever")
+
+try:
     loop.run_forever()
 except KeyboardInterrupt:
     # TODO cleanup
@@ -83,3 +90,6 @@ except KeyboardInterrupt:
     loop.close()
     log.debug("Everything stopped, shutting down")
     sys.exit(0)
+except Exception:
+    log.fatal("Fatal error in main loop", exc_info=True)
+    sys.exit(20)
