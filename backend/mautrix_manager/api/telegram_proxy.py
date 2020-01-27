@@ -56,7 +56,9 @@ async def _proxy(request: web.Request, path_prefix: str) -> web.Response:
 async def proxy_user(request: web.Request) -> web.Response:
     user_id = request.match_info.get("user_id", None)
     sender = request["token"].user_id
-    if sender != user_id and not config.get_permissions(sender).admin:
+    if user_id == "me":
+        user_id = sender
+    elif sender != user_id and not config.get_permissions(sender).admin:
         raise Error.no_impersonation
 
     return await _proxy(request, f"user/{user_id}")
