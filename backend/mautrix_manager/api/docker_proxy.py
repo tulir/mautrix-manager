@@ -29,23 +29,18 @@ http: aiohttp.ClientSession
 
 
 @routes.view("/docker/{path:.+}")
-async def proxy(request: web.Request) -> web.StreamResponse:
+async def proxy(request: web.Request) -> web.Response:
     if not config.get_permissions(request["token"].user_id).admin:
         raise Error.no_access_docker
-    path = request.match_info.get("path", None)
+    path = request.match_info["path"]
     query = request.query.copy()
     headers = request.headers.copy()
     del headers["Host"]
     del headers["Authorization"]
 
-    async with http.request(request.method, f"{host}/{path}", headers=headers,
-                            params=query, data=request.content) as proxy_resp:
-        response = web.StreamResponse(status=proxy_resp.status, headers=proxy_resp.headers)
-        await response.prepare(request)
-        async for chunk in proxy_resp.content.iter_chunked(PROXY_CHUNK_SIZE):
-            await response.write(chunk)
-        await response.write_eof()
-        return response
+    resp = await http.request(request.method, f"{host}/{path}", headers=headers,
+                              params=query, data=request.content)
+    return web.Response(status=resp.status, headers=resp.headers, body=resp.content)
 
 
 def init(cfg: Config) -> None:

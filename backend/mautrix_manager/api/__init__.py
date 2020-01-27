@@ -17,14 +17,17 @@ from aiohttp import web
 
 from ..config import Config
 from .auth import routes as auth_routes, token_middleware
-from .docker_proxy import routes as proxy_routes, init as proxy_init
+from .docker_proxy import routes as docker_routes, init as docker_init
+from .telegram_proxy import routes as telegram_routes, init as telegram_init
 
 integrations_app = web.Application()
 integrations_app.add_routes(auth_routes)
 
 api_app = web.Application(middlewares=[token_middleware])
-api_app.add_routes(proxy_routes)
+api_app.add_routes(docker_routes)
+api_app.add_routes(telegram_routes)
 
 
 def init(config: Config) -> None:
-    proxy_init(config)
+    docker_init(config)
+    telegram_init(config)

@@ -26,7 +26,7 @@ server:
 # Bridge API URLs and secrets. If secret or URL is null, the bridge is disabled.
 bridges:
     mautrix-telegram:
-        url: http://localhost:29317
+        url: http://localhost:29317/_matrix/provision/v1
         secret: null
     mautrix-whatsapp:
         url: http://localhost:29318

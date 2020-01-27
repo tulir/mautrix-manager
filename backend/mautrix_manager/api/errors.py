@@ -19,7 +19,10 @@ import json
 from aiohttp import web
 
 
-class Error:
+class _ErrorMeta:
+    def __init__(self, *args, **kwargs) -> None:
+        pass
+
     @staticmethod
     def _make_error(errcode: str, error: str) -> Dict[str, str]:
         return {
@@ -30,59 +33,56 @@ class Error:
             "content_type": "application/json",
         }
 
-    @classmethod
     @property
-    def request_not_json(cls) -> None:
-        raise web.HTTPBadRequest(**cls._make_error("M_NOT_JSON",
-                                                   "Request body is not valid JSON"))
+    def request_not_json(self) -> web.HTTPException:
+        return web.HTTPBadRequest(**self._make_error("M_NOT_JSON",
+                                                     "Request body is not valid JSON"))
 
-    @classmethod
     @property
-    def missing_auth_header(cls) -> None:
-        raise web.HTTPForbidden(**cls._make_error("M_MISSING_TOKEN",
-                                                  "Missing authorization header"))
+    def missing_auth_header(self) -> web.HTTPException:
+        return web.HTTPForbidden(**self._make_error("M_MISSING_TOKEN",
+                                                    "Missing authorization header"))
 
-    @classmethod
     @property
-    def invalid_auth_header(cls) -> None:
-        raise web.HTTPForbidden(**cls._make_error("M_UNKNOWN_TOKEN",
-                                                  "Invalid authorization header"))
+    def invalid_auth_header(self) -> web.HTTPException:
+        return web.HTTPForbidden(**self._make_error("M_UNKNOWN_TOKEN",
+                                                    "Invalid authorization header"))
 
-    @classmethod
     @property
-    def invalid_auth_token(cls) -> None:
-        raise web.HTTPForbidden(**cls._make_error("M_UNKNOWN_TOKEN",
-                                                  "Invalid authorization token"))
+    def invalid_auth_token(self) -> web.HTTPException:
+        return web.HTTPForbidden(**self._make_error("M_UNKNOWN_TOKEN",
+                                                    "Invalid authorization token"))
 
-    @classmethod
     @property
-    def invalid_openid_payload(cls) -> None:
-        raise web.HTTPBadRequest(**cls._make_error("M_BAD_JSON", "Missing one or more "
-                                                                 "fields in OpenID payload"))
+    def invalid_openid_payload(self) -> web.HTTPException:
+        return web.HTTPBadRequest(**self._make_error("M_BAD_JSON", "Missing one or more "
+                                                                   "fields in OpenID payload"))
 
-    @classmethod
     @property
-    def invalid_openid_token(cls) -> None:
-        raise web.HTTPForbidden(**cls._make_error("M_UNKNOWN_TOKEN",
-                                                  "Invalid OpenID token"))
+    def invalid_openid_token(self) -> web.HTTPException:
+        return web.HTTPForbidden(**self._make_error("M_UNKNOWN_TOKEN",
+                                                    "Invalid OpenID token"))
 
-    @classmethod
     @property
-    def no_access(cls) -> None:
-        raise web.HTTPUnauthorized(**cls._make_error("M_UNAUTHORIZED",
-                                                     "You are not authorized to access this "
-                                                     "mautrix-manager instance"))
+    def no_access(self) -> web.HTTPException:
+        return web.HTTPUnauthorized(**self._make_error(
+            "M_UNAUTHORIZED", "You are not authorized to access this mautrix-manager instance"))
 
-    @classmethod
     @property
-    def no_access_docker(cls) -> None:
-        raise web.HTTPUnauthorized(**cls._make_error("M_UNAUTHORIZED",
-                                                     "You are not authorized to access the Docker "
-                                                     "API proxy"))
+    def no_access_docker(self) -> web.HTTPException:
+        return web.HTTPUnauthorized(**self._make_error(
+            "M_UNAUTHORIZED", "You are not authorized to access the Docker API proxy"))
 
-    @classmethod
     @property
-    def homeserver_mismatch(cls) -> None:
-        raise web.HTTPUnauthorized(**cls._make_error("M_UNAUTHORIZED",
-                                                     "Request matrix_server_name and OpenID "
-                                                     "sub homeserver don't match"))
+    def no_impersonation(self) -> web.HTTPException:
+        return web.HTTPUnauthorized(**self._make_error(
+            "M_UNAUTHORIZED", "You are not authorized to impersonate other users"))
+
+    @property
+    def homeserver_mismatch(self) -> web.HTTPException:
+        return web.HTTPUnauthorized(**self._make_error(
+            "M_UNAUTHORIZED", "Request matrix_server_name and OpenID sub homeserver don't match"))
+
+
+class Error(metaclass=_ErrorMeta):
+    pass
