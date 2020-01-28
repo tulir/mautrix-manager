@@ -18,7 +18,11 @@ export const resolveWellKnown = async (server) => {
     try {
         const resp = await fetch(`https://${server}/.well-known/matrix/client`)
         const data = await resp.json()
-        return data["m.homeserver"].base_url
+        let url = data["m.homeserver"].base_url
+        if (url.endsWith("/")) {
+            url = url.slice(0, -1)
+        }
+        return url
     } catch (err) {
         console.error("Resolution failed:", err)
         throw new Error(`Failed to resolve URL for ${server}`)
@@ -63,6 +67,9 @@ export const loginMatrix = async (address, username, password) => {
     }
     if (data.well_known && data.well_known["m.homeserver"]) {
         address = data.well_known["m.homeserver"].base_url || address
+        if (address.endsWith("/")) {
+            address = address.slice(0, -1)
+        }
     }
     return [data.access_token, data.user_id, address]
 }
