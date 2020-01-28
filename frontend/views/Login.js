@@ -18,7 +18,8 @@ import { html } from "/web_modules/htm/preact.js"
 
 import {
     resolveWellKnown, loginMatrix, requestOpenIDToken, requestIntegrationToken,
-} from "../lib/loginAPI.js"
+} from "../lib/api/login.js"
+import Spinner from "../lib/Spinner.js"
 import { makeStyles } from "../lib/theme.js"
 
 const useStyles = makeStyles(theme => ({
@@ -30,7 +31,7 @@ const useStyles = makeStyles(theme => ({
         justifyContent: "space-around",
     },
     loginBox: {
-        backgroundColor: "white",
+        backgroundColor: theme.color.background,
         width: "25rem",
         height: "22.5rem",
         padding: "2.5rem 2.5rem 2rem",
@@ -64,6 +65,7 @@ const useStyles = makeStyles(theme => ({
     },
     username: {
         display: "flex",
+        cursor: "text",
         "& > input": {
             border: "none",
             padding: ".75rem .125rem",
@@ -85,34 +87,15 @@ const useStyles = makeStyles(theme => ({
         },
     },
     password: {
-        padding: "calc(.75rem + 1px) 1rem",
-        fontSize: "1rem",
-        "&:focus": {
-            padding: ".75rem calc(1rem - 1px)",
-        },
+        ...theme.input(),
     },
     submit: {
-        backgroundColor: theme.color.primary,
-        cursor: "pointer",
-        height: "3rem",
-        margin: ".5rem 0",
-        borderRadius: ".25rem",
-        border: "none",
-        color: "white",
-        fontSize: "1rem",
-        padding: 0,
-        "&:hover": {
-            backgroundColor: theme.color.primaryDark,
-        },
-        "&:disabled": {
-            backgroundColor: theme.color.disabled,
-            cursor: "default",
-        },
+        ...theme.button({ size: "thick" }),
     },
     error: {
         padding: "1rem",
         borderRadius: ".25rem",
-        border: `1px solid ${theme.color.errorDark}`,
+        border: `2px solid ${theme.color.errorDark}`,
         backgroundColor: theme.color.error,
         margin: ".5rem 0",
         width: "100%",
@@ -126,9 +109,11 @@ const useStyles = makeStyles(theme => ({
 const LoginView = ({ onLoggedIn }) => {
     const classes = useStyles()
 
+    const usernameWrapperRef = useRef()
     const usernameRef = useRef()
     const serverRef = useRef()
     const passwordRef = useRef()
+    const [loading, setLoading] = useState(false)
     const [userIDFocused, setUserIDFocused] = useState(true)
     const [username, setUsername] = useState("")
     const [server, setServer] = useState("")
@@ -190,18 +175,26 @@ const LoginView = ({ onLoggedIn }) => {
 
     const onSubmit = evt => {
         evt.preventDefault()
-        submit().catch(err => console.error("Fatal error:", err))
+        setError(null)
+        setLoading(true)
+        submit()
+            .catch(err => console.error("Fatal error:", err))
+            .finally(() => setLoading(false))
     }
+
+    const usernameWrapperClick = evt => evt.target === usernameWrapperRef.current
+        && usernameRef.current.focus()
 
     return html`<main class=${classes.root}>
         <form class="${classes.loginBox} ${error ? classes.hasError : ""}" onSubmit=${onSubmit}>
             <h1 class=${classes.header}>mautrix-manager</h1>
-            <div class="${classes.username} ${classes.input} ${userIDFocused ? classes.focus : ""}">
-                <span>@</span>
+            <div class="${classes.username} ${classes.input} ${userIDFocused ? classes.focus : ""}"
+                 ref=${usernameWrapperRef} onClick=${usernameWrapperClick}>
+                <span onClick=${() => usernameRef.current.focus()}>@</span>
                 <input type="text" placeholder="username" name="username" value=${username}
                        onChange=${evt => setUsername(evt.target.value)} ref=${usernameRef}
                        onKeyDown=${keyDown} onFocus=${onFocus} onBlur=${onBlur} autoFocus />
-                <span>:</span>
+                <span onClick=${() => serverRef.current.focus()}>:</span>
                 <input type="text" placeholder="example.com" name="server" value=${server}
                        onChange=${evt => setServer(evt.target.value)} ref=${serverRef}
                        onKeyDown=${keyDown} onFocus=${onFocus} onBlur=${onBlur} />
@@ -211,7 +204,7 @@ const LoginView = ({ onLoggedIn }) => {
                    onChange=${evt => setPassword(evt.target.value)} />
             <button type="submit" class=${classes.submit}
                     disabled=${!username || !server || !password}>
-                Log in
+                 ${loading ? html`<${Spinner} size=30 />` : "Log in"}
             </button>
             ${error && html`<div class=${classes.error}>
                 ${error}

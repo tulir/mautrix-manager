@@ -16,7 +16,7 @@
 from aiohttp import web
 
 from ..config import Config
-from .auth import routes as auth_routes, token_middleware
+from .auth import routes as auth_routes, token_middleware, init as auth_init
 from .docker_proxy import routes as docker_routes, init as docker_init
 from .telegram_proxy import routes as telegram_routes, init as telegram_init
 
@@ -29,5 +29,6 @@ api_app.add_routes(telegram_routes)
 
 
 def init(config: Config) -> None:
+    auth_init(config)
     docker_init(config)
     telegram_init(config)

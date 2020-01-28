@@ -1,0 +1,12 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    font-family: Raleway, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+input, button {
+    font-family: Raleway, sans-serif;
+}

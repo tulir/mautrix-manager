@@ -57,7 +57,7 @@ export const loginMatrix = async (address, username, password) => {
         console.error("Login JSON parse failed:", err)
         throw new Error(`Invalid login response from ${address}`)
     }
-    if (resp.status !== 200) {
+    if (resp.status >= 300) {
         console.error("Unexpected login status", resp.status, data)
         throw new Error(data.error || `Invalid login response from ${address}`)
     }
@@ -90,7 +90,7 @@ export const requestOpenIDToken = async (address, userID, accessToken) => {
         console.error("OpenID token request JSON parse failed:", err)
         throw new Error("Invalid OpenID response")
     }
-    if (resp.status !== 200) {
+    if (resp.status >= 300) {
         console.error("Unexpected OpenID token request status", resp.status, data)
         throw new Error(data.error || "Invalid OpenID response")
     }
@@ -118,7 +118,7 @@ export const requestIntegrationToken = async (tokenData) => {
         console.error("Integration register JSON parse failed:", err)
         throw new Error("Invalid mautrix-manager registration response")
     }
-    if (resp.status !== 200) {
+    if (resp.status >= 300) {
         console.error("Unexpected integration manager register status", resp.status, data)
         throw new Error(data.error || "Invalid mautrix-manager registration response")
     }
