@@ -54,8 +54,8 @@ class Config(BaseFileConfig):
 
     def _get_permissions(self, key: str) -> Permissions:
         level = self["permissions"].get(key, "")
-        user = level == "user"
         admin = level == "admin"
+        user = admin or level == "user"
         return Permissions(user=user, admin=admin, level=level)
 
     def get_permissions(self, mxid: UserID) -> Permissions:
