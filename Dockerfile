@@ -9,6 +9,7 @@ FROM alpine:3.11
 
 COPY --from=builder /opt/mautrix-manager/frontend /opt/mautrix-manager/frontend
 COPY ./backend /opt/mautrix-manager/backend
+COPY ./docker-run.sh /opt/mautrix-manager
 
 WORKDIR /opt/mautrix-manager/backend
 
