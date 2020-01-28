@@ -21,7 +21,7 @@ from mautrix.util.config import BaseFileConfig, ConfigUpdateHelper
 from mautrix.types import UserID
 from mautrix.client import Client
 
-Permissions = NamedTuple("Permissions", admin=bool, level=str)
+Permissions = NamedTuple("Permissions", user=bool, admin=bool, level=str)
 
 
 class Config(BaseFileConfig):
@@ -54,8 +54,9 @@ class Config(BaseFileConfig):
 
     def _get_permissions(self, key: str) -> Permissions:
         level = self["permissions"].get(key, "")
+        user = level == "user"
         admin = level == "admin"
-        return Permissions(admin, level)
+        return Permissions(user=user, admin=admin, level=level)
 
     def get_permissions(self, mxid: UserID) -> Permissions:
         permissions = self["permissions"]

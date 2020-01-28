@@ -105,7 +105,7 @@ async def exchange_token(request: web.Request) -> web.Response:
     if homeserver != data["matrix_server_name"]:
         raise Error.homeserver_mismatch
     permissions = config.get_permissions(user_id)
-    if not permissions.admin:
+    if not permissions.user:
         raise Error.no_access
     token = Token.random(user_id)
     await token.insert()
