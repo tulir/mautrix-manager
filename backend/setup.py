@@ -26,7 +26,6 @@ setuptools.setup(
         "mautrix>=0.4,<0.5",
         "ruamel.yaml>=0.15.90,<0.17",
         "yarl>=1,<2",
-        "aiosqlite>=0.11,<0.12",
         "asyncpg>=0.20,<0.21",
         "attrs>=18.1.0",
     ],
