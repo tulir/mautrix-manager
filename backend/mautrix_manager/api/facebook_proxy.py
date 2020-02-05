@@ -26,36 +26,14 @@ host: URL
 secret: str
 
 
-@routes.view("/mautrix-telegram/user/{user_id}")
-@routes.view("/mautrix-telegram/user/{user_id}/{path:.+}")
-async def proxy_user(request: web.Request) -> web.Response:
+@routes.view("/mautrix-facebook/{path:.+}")
+async def proxy_all(request: web.Request) -> web.Response:
     if not secret:
         raise Error.bridge_disabled
-    user_id = request.match_info.get("user_id", None)
-    sender = request["token"].user_id
-    if user_id == "me":
-        user_id = sender
-    elif sender != user_id and not config.get_permissions(sender).admin:
-        raise Error.no_impersonation
-
-    return await proxy(host, secret, request, f"user/{user_id}")
+    return await proxy(host, secret, request, "api")
 
 
-@routes.view("/mautrix-telegram/portal/{path:.+}")
-async def proxy_portal(request: web.Request) -> web.Response:
-    if not secret:
-        raise Error.bridge_disabled
-    return await proxy(host, secret, request, "portal")
-
-
-@routes.view("/mautrix-telegram/bridge")
-async def proxy_bridge(request: web.Request) -> web.Response:
-    if not secret:
-        raise Error.bridge_disabled
-    return await proxy(host, secret, request, "bridge")
-
-
-@routes.get("/mautrix-telegram")
+@routes.get("/mautrix-facebook")
 async def check_status(_: web.Request) -> web.Response:
     if not secret:
         raise Error.bridge_disabled
@@ -65,6 +43,6 @@ async def check_status(_: web.Request) -> web.Response:
 def init(cfg: Config) -> None:
     global host, secret, config
     config = cfg
-    secret = cfg["bridges.mautrix-telegram.secret"]
+    secret = cfg["bridges.mautrix-facebook.secret"]
     if secret:
-        host = URL(cfg["bridges.mautrix-telegram.url"])
+        host = URL(cfg["bridges.mautrix-facebook.url"])

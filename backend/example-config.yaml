@@ -23,7 +23,7 @@ server:
     # Optionally, you can use another web server to serve the UI and only proxy /api to the backend.
     override_resource_path: false
 
-# Bridge API URLs and secrets. If secret or URL is null, the bridge is disabled.
+# Bridge API URLs and secrets. If secret is null, the bridge is disabled.
 bridges:
     mautrix-telegram:
         url: http://localhost:29317/_matrix/provision/v1

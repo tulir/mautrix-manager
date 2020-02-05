@@ -19,6 +19,7 @@ import { Router } from "/web_modules/preact-router.js"
 
 import { makeStyles } from "../lib/theme.js"
 import TelegramBridge from "./bridges/Telegram.js"
+import FacebookBridge from "./bridges/Facebook.js"
 import LoginView from "./Login.js"
 
 const useStyles = makeStyles({
@@ -43,10 +44,13 @@ const Main = () => {
             <a href="/">Home</a>
             —
             <a href="/telegram">Telegram</a>
+            —
+            <a href="/facebook">Facebook</a>
         </nav>
         <${Router}>
             <div path="/">This is the home</div>
             <${TelegramBridge} path="/telegram" />
+            <${FacebookBridge} path="/facebook" />
         </Router>
     `
 }

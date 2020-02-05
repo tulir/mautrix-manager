@@ -16,28 +16,26 @@
 
 import { tryFetch } from "./tryGet.js"
 
-const service = "Telegram bridge"
+const service = "Facebook bridge"
 
-export const getMe = () => tryFetch("/api/mautrix-telegram/user/me", {}, {
+export const whoami = () => tryFetch("/api/mautrix-facebook/whoami", {}, {
     service,
     requestType: "user info",
 })
 
-export const logout = () => tryFetch("/api/mautrix-telegram/user/me/logout", { method: "POST" }, {
+export const logout = () => tryFetch("/api/mautrix-facebook/logout", { method: "POST" }, {
     service,
     requestType: "logout",
 })
 
-export const login = (endpoint, payload) => tryFetch(
-    `/api/mautrix-telegram/login/user/me/login/${endpoint}`,
-    {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: {
-            Authorization: `Bearer ${localStorage.accessToken}`,
-            "Content-Type": "application/json",
-        },
-    }, {
-        service,
-        requestType: "login",
-    })
+export const login = payload => tryFetch("/api/mautrix-facebook/login", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    headers: {
+        Authorization: `Bearer ${localStorage.accessToken}`,
+        "Content-Type": "application/json",
+    },
+}, {
+    service,
+    requestType: "login",
+})

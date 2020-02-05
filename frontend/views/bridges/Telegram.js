@@ -179,7 +179,13 @@ const TelegramBridge = () => {
     const [bridgeState, setBridgeState] = useState(null)
     const [error, setError] = useState(null)
 
-    useEffect(async () => setBridgeState(await api.getMe()), [])
+    useEffect(async () => {
+        try {
+            setBridgeState(await api.getMe())
+        } catch (err) {
+            setError(err.message)
+        }
+    }, [])
 
     const logout = async () => {
         try {

@@ -18,7 +18,9 @@ from aiohttp import web
 from ..config import Config
 from .auth import routes as auth_routes, token_middleware, init as auth_init
 from .docker_proxy import routes as docker_routes, init as docker_init
+from .generic_proxy import init as generic_proxy_init
 from .telegram_proxy import routes as telegram_routes, init as telegram_init
+from .facebook_proxy import routes as facebook_routes, init as facebook_init
 
 integrations_app = web.Application()
 integrations_app.add_routes(auth_routes)
@@ -26,9 +28,12 @@ integrations_app.add_routes(auth_routes)
 api_app = web.Application(middlewares=[token_middleware])
 api_app.add_routes(docker_routes)
 api_app.add_routes(telegram_routes)
+api_app.add_routes(facebook_routes)
 
 
 def init(config: Config) -> None:
     auth_init(config)
     docker_init(config)
+    generic_proxy_init()
     telegram_init(config)
+    facebook_init(config)

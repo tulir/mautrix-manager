@@ -17,42 +17,37 @@ import asyncio
 
 import aiohttp
 from aiohttp import web
+from yarl import URL
 
-from ..config import Config
 from .errors import Error
 
-PROXY_CHUNK_SIZE = 32 * 1024
-routes = web.RouteTableDef()
-config: Config
-host: str
 http: aiohttp.ClientSession
 
 
-@routes.view("/docker/{path:.+}")
-async def proxy(request: web.Request) -> web.Response:
-    if not config.get_permissions(request["token"].user_id).admin:
-        raise Error.no_access_docker
-    path = request.match_info["path"]
+async def proxy(url: URL, secret: str, request: web.Request, path_prefix: str) -> web.Response:
+    if not secret:
+        raise Error.bridge_disabled
     query = request.query.copy()
+    query["user_id"] = request["token"].user_id
     headers = request.headers.copy()
+    headers["Authorization"] = f"Bearer {secret}"
     del headers["Host"]
-    del headers["Authorization"]
+
+    if path_prefix:
+        url /= path_prefix
+
+    path = request.match_info.get("path", None)
+    if path:
+        url /= path
 
     try:
-        resp = await http.request(request.method, f"{host}/{path}", headers=headers,
+        resp = await http.request(request.method, url, headers=headers,
                                   params=query, data=request.content)
     except aiohttp.ClientError:
-        raise web.HTTPBadGateway(text="Failed to contact Docker daemon")
+        raise web.HTTPBadGateway(text="Failed to contact Telegram bridge")
     return web.Response(status=resp.status, headers=resp.headers, body=resp.content)
 
 
-def init(cfg: Config) -> None:
-    global http, host, config
-    config = cfg
-    host = cfg["docker.host"]
-    if host.startswith("unix://"):
-        http = aiohttp.ClientSession(connector=aiohttp.UnixConnector(path=host[len("unix://"):]),
-                                     loop=asyncio.get_event_loop())
-        host = "unix://localhost"
-    else:
-        http = aiohttp.ClientSession(loop=asyncio.get_event_loop())
+def init() -> None:
+    global http
+    http = aiohttp.ClientSession(loop=asyncio.get_event_loop())
