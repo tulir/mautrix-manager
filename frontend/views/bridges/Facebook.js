@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import { useEffect, useState } from "/web_modules/preact/hooks.js"
+import { useEffect, useState, useRef } from "/web_modules/preact/hooks.js"
 import { html } from "/web_modules/htm/preact.js"
 
 import * as api from "../../lib/api/facebook.js"
@@ -46,6 +46,11 @@ const useStyles = makeStyles(theme => ({
         width: "100%",
         boxSizing: "border-box",
     },
+    addonIcon: {
+        maxWidth: "50%",
+        padding: "0 .5rem",
+        boxSizing: "border-box",
+    }
 }))
 
 const manualInstructions = html`<ol>
@@ -63,6 +68,13 @@ const FacebookLogin = ({ onLoggedIn }) => {
     const [xs, setXS] = useState("")
     const [user, setUser] = useState("")
     const [error, setError] = useState(null)
+    const xsRef = useRef()
+
+    const onUserKeyDown = evt => {
+        if (evt.key === "Enter") {
+            xsRef.current.focus()
+        }
+    }
 
     const submit = async () => {
         await api.login({
@@ -84,13 +96,35 @@ const FacebookLogin = ({ onLoggedIn }) => {
     return html`
         <form class=${classes.root} onSubmit=${onSubmit}>
             <h2>Sign into Facebook</h2>
+            <p>
+                To start using the Matrix-Facebook Messenger bridge, please use one of the options
+                below to sign in with your Facebook account.
+            </p>
+            <h3>Browser extension (easy way)</h3>
+            <p>Coming soon</p>
+            <!--<p>
+                To log in the easy way, install the browser extension, open it while on this page,
+                then follow the instructions in the extension. Alternatively, you may extract the
+                authentication cookies manually using the instructions below.
+            </p>
+            <p>
+                <a href="javascript:alert('Not yet implemented')">
+                    <img class=${classes.addonIcon} src="/res/firefox.png"
+                         alt="Extension for Firefox" />
+                </a>
+                <a href="javascript:alert('Not yet implemented')">
+                    <img class=${classes.addonIcon} src="/res/chrome.png"
+                         alt="Extension for Chrome" />
+                </a>
+            </p>-->
+            <h3>Manual login (hard way)</h3>
             ${manualInstructions}
-            <input type="string" value=${user} placeholder="c_user cookie" class=${classes.input}
-                   onChange=${evt => setUser(evt.target.value)} />
+            <input type="number" value=${user} placeholder="c_user cookie" class=${classes.input}
+                   onChange=${evt => setUser(evt.target.value)} onKeyDown=${onUserKeyDown} />
             <input type="string" value=${xs} placeholder="xs cookie" class=${classes.input}
-                   onChange=${evt => setXS(evt.target.value)} />
-            <button class=${classes.submit} type="submit">
-                ${loading ? html`<${Spinner} size=20 />` : "Request code"}
+                   onChange=${evt => setXS(evt.target.value)} ref=${xsRef} />
+            <button class=${classes.submit} type="submit" disabled=${!user || !xs}>
+                ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
             </button>
             ${error && html`<div class=${classes.error}>${error}</div>`}
         </form>

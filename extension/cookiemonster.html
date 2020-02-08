@@ -1,0 +1,75 @@
+<!--
+mautrix-cookiemonster - A browser extension to eat cookies to log into bridges.
+Copyright (C) 2020 Tulir Asokan
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Mautrix Cookie Monster</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="cookiemonster.css"/>
+</head>
+<body>
+    <h1>Mautrix Cookie Monster 🍪</h1>
+    <div id="init">
+        <p>
+            Open this extension on your mautrix-manager page to get started.
+        </p>
+    </div>
+    <div id="token-received" style="display: none">
+        <p>
+            Received token for <code id="token-received-user"></code> to log into
+            <code id="token-received-homeserver"></code>'s
+            <span id="token-received-bridge-type"></span> bridge
+        </p>
+        <button id="token-received-nav">
+            Go to log in
+        </button>
+    </div>
+    <div id="cookie-not-found" style="display: none">
+        <p>
+            Authentication cookies not found! Did you log in already?
+        </p>
+    </div>
+    <div id="cookie-eaten" style="display: none">
+        <p>
+            Successfully ate cookies from <span id="cookie-eaten-bridge-type"></span>.
+        </p>
+        <form id="cookie-eaten-form">
+            <table>
+                <thead>
+                <tr>
+                    <td>Name</td>
+                    <td>Value</td>
+                </tr>
+                </thead>
+                <tbody id="cookie-eaten-cookies"></tbody>
+            </table>
+            <button type="submit">
+                Send to <span id="cookie-eaten-homeserver"></span>
+            </button>
+        </form>
+    </div>
+    <div id="logged-in" style="display: none">
+        <p>Logged in successfully! 🎉</p>
+    </div>
+    <div id="login-error" style="display: none">
+        <p>Login failed :(</p>
+    </div>
+    <script src="browser-polyfill.min.js"></script>
+    <script src="cookiemonster.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "manifest_version": 2,
+  "name": "Mautrix Cookie Monster",
+  "homepage": "https://github.com/tulir/mautrix-manager/tree/extension",
+  "version": "0.2.0",
+  "description": "Eats cookies from Facebook and Google to make logging into Matrix bridges easier.",
+  "icons": {
+    "520": "cookiemonster.png"
+  },
+  "browser_action": {
+    "browser_style": true,
+    "default_popup": "cookiemonster.html",
+    "default_icon": {
+      "520": "cookiemonster.png"
+    }
+  },
+  "permissions": [
+    "*://*.facebook.com/*",
+    "*://accounts.google.com/*",
+    "cookies",
+    "activeTab"
+  ]
+}

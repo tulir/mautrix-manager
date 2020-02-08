@@ -101,7 +101,7 @@ const TelegramLogin = ({ onLoggedIn }) => {
             <input type="tel" value=${phone} placeholder="Phone number" class=${classes.input}
                    onChange=${evt => setPhone(evt.target.value)} />
             <div class=${classes.buttonGroup}>
-                <button class=${classes.submit} type="submit">
+                <button class=${classes.submit} type="submit" disabled=${!phone}>
                     ${loading ? html`<${Spinner} size=20 />` : "Request code"}
                 </button>
                 <button class=${classes.rightButton} type="button"
@@ -119,7 +119,7 @@ const TelegramLogin = ({ onLoggedIn }) => {
             <input type="text" value=${botToken} placeholder="Bot token" class=${classes.input}
                    onChange=${evt => setBotToken(evt.target.value)} />
             <div class=${classes.buttonGroup}>
-                <button class=${classes.submit} type="submit">
+                <button class=${classes.submit} type="submit" disabled=${!botToken}>
                     ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
                 </button>
                 <button class=${classes.rightButton} type="button"
@@ -133,7 +133,7 @@ const TelegramLogin = ({ onLoggedIn }) => {
             <p>Sign-in code sent. Please enter the code here.</p>
             <input type="number" value=${phoneCode} placeholder="Phone code" class=${classes.input}
                    onChange=${evt => setPhoneCode(evt.target.value)} />
-            <button class=${classes.submit} type="submit">
+            <button class=${classes.submit} type="submit" disabled=${!phoneCode}>
                 ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
             </button>
         `
@@ -145,7 +145,7 @@ const TelegramLogin = ({ onLoggedIn }) => {
             </p>
             <input type="password" value=${password} placeholder="Password" class=${classes.input}
                    onChange=${evt => setPassword(evt.target.value)} />
-            <button class=${classes.submit} type="submit">
+            <button class=${classes.submit} type="submit" disabled=${!password}>
                 ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
             </button>
         `
@@ -162,6 +162,7 @@ const TelegramLogin = ({ onLoggedIn }) => {
 
     return html`<form class=${classes.root} onSubmit=${onSubmit}>
         <h2>Sign into Telegram</h2>
+        <p>To start using the Matrix-Telegram bridge, sign in with your Telegram account below.</p>
         ${content}
         ${error && html`<div class=${classes.error}>${error}</div>`}
     </form>`

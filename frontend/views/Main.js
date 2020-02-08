@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import { useState } from "/web_modules/preact/hooks.js"
+import { useEffect, useState } from "/web_modules/preact/hooks.js"
 import { html } from "/web_modules/htm/preact.js"
 import { Router } from "/web_modules/preact-router.js"
 
@@ -22,15 +22,26 @@ import TelegramBridge from "./bridges/Telegram.js"
 import FacebookBridge from "./bridges/Facebook.js"
 import LoginView from "./Login.js"
 
-const useStyles = makeStyles({
-    hello: {
-        color: "red",
-    },
-})
+const useStyles = makeStyles({})
 
 const Main = () => {
     const classes = useStyles()
     const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.accessToken))
+
+    const handleExtension = () => {
+        window.dispatchEvent(new CustomEvent("mautrix-cookie-monster-response"), {
+            detail: {
+                loggedIn,
+                token: localStorage.accessToken,
+                url: window.location.origin,
+            },
+        })
+    }
+
+    useEffect(() => {
+        window.addEventListener("mautrix-cookie-monster-appeared", handleExtension)
+        return () => window.removeEventListener("mautrix-cookie-monster-appeared", handleExtension)
+    }, [loggedIn])
 
     if (!loggedIn) {
         return html`<${LoginView}

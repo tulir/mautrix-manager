@@ -1,0 +1,17 @@
+body {
+    font-size: 16px;
+    margin: 1rem;
+    width: 28rem;
+}
+
+input {
+    width: 100%;
+}
+
+h1 {
+    margin: 0 auto 1rem;
+}
+
+code {
+    font-size: 14px;
+}
