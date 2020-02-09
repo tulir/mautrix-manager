@@ -54,8 +54,11 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const manualInstructions = html`<ol>
-    <li>Log in to Facebook normally.</li>
-    <li>Press <kbd>F12</kbd> to open developer tools.</li>
+    <li>Open <a href="https://facebook.com">facebook.com</a> in a new tab and log in normally.</li>
+    <li>
+      While in Facebook tab, open browser developer tools: <kbd>F12</kbd> on Windows/Linux
+      or <kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>I</kbd> on macOS.
+    </li>
     <li>Select the "Application" (Chrome) or "Storage" (Firefox) tab.</li>
     <li>In the sidebar, expand "Cookies" and select <code>https://www.facebook.com</code>.</li>
     <li>In the cookie list, find the <code>c_user</code> and <code>xs</code> rows.</li>
