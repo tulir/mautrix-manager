@@ -29,10 +29,10 @@ bridges:
         url: http://localhost:29317/_matrix/provision/v1
         secret: null
     mautrix-whatsapp:
-        url: http://localhost:29318
+        url: http://localhost:29318/_matrix/provision/v1
         secret: null
     mautrix-facebook:
-        url: http://localhost:29319
+        url: http://localhost:29319/public
         secret: null
     mautrix-hangouts:
         url: http://localhost:29320
