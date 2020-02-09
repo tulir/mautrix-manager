@@ -59,11 +59,15 @@ def make_error(errcode: str, error: str) -> Dict[str, str]:
 async def get_token(request: web.Request) -> Token:
     try:
         auth = request.headers["Authorization"]
+        if not auth.startswith("Bearer "):
+            raise Error.invalid_auth_header
+        auth = auth[len("Bearer "):]
     except KeyError:
-        raise Error.missing_auth_header
-    if not auth.startswith("Bearer "):
-        raise Error.invalid_auth_header
-    token = await Token.get(auth[len("Bearer "):])
+        try:
+            auth = request.query["access_token"]
+        except KeyError:
+            raise Error.missing_auth_header
+    token = await Token.get(auth)
     if not token:
         raise Error.invalid_auth_token
     return token

@@ -10,6 +10,7 @@
     "htm": "^3.0.1",
     "preact": "^10.2.1",
     "preact-router": "^3.2.0",
+    "qrcode": "^1.4.4",
     "react-jss": "^10.0.3",
     "snowpack": "^1.1.0"
   },
@@ -31,7 +32,8 @@
       "preact/hooks",
       "preact-router",
       "htm/preact",
-      "react-jss"
+      "react-jss",
+      "qrcode/lib/index.js"
     ]
   }
 }
