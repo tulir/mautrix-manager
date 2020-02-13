@@ -14,16 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { tryFetch } from "./tryGet.js"
+import { tryFetch, apiPrefix } from "./tryGet.js"
 
 const service = "WhatsApp bridge"
+const prefix = `${apiPrefix}/mautrix-whatsapp`
 
-export const ping = () => tryFetch("/api/mautrix-whatsapp/ping", {}, {
+export const ping = () => tryFetch(`${prefix}/ping`, {}, {
     service,
     requestType: "ping",
 })
 
-const makeSimplePost = endpoint => () => tryFetch(`/api/mautrix-whatsapp/${endpoint}`, {
+const makeSimplePost = endpoint => () => tryFetch(`${prefix}/${endpoint}`, {
     method: "POST",
 }, {
     service,
@@ -37,8 +38,9 @@ export const deleteSession = makeSimplePost("delete_connection")
 export const deleteConnection = makeSimplePost("delete_session")
 
 export const login = async (onCode) => {
+    const localPrefix = prefix.startsWith("/") ? prefix : window.location.pathname + prefix
     const url = `${window.location.protocol.replace("http", "ws")}//
-${window.location.host}/api/mautrix-whatsapp/login?access_token=${localStorage.accessToken}`
+${window.location.host}${localPrefix}/login?access_token=${localStorage.accessToken}`
     return new Promise(resolve => {
         const socket = new WebSocket(url)
         socket.addEventListener("message", evt => {

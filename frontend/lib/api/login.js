@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { tryFetch } from "./tryGet.js"
+import { tryFetch, integrationPrefix } from "./tryGet.js"
 
 export const resolveWellKnown = async (server) => {
     try {
@@ -79,7 +79,7 @@ export const requestOpenIDToken = (address, userID, accessToken) => tryFetch(
 )
 
 export const requestIntegrationToken = tokenData => tryFetch(
-    "/_matrix/integrations/v1/account/register", {
+    `${integrationPrefix}/account/register`, {
         method: "POST",
         body: JSON.stringify(tokenData),
         headers: {

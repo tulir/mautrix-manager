@@ -14,21 +14,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { tryFetch } from "./tryGet.js"
+import { tryFetch, apiPrefix } from "./tryGet.js"
 
 const service = "Facebook bridge"
+const prefix = `${apiPrefix}/mautrix-facebook`
 
-export const whoami = () => tryFetch("/api/mautrix-facebook/whoami", {}, {
+export const whoami = () => tryFetch(`${prefix}/whoami`, {}, {
     service,
     requestType: "user info",
 })
 
-export const logout = () => tryFetch("/api/mautrix-facebook/logout", { method: "POST" }, {
+export const logout = () => tryFetch(`${prefix}/logout`, { method: "POST" }, {
     service,
     requestType: "logout",
 })
 
-export const login = payload => tryFetch("/api/mautrix-facebook/login", {
+export const login = payload => tryFetch(`${prefix}/login`, {
     method: "POST",
     body: JSON.stringify(payload),
     headers: {
