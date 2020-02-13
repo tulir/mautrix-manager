@@ -13,9 +13,10 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import { useEffect, useState } from "/web_modules/preact/hooks.js"
-import { html } from "/web_modules/htm/preact.js"
-import { Router } from "/web_modules/preact-router.js"
+import { useEffect, useState } from "../web_modules/preact/hooks.js"
+import { html } from "../web_modules/htm/preact.js"
+import { Router } from "../web_modules/preact-router.js"
+import { createHashHistory } from "../web_modules/history.js"
 
 import { makeStyles } from "../lib/theme.js"
 import TelegramBridge from "./bridges/Telegram.js"
@@ -61,7 +62,7 @@ const Main = () => {
             —
             <a href="/whatsapp">WhatsApp</a>
         </nav>
-        <${Router}>
+        <${Router} history=${createHashHistory()}>
             <div path="/">This is the home</div>
             <${TelegramBridge} path="/telegram" />
             <${FacebookBridge} path="/facebook" />

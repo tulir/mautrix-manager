@@ -13,8 +13,8 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import { useEffect, useState, useRef } from "/web_modules/preact/hooks.js"
-import { html } from "/web_modules/htm/preact.js"
+import { useEffect, useState, useRef } from "../../web_modules/preact/hooks.js"
+import { html } from "../../web_modules/htm/preact.js"
 
 import * as api from "../../lib/api/facebook.js"
 import Spinner from "../../lib/Spinner.js"

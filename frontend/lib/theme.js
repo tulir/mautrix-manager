@@ -13,10 +13,10 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import { h } from "/web_modules/preact.js"
+import { h } from "../web_modules/preact.js"
 import {
     createUseStyles, useTheme, ThemeProvider as JSSThemeProvider,
-} from "/web_modules/react-jss.js"
+} from "../web_modules/react-jss.js"
 
 const color = {
     primary: "#00C853",

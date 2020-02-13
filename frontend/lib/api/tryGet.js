@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-export const apiPrefix = "/api"
-export const integrationPrefix = "/_matrix/integrations/v1"
+export const apiPrefix = "api"
+export const integrationPrefix = "_matrix/integrations/v1"
 
 export const tryFetch = async (url, options, reqInfo) => {
     const reqName = `${reqInfo.service} ${reqInfo.requestType}`

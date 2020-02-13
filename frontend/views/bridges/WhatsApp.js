@@ -13,9 +13,9 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import { useEffect, useState, useRef, useLayoutEffect } from "/web_modules/preact/hooks.js"
-import { html } from "/web_modules/htm/preact.js"
-import QR from "/web_modules/qrcode/lib/index.js"
+import { useEffect, useState, useRef, useLayoutEffect } from "../../web_modules/preact/hooks.js"
+import { html } from "../../web_modules/htm/preact.js"
+import QR from "../../web_modules/qrcode/lib/index.js"
 
 import * as api from "../../lib/api/whatsapp.js"
 import Spinner from "../../lib/Spinner.js"
