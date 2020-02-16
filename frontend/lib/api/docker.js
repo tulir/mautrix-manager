@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { apiPrefix, tryFetch } from "./tryGet.js"
 
-const baseURL = `${apiPrefix}/docker/v1.40`
+const baseURL = `${apiPrefix}/docker/v1.35`
 const service = "Docker"
 
 export const findContainerByName = async (container) => {
