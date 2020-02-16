@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
         border: `2px solid ${theme.color.errorDark}`,
         backgroundColor: theme.color.error,
     },
-}))
+}), { name: "alert" })
 
 const Alert = ({ message, severity = "error", hideIfEmpty = true }) => {
     const classes = useStyles()

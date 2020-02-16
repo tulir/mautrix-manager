@@ -53,4 +53,55 @@ export const stopContainer = async id => await tryFetch(`${baseURL}/containers/$
 }, {
     service,
     requestType: "container stop",
+    raw: true,
 })
+
+const bytesToUInt32 = bytes => (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3]
+
+export const streamLogs = async (id, tail = 100) => {
+    const resp = await tryFetch(`${baseURL}/containers/${id}/logs`, {
+        query: {
+            follow: true,
+            stdout: true,
+            stderr: true,
+            tail,
+        },
+    }, {
+        service,
+        requestType: "container logs",
+        raw: true,
+    })
+    const reader = resp.body.getReader()
+    const decoder = new TextDecoder("utf-8")
+    return {
+        resp,
+        async close() {
+            await reader.cancel()
+        },
+        async * read() {
+            let done = false
+            while (!done) {
+                const chunk = await reader.read()
+                if (chunk.value) {
+                    let offset = 0
+                    while (offset < chunk.value.length) {
+                        //const type = chunk.value[offset]
+                        if (chunk.value[offset + 1] !== 0 ||
+                            chunk.value[offset + 2] !== 0 ||
+                            chunk.value[offset + 3] !== 0) {
+                            console.error("Invalid docker log header in", chunk)
+                            break
+                        }
+                        const length = bytesToUInt32(chunk.value.slice(offset + 4, offset + 8))
+                        if (chunk.value.length < offset + 8 + length) {
+                            console.error("Unexpectedly small chunk:", offset, length, chunk.value.length)
+                        }
+                        yield decoder.decode(chunk.value.slice(offset + 8, offset + 8 + length))
+                        offset += 8 + length
+                    }
+                }
+                done = chunk.done
+            }
+        },
+    }
+}

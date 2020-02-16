@@ -21,10 +21,10 @@ import { makeStyles } from "../lib/theme.js"
 import TelegramBridge from "./bridges/Telegram.js"
 import FacebookBridge from "./bridges/Facebook.js"
 import WhatsAppBridge from "./bridges/WhatsApp.js"
-import DockerControls from "./DockerControls.js"
+import DockerControls from "./docker/Controls.js"
 import LoginView from "./Login.js"
 
-const useStyles = makeStyles({})
+const useStyles = makeStyles({}, { name: "main" })
 
 const Main = () => {
     const classes = useStyles()

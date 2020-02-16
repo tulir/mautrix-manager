@@ -15,14 +15,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { html } from "../../web_modules/htm/preact.js"
 
-const Spinner = ({ size = 40, center = true, green = false }) => {
+const Spinner = ({ size = 40, noCenter = false, noMargin = false, green = false }) => {
     let margin = 0
     if (!isNaN(+size)) {
         size = +size
-        margin = `${Math.round(size / 6)}px`
+        margin = noMargin ? 0 : `${Math.round(size / 6)}px`
         size = `${size}px`
     }
-    const noInnerMargin = center || !margin
+    const noInnerMargin = !noCenter || !margin
     const comp = html`
         <div style="width: ${size}; height: ${size}; margin: ${noInnerMargin ? 0 : margin} 0;"
              class="sk-chase ${green && "green"}">
@@ -34,7 +34,7 @@ const Spinner = ({ size = 40, center = true, green = false }) => {
             <div class="sk-chase-dot" />
         </div>
     `
-    if (center) {
+    if (!noCenter) {
         return html`<div style="margin: ${margin} 0;" class="sk-center-wrapper">${comp}</div>`
     }
     return comp

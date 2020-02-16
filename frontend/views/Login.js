@@ -104,7 +104,7 @@ const useStyles = makeStyles(theme => ({
 
     focus: {},
     hasError: {},
-}))
+}), { name: "login" })
 
 const LoginView = ({ onLoggedIn }) => {
     const classes = useStyles()

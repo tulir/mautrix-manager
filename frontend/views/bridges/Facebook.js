@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
         padding: "0 .5rem",
         boxSizing: "border-box",
     }
-}))
+}), { name: "facebook" })
 
 const manualInstructions = html`<ol>
     <li>Open <a href="https://facebook.com">facebook.com</a> in a new tab and log in normally.</li>

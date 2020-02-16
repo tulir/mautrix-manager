@@ -13,14 +13,16 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import { useEffect, useState } from "../web_modules/preact/hooks.js"
-import { useLocation } from "../web_modules/wouter-preact.js"
-import { html } from "../web_modules/htm/preact.js"
+import { useEffect, useState } from "../../web_modules/preact/hooks.js"
+import { useLocation } from "../../web_modules/wouter-preact.js"
+import { html } from "../../web_modules/htm/preact.js"
 
-import { makeStyles } from "../lib/theme.js"
-import * as api from "../lib/api/docker.js"
-import Alert from "./components/Alert.js"
-import Spinner from "./components/Spinner.js"
+import { makeStyles } from "../../lib/theme.js"
+import * as api from "../../lib/api/docker.js"
+import Alert from "../components/Alert.js"
+import Spinner from "../components/Spinner.js"
+import useDialog from "../Dialog.js"
+import Logs from "./Logs.js"
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -32,7 +34,7 @@ const useStyles = makeStyles(theme => ({
         paddingRight: "1.5rem",
         marginRight: ".5rem",
     },
-}))
+}), { name: "docker" })
 
 const nameMap = {
     "/telegram": "mautrix-telegram",
@@ -46,6 +48,7 @@ const DockerControls = () => {
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(null)
     const [path] = useLocation()
+    const { openDialog } = useDialog()
 
     const containerName = nameMap[path]
 
@@ -71,7 +74,7 @@ const DockerControls = () => {
         if (error) {
             return html`<${Alert} message=${error} />`
         } else {
-            return html`<${Spinner} green center=${false} />`
+            return html`<${Spinner} green noCenter />`
         }
     }
 
@@ -95,7 +98,7 @@ const DockerControls = () => {
         setLoading(null)
         await updateContainerInfo()
     }
-    const viewLogs = () => alert("Not yet implemented")
+    const viewLogs = () => openDialog(Logs, { container })
 
     const isNotLoading = name => loading && loading !== name
 

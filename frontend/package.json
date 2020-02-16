@@ -7,6 +7,7 @@
   "license": "AGPL-3.0-or-later",
   "private": true,
   "dependencies": {
+    "ansi-to-html": "^0.6.14",
     "htm": "^3.0.1",
     "preact": "^10.2.1",
     "qrcode": "^1.4.4",
@@ -33,7 +34,8 @@
       "wouter-preact",
       "htm/preact",
       "react-jss",
-      "qrcode/lib/index.js"
+      "qrcode/lib/index.js",
+      "ansi-to-html"
     ]
   }
 }

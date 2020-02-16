@@ -71,8 +71,8 @@ const theme = {
     }),
 }
 
-export const makeStyles = style => {
-    const useStyles = createUseStyles(style)
+export const makeStyles = (style, options) => {
+    const useStyles = createUseStyles(style, options)
     return (...props) => {
         const theme = useTheme()
         return useStyles({ ...props, theme })

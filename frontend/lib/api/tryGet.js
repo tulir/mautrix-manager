@@ -23,7 +23,6 @@ const queryToURL = (url, query) => {
     }
     query = query.map(([key, value]) =>
         [key, typeof value === "string" ? value : JSON.stringify(value)])
-    console.log(query)
     url = `${url}?${new URLSearchParams(query)}`
     return url
 }
@@ -52,6 +51,8 @@ export const tryFetch = async (url, options, reqInfo) => {
     }
     if (reqInfo.raw) {
         return resp
+    } else if (resp.status === 204) {
+        return
     }
     let data
     try {

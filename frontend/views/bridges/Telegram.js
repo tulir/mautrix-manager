@@ -51,7 +51,7 @@ const useStyles = makeStyles(theme => ({
             },
         },
     },
-}))
+}), { name: "telegram" })
 
 const TelegramLogin = ({ onLoggedIn }) => {
     const classes = useStyles()
