@@ -40,8 +40,9 @@ async def proxy(request: web.Request) -> web.Response:
     del headers["Authorization"]
 
     try:
+        timeout = aiohttp.ClientTimeout(total=None, connect=5, sock_connect=5, sock_read=None)
         resp = await http.request(request.method, host / path, headers=headers,
-                                  params=query, data=request.content)
+                                  params=query, data=request.content, timeout=timeout)
     except aiohttp.ClientError:
         raise web.HTTPBadGateway(text="Failed to contact Docker daemon")
     return web.Response(status=resp.status, headers=resp.headers, body=resp.content)
