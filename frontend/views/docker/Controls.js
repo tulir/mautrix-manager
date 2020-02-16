@@ -21,7 +21,7 @@ import { makeStyles } from "../../lib/theme.js"
 import * as api from "../../lib/api/docker.js"
 import Alert from "../components/Alert.js"
 import Spinner from "../components/Spinner.js"
-import useDialog from "../Dialog.js"
+import useModal from "../Modal.js"
 import Logs from "./Logs.js"
 
 const useStyles = makeStyles(theme => ({
@@ -48,7 +48,7 @@ const DockerControls = () => {
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(null)
     const [path] = useLocation()
-    const { openDialog } = useDialog()
+    const { openModal } = useModal()
 
     const containerName = nameMap[path]
 
@@ -98,7 +98,7 @@ const DockerControls = () => {
         setLoading(null)
         await updateContainerInfo()
     }
-    const viewLogs = () => openDialog(Logs, { container })
+    const viewLogs = () => openModal(Logs, { container })
 
     const isNotLoading = name => loading && loading !== name
 

@@ -4,15 +4,15 @@ import { Router } from "./web_modules/wouter-preact.js"
 
 import useHashLocation from "./lib/useHashLocation.js"
 import { ThemeProvider } from "./lib/theme.js"
-import { DialogProvider } from "./views/Dialog.js"
+import { ModalProvider } from "./views/Modal.js"
 import Main from "./views/Main.js"
 
 render(html`
     <${ThemeProvider}>
         <${Router} hook=${useHashLocation}>
-            <${DialogProvider}>
+            <${ModalProvider}>
                 <${Main}/>
-            </DialogProvider>
+            </ModalProvider>
         </Router>
     </ThemeProvider>
 `, document.body)

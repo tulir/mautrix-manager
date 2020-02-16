@@ -41,19 +41,19 @@ const useStyles = makeStyles(theme => ({
         boxSizing: "border-box"
     },
     open: {},
-}), { name: "dialog" })
+}), { name: "modal" })
 
 const defaultContextValue = {
     open() {
-        throw new Error("Dialog not mounted")
+        throw new Error("Modal not mounted")
     },
     close() {
-        throw new Error("Dialog not mounted")
+        throw new Error("Modal not mounted")
     },
 }
-const DialogContext = createContext()
+const ModalContext = createContext()
 
-const Dialog = ({ contextRef }) => {
+const Modal = ({ contextRef }) => {
     const classes = useStyles()
     const [open, setOpen] = useState(false)
     const [component, setComponent] = useState(null)
@@ -62,13 +62,13 @@ const Dialog = ({ contextRef }) => {
 
     useEffect(() => {
         contextRef.current = {
-            openDialog(component, props) {
+            openModal(component, props) {
                 clearTimeout(closeTimeout.current)
                 setProps(props)
                 setComponent(() => component)
                 setOpen(true)
             },
-            closeDialog() {
+            closeModal() {
                 setOpen(false)
                 closeTimeout.current = setTimeout(() => {
                     setComponent(null)
@@ -81,7 +81,7 @@ const Dialog = ({ contextRef }) => {
 
     return html`
         <div class="${classes.root} ${open ? classes.open : ""}"
-             onClick=${contextRef.current.closeDialog}>
+             onClick=${contextRef.current.closeModal}>
             <div class=${classes.modal} onClick=${evt => evt.stopPropagation()}>
                 ${open && component && html`<${component} ...${props} />`}
             </div>
@@ -89,20 +89,20 @@ const Dialog = ({ contextRef }) => {
     `
 }
 
-export const DialogProvider = ({ children }) => {
+export const ModalProvider = ({ children }) => {
     const contextRef = useRef(defaultContextValue)
     const proxyMethods = {
-        openDialog: (...args) => contextRef.current.openDialog(...args),
-        closeDialog: (...args) => contextRef.current.closeDialog(...args),
+        openModal: (...args) => contextRef.current.openModal(...args),
+        closeModal: (...args) => contextRef.current.closeModal(...args),
     }
     return html`
-        <${Dialog} contextRef=${contextRef} />
-        <${DialogContext.Provider} value=${proxyMethods}>
+        <${Modal} contextRef=${contextRef} />
+        <${ModalContext.Provider} value=${proxyMethods}>
             ${children}
         <//>
     `
 }
 
-const useDialog = () => useContext(DialogContext)
+const useModal = () => useContext(ModalContext)
 
-export default useDialog
+export default useModal
