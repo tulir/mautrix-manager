@@ -20,13 +20,13 @@ from .token import Token
 
 class Database:
     url: str
-    db: asyncpg.Connection
+    db: asyncpg.pool.Pool
 
     def __init__(self, url: str) -> None:
         self.url = url
 
     async def start(self) -> None:
-        self.db = await asyncpg.connect(self.url)
+        self.db = await asyncpg.create_pool(self.url, min_size=1)
         Token.init(self.db)
 
     async def stop(self) -> None:

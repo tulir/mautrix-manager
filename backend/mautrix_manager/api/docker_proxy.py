@@ -17,6 +17,7 @@ import asyncio
 
 import aiohttp
 from aiohttp import web
+from yarl import URL
 
 from ..config import Config
 from .errors import Error
@@ -24,7 +25,7 @@ from .errors import Error
 PROXY_CHUNK_SIZE = 32 * 1024
 routes = web.RouteTableDef()
 config: Config
-host: str
+host: URL
 http: aiohttp.ClientSession
 
 
@@ -39,7 +40,7 @@ async def proxy(request: web.Request) -> web.Response:
     del headers["Authorization"]
 
     try:
-        resp = await http.request(request.method, f"{host}/{path}", headers=headers,
+        resp = await http.request(request.method, host / path, headers=headers,
                                   params=query, data=request.content)
     except aiohttp.ClientError:
         raise web.HTTPBadGateway(text="Failed to contact Docker daemon")
@@ -56,3 +57,4 @@ def init(cfg: Config) -> None:
         host = "unix://localhost"
     else:
         http = aiohttp.ClientSession(loop=asyncio.get_event_loop())
+    host = URL(host)

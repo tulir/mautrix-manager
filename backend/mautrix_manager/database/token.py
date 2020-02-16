@@ -25,7 +25,7 @@ from mautrix.types import UserID
 
 @dataclass
 class Token:
-    _db: ClassVar[asyncpg.Connection]
+    _db: ClassVar[asyncpg.pool.Pool]
 
     user_id: UserID
     secret: str
@@ -49,5 +49,5 @@ class Token:
                                self.user_id, self.secret)
 
     @classmethod
-    def init(cls, db: asyncpg.Connection) -> None:
+    def init(cls, db: asyncpg.pool.Pool) -> None:
         cls._db = db

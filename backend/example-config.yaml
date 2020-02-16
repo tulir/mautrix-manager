@@ -45,7 +45,8 @@ bridges:
         secret: null
 
 # Permissions for the manager.
-# Currently only the `admin` role exists.
+# * `user` gives normal bridge login access
+# * `admin` gives access to docker and user impersonation for bridge login.
 # Permission keys may be user IDs or server names
 permissions:
     '@user:example.com': admin
