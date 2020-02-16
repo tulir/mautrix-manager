@@ -15,8 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { html } from "../../web_modules/htm/preact.js"
 import { useEffect, useRef, useState } from "../../web_modules/preact/hooks.js"
-import ANSIToHTML from "../../web_modules/ansi-to-html.js"
 
+import ANSIToHTML from "../../lib/ansiToHTML.js"
 import { makeStyles } from "../../lib/theme.js"
 import * as api from "../../lib/api/docker.js"
 import Spinner from "../components/Spinner.js"
@@ -43,7 +43,10 @@ const Logs = ({ container }) => {
         ;(async () => {
             stream.current = await api.streamLogs(container.Id)
             setLoading(false)
-            const ansiConverter = new ANSIToHTML()
+            const ansiConverter = new ANSIToHTML({
+                stream: true,
+                escapeHTML: true,
+            })
             for await (const lines of stream.current.read()) {
                 const log = logRef.current
                 let scrollDown = false
@@ -55,10 +58,7 @@ const Logs = ({ container }) => {
                         continue
                     }
                     const div = document.createElement("div")
-                    div.innerHTML = ansiConverter.toHtml(line, {
-                        escapeXML: true,
-                        stream: true,
-                    })
+                    div.innerHTML = ansiConverter.toHtml(line)
                     log.appendChild(div)
                 }
                 if (scrollDown) {
