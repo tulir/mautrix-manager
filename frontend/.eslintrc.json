@@ -68,6 +68,10 @@
 			"error",
 			{
 				"newlines-between": "always",
+        "pathGroups": [{
+          "pattern":"{.,..,../..,../../..,../../../..}/web_modules/**",
+          "group": "external"
+        }],
 				"groups": [
 					"builtin",
 					"external",
