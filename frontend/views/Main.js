@@ -15,13 +15,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { useEffect, useState } from "../web_modules/preact/hooks.js"
 import { html } from "../web_modules/htm/preact.js"
-import { Router } from "../web_modules/preact-router.js"
-import { createHashHistory } from "../web_modules/history.js"
+import { Route, Link } from "../web_modules/wouter-preact.js"
 
 import { makeStyles } from "../lib/theme.js"
 import TelegramBridge from "./bridges/Telegram.js"
 import FacebookBridge from "./bridges/Facebook.js"
 import WhatsAppBridge from "./bridges/WhatsApp.js"
+import DockerControls from "./DockerControls.js"
 import LoginView from "./Login.js"
 
 const useStyles = makeStyles({})
@@ -54,20 +54,20 @@ const Main = () => {
     return html`
         Logged in as ${localStorage.mxUserID}
         <nav>
-            <a href="/">Home</a>
+            <${Link} href="#/">Home</Link>
             —
-            <a href="/telegram">Telegram</a>
+            <${Link} href="#/telegram">Telegram</Link>
             —
-            <a href="/facebook">Facebook</a>
+            <${Link} href="#/facebook">Facebook</Link>
             —
-            <a href="/whatsapp">WhatsApp</a>
+            <${Link} href="#/whatsapp">WhatsApp</Link>
         </nav>
-        <${Router} history=${createHashHistory()}>
-            <div path="/">This is the home</div>
-            <${TelegramBridge} path="/telegram" />
-            <${FacebookBridge} path="/facebook" />
-            <${WhatsAppBridge} path="/whatsapp" />
-        </Router>
+
+        <${DockerControls} />
+        <${Route} exact path="/">This is the home</Route>
+        <${Route} path="/telegram" component=${TelegramBridge} />
+        <${Route} path="/facebook" component=${FacebookBridge} />
+        <${Route} path="/whatsapp" component=${WhatsAppBridge} />
     `
 }
 

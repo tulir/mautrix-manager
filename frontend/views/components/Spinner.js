@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import { html } from "../web_modules/htm/preact.js"
+import { html } from "../../web_modules/htm/preact.js"
 
 const Spinner = ({ size = 40, center = true, green = false }) => {
     let margin = 0

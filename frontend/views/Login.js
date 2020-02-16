@@ -19,7 +19,7 @@ import { html } from "../web_modules/htm/preact.js"
 import {
     resolveWellKnown, loginMatrix, requestOpenIDToken, requestIntegrationToken,
 } from "../lib/api/login.js"
-import Spinner from "../lib/Spinner.js"
+import Spinner from "./components/Spinner.js"
 import { makeStyles } from "../lib/theme.js"
 
 const useStyles = makeStyles(theme => ({

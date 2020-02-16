@@ -17,8 +17,9 @@ import { useEffect, useState } from "../../web_modules/preact/hooks.js"
 import { html } from "../../web_modules/htm/preact.js"
 
 import * as api from "../../lib/api/telegram.js"
-import Spinner from "../../lib/Spinner.js"
 import { makeStyles } from "../../lib/theme.js"
+import Alert from "../components/Alert.js"
+import Spinner from "../components/Spinner.js"
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -49,15 +50,6 @@ const useStyles = makeStyles(theme => ({
                 marginLeft: ".5rem",
             },
         },
-    },
-    error: {
-        padding: ".75rem",
-        borderRadius: ".25rem",
-        border: `2px solid ${theme.color.errorDark}`,
-        backgroundColor: theme.color.error,
-        margin: ".5rem 0",
-        width: "100%",
-        boxSizing: "border-box",
     },
 }))
 
@@ -211,7 +203,7 @@ const TelegramBridge = () => {
         ${bridgeState.telegram
         ? html`<button type="button" onClick=${logout} class=${classes.button}>Sign out</button>`
         : html`<${TelegramLogin} onLoggedIn=${onLoggedIn} />`}
-        ${error && `Error: ${error}`}
+        <${Alert} message=${error} />
     `
 }
 

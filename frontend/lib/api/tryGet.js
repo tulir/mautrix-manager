@@ -17,7 +17,22 @@
 export const apiPrefix = "api"
 export const integrationPrefix = "_matrix/integrations/v1"
 
+const queryToURL = (url, query) => {
+    if (!Array.isArray(query)) {
+        query = Object.entries(query)
+    }
+    query = query.map(([key, value]) =>
+        [key, typeof value === "string" ? value : JSON.stringify(value)])
+    console.log(query)
+    url = `${url}?${new URLSearchParams(query)}`
+    return url
+}
+
 export const tryFetch = async (url, options, reqInfo) => {
+    if (options.query) {
+        url = queryToURL(url, options.query)
+        delete options.query
+    }
     const reqName = `${reqInfo.service} ${reqInfo.requestType}`
     let resp
     try {
@@ -45,7 +60,7 @@ export const tryFetch = async (url, options, reqInfo) => {
     }
     if (resp.status >= 300) {
         console.error("Unexpected", reqName, "request status:", resp.status, data)
-        throw new Error(data.error || `Invalid response from ${reqInfo.service}`)
+        throw new Error(data.error || data.message || `Invalid response from ${reqInfo.service}`)
     }
     return data
 }

@@ -7,13 +7,12 @@
   "license": "AGPL-3.0-or-later",
   "private": true,
   "dependencies": {
-    "history": "^4.10.1",
     "htm": "^3.0.1",
     "preact": "^10.2.1",
-    "preact-router": "^3.2.0",
     "qrcode": "^1.4.4",
     "react-jss": "^10.0.3",
-    "snowpack": "^1.1.0"
+    "snowpack": "^1.1.0",
+    "wouter-preact": "^2.4.0"
   },
   "devDependencies": {
     "es-dev-server": "^1.36.2",
@@ -31,11 +30,10 @@
     "webDependencies": [
       "preact",
       "preact/hooks",
-      "preact-router",
+      "wouter-preact",
       "htm/preact",
       "react-jss",
-      "qrcode/lib/index.js",
-      "history"
+      "qrcode/lib/index.js"
     ]
   }
 }

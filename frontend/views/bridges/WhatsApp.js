@@ -18,8 +18,9 @@ import { html } from "../../web_modules/htm/preact.js"
 import QR from "../../web_modules/qrcode/lib/index.js"
 
 import * as api from "../../lib/api/whatsapp.js"
-import Spinner from "../../lib/Spinner.js"
 import { makeStyles } from "../../lib/theme.js"
+import Alert from "../components/Alert.js"
+import Spinner from "../components/Spinner.js"
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -37,15 +38,6 @@ const useStyles = makeStyles(theme => ({
     qrWrapper: {
         display: "flex",
         justifyContent: "space-around",
-    },
-    error: {
-        padding: ".75rem",
-        borderRadius: ".25rem",
-        border: `2px solid ${theme.color.errorDark}`,
-        backgroundColor: theme.color.error,
-        margin: ".5rem 0",
-        width: "100%",
-        boxSizing: "border-box",
     },
 }))
 
@@ -147,7 +139,7 @@ const WhatsAppBridge = () => {
             <button type="button" onClick=${call(api.disconnect)} class=${classes.button}>Disconnect</button>
         </div>`
         : html`<${WhatsAppLogin} onLoggedIn=${onLoggedIn} />`}
-        ${error && `Error: ${error}`}
+        <${Alert} message=${error} />
     `
 }
 
