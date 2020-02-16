@@ -22,12 +22,17 @@ import * as api from "../lib/api/docker.js"
 import Alert from "./components/Alert.js"
 import Spinner from "./components/Spinner.js"
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     root: {
-        margin: "1rem 0"
+        margin: "1rem 0",
     },
-
-})
+    button: {
+        ...theme.button(),
+        paddingLeft: "1.5rem",
+        paddingRight: "1.5rem",
+        marginRight: ".5rem",
+    },
+}))
 
 const nameMap = {
     "/telegram": "mautrix-telegram",
@@ -39,19 +44,25 @@ const DockerControls = () => {
     const classes = useStyles()
     const [container, setContainer] = useState(null)
     const [error, setError] = useState("")
+    const [loading, setLoading] = useState(null)
     const [path] = useLocation()
 
     const containerName = nameMap[path]
-    useEffect(async () => {
-        if (!containerName) {
-            return
-        }
-        setContainer(null)
+
+    const updateContainerInfo = async () => {
         try {
             setContainer(await api.findContainerByName(containerName))
         } catch (err) {
             setError(err.message)
         }
+    }
+
+    useEffect(async () => {
+        if (!containerName) {
+            return
+        }
+        setContainer(null)
+        await updateContainerInfo()
     }, [containerName])
 
     if (!containerName) {
@@ -64,11 +75,47 @@ const DockerControls = () => {
         }
     }
 
-    console.log(container)
+    const start = async () => {
+        setLoading("start")
+        try {
+            await api.startContainer(container.Id)
+        } catch (err) {
+            setError(err.message)
+        }
+        setLoading(null)
+        await updateContainerInfo()
+    }
+    const stop = async () => {
+        setLoading("stop")
+        try {
+            await api.stopContainer(container.Id)
+        } catch (err) {
+            setError(err.message)
+        }
+        setLoading(null)
+        await updateContainerInfo()
+    }
+    const viewLogs = () => alert("Not yet implemented")
+
+    const isNotLoading = name => loading && loading !== name
 
     return html`
         <div class=${classes.root}>
             Docker status for ${container.Names[0].substr(1)}: ${container.Status}
+            <div>
+                <button disabled=${isNotLoading("start") || container.State === "running"}
+                        class=${classes.button} onClick=${start}>
+                    ${loading === "start" ? html`<${Spinner} size=20 />` : "Start"}
+                </button>
+                <button disabled=${isNotLoading("stop") || container.State === "exited"}
+                        class=${classes.button} onClick=${stop}>
+                    ${loading === "stop" ? html`<${Spinner} size=20 />` : "Stop"}
+                </button>
+                <button class=${classes.button} onClick=${viewLogs}
+                        disabled=${container.State !== "running"}>
+                    Logs
+                </button>
+            </div>
             <details>
                 <summary>Container state</summary>
                 <pre>${JSON.stringify(container, null, "  ")}</pre>

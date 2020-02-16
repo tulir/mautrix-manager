@@ -28,7 +28,8 @@ export const findContainerByName = async (container) => {
         },
         contentType: "application/json",
     }, {
-        service, requestType: "container find"
+        service,
+        requestType: "container find",
     })
     if (data.length === 0) {
         console.error("Container with name", container, "not created")
@@ -39,3 +40,17 @@ export const findContainerByName = async (container) => {
     }
     return data[0]
 }
+
+export const startContainer = async id => await tryFetch(`${baseURL}/containers/${id}/start`, {
+    method: "POST",
+}, {
+    service,
+    requestType: "container start",
+})
+
+export const stopContainer = async id => await tryFetch(`${baseURL}/containers/${id}/stop`, {
+    method: "POST",
+}, {
+    service,
+    requestType: "container stop",
+})

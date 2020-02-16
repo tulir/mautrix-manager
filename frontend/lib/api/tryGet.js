@@ -50,7 +50,9 @@ export const tryFetch = async (url, options, reqInfo) => {
         console.error("Unexpected", reqName, "request bad gateway:", await resp.text())
         throw new Error(`Failed to contact ${reqInfo.service}`)
     }
-
+    if (reqInfo.raw) {
+        return resp
+    }
     let data
     try {
         data = await resp.json()
@@ -58,7 +60,7 @@ export const tryFetch = async (url, options, reqInfo) => {
         console.error(reqName, "request JSON parse failed:", err)
         throw new Error(`Invalid response from ${reqInfo.service}`)
     }
-    if (resp.status >= 300) {
+    if (resp.status >= 400) {
         console.error("Unexpected", reqName, "request status:", resp.status, data)
         throw new Error(data.error || data.message || `Invalid response from ${reqInfo.service}`)
     }

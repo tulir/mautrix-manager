@@ -7,6 +7,10 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+pre, code {
+    font-family: "Fira Code", monospace;
+}
+
 input, button {
     font-family: Raleway, sans-serif;
 }
