@@ -39,6 +39,7 @@ const useStyles = makeStyles(theme => ({
 const nameMap = {
     "/telegram": "mautrix-telegram",
     "/facebook": "mautrix-facebook",
+    "/hangouts": "mautrix-hangouts",
     "/whatsapp": "mautrix-whatsapp",
 }
 

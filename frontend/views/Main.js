@@ -20,6 +20,7 @@ import { Route, Link } from "../web_modules/wouter-preact.js"
 import { makeStyles } from "../lib/theme.js"
 import TelegramBridge from "./bridges/Telegram.js"
 import FacebookBridge from "./bridges/Facebook.js"
+import HangoutsBridge from "./bridges/Hangouts.js"
 import WhatsAppBridge from "./bridges/WhatsApp.js"
 import DockerControls from "./docker/Controls.js"
 import LoginView from "./Login.js"
@@ -60,6 +61,8 @@ const Main = () => {
             —
             <${Link} href="#/facebook">Facebook</Link>
             —
+            <${Link} href="#/hangouts">Hangouts</Link>
+            —
             <${Link} href="#/whatsapp">WhatsApp</Link>
         </nav>
 
@@ -67,6 +70,7 @@ const Main = () => {
         <${Route} exact path="/">This is the home</Route>
         <${Route} path="/telegram" component=${TelegramBridge} />
         <${Route} path="/facebook" component=${FacebookBridge} />
+        <${Route} path="/hangouts" component=${HangoutsBridge} />
         <${Route} path="/whatsapp" component=${WhatsAppBridge} />
     `
 }

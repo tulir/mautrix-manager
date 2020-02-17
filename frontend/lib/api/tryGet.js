@@ -32,15 +32,14 @@ export const tryFetch = async (url, options, reqInfo) => {
         url = queryToURL(url, options.query)
         delete options.query
     }
+    options.headers = {
+        Authorization: `Bearer ${localStorage.accessToken}`,
+        ...options.headers,
+    }
     const reqName = `${reqInfo.service} ${reqInfo.requestType}`
     let resp
     try {
-        resp = await fetch(url, {
-            headers: {
-                Authorization: `Bearer ${localStorage.accessToken}`,
-            },
-            ...options,
-        })
+        resp = await fetch(url, options)
     } catch (err) {
         console.error(reqName, "request failed:", err)
         throw new Error(`Failed to contact ${reqInfo.service}`)

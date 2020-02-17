@@ -21,6 +21,7 @@ from .docker_proxy import routes as docker_routes, init as docker_init
 from .generic_proxy import init as generic_proxy_init
 from .telegram_proxy import routes as telegram_routes, init as telegram_init
 from .facebook_proxy import routes as facebook_routes, init as facebook_init
+from .hangouts_proxy import routes as hangouts_routes, init as hangouts_init
 from .whatsapp_proxy import routes as whatsapp_routes, init as whatsapp_init
 
 integrations_app = web.Application()
@@ -30,6 +31,7 @@ api_app = web.Application(middlewares=[token_middleware])
 api_app.add_routes(docker_routes)
 api_app.add_routes(telegram_routes)
 api_app.add_routes(facebook_routes)
+api_app.add_routes(hangouts_routes)
 api_app.add_routes(whatsapp_routes)
 
 
@@ -39,4 +41,5 @@ def init(config: Config) -> None:
     generic_proxy_init()
     telegram_init(config)
     facebook_init(config)
+    hangouts_init(config)
     whatsapp_init(config)

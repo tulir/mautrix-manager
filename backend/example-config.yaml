@@ -35,7 +35,7 @@ bridges:
         url: http://localhost:29319/public
         secret: null
     mautrix-hangouts:
-        url: http://localhost:29320
+        url: http://localhost:29320/login
         secret: null
     mx-puppet-slack:
         url: http://localhost:8434
