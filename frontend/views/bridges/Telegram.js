@@ -156,7 +156,7 @@ const TelegramLogin = ({ onLoggedIn }) => {
         <h2>Sign into Telegram</h2>
         <p>To start using the Matrix-Telegram bridge, sign in with your Telegram account below.</p>
         ${content}
-        ${error && html`<div class=${classes.error}>${error}</div>`}
+        <${Alert} message=${error} />
     </form>`
 }
 

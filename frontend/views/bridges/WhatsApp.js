@@ -87,7 +87,7 @@ const WhatsAppLogin = ({ onLoggedIn }) => {
             ` : html`
                 <button class=${classes.button} onClick=${startLogin}>Start</button>
             `}
-            ${error && html`<div class=${classes.error}>${error}</div>`}
+            <${Alert} message=${error} />
         </div>
     `
 }

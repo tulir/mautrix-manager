@@ -121,7 +121,7 @@ const FacebookLogin = ({ onLoggedIn }) => {
             <button class=${classes.submit} type="submit" disabled=${!user || !xs}>
                 ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
             </button>
-            ${error && html`<div class=${classes.error}>${error}</div>`}
+            <${Alert} message=${error} />
         </form>
     `
 }

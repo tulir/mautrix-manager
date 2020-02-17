@@ -122,7 +122,7 @@ const HangoutsLogin = ({ onLoggedIn }) => {
             ` : html`<button class=${classes.submit} onClick=${call(start)} type="button">
                     Start
                 </button>`}
-            ${error && html`<div class=${classes.error}>${error}</div>`}
+            <${Alert} message=${error} />
         </form>
     `
 }
