@@ -68,15 +68,7 @@ const HangoutsLogin = ({ onLoggedIn }) => {
     const [cookie, setCookie] = useState("")
     const [error, setError] = useState(null)
 
-    const start = async () => {
-        const data = await api.loginStart(true)
-        setAuthURL(data.manual_auth_url)
-    }
-
-    const submit = async () => {
-        const data = await api.loginStep("authorization", {
-            authorization: cookie,
-        })
+    const handle = async data => {
         if (data.status === "fail") {
             setError(data.error)
         } else if (data.status === "success") {
@@ -84,8 +76,23 @@ const HangoutsLogin = ({ onLoggedIn }) => {
         } else if (data.status === "cancelled") {
             setError("Login cancelled")
             setAuthURL(null)
+        } else if (data.next_step === "authorization") {
+            setAuthURL(data.manual_auth_url)
+        } else if (data.next_step) {
+            setError(`Unknown step ${data.next_step}`)
+        } else {
+            console.error("Invalid response from bridge:", data)
+            setError("Invalid response from bridge")
         }
     }
+
+    const start = async () => {
+        await handle(await api.loginStart(true))
+    }
+
+    const submit = async () => await handle(await api.loginStep("authorization", {
+        authorization: cookie,
+    }))
 
     const call = method => evt => {
         evt.preventDefault()
