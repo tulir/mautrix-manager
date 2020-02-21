@@ -114,6 +114,7 @@ async def exchange_token(request: web.Request) -> web.Response:
     token = Token.random(user_id)
     await token.insert()
     return web.json_response({
+        "user_id": user_id,
         "token": token.secret,
         "level": permissions.level,
     })

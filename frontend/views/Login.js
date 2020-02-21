@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import { useState, useRef, useLayoutEffect } from "../web_modules/preact/hooks.js"
+import { useState, useRef, useLayoutEffect, useEffect } from "../web_modules/preact/hooks.js"
 import { html } from "../web_modules/htm/preact.js"
 
 import {
@@ -172,6 +172,31 @@ const LoginView = ({ onLoggedIn }) => {
             setError(err.message)
         }
     }
+
+    useEffect(() => {
+        const fn = async evt => {
+            if (evt.source !== window.opener) {
+                console.warn("postMessage from unknown source:", evt)
+                return
+            } else if (evt.data.type !== "login") {
+                console.log("Unknown postMessage command:", evt.data)
+                return
+            }
+            setLoading(true)
+            try {
+                const integrationData = await requestIntegrationToken(evt.data.token)
+                localStorage.mxUserID = integrationData.user_id
+                localStorage.accessToken = integrationData.token
+                localStorage.accessLevel = integrationData.level
+                onLoggedIn()
+            } catch (err) {
+                setError(err.message)
+            }
+            setLoading(false)
+        }
+        window.addEventListener("message", fn)
+        return () => window.removeEventListener("message", fn)
+    })
 
     const onSubmit = evt => {
         evt.preventDefault()
