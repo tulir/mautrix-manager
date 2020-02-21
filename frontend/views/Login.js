@@ -175,10 +175,11 @@ const LoginView = ({ onLoggedIn }) => {
 
     useEffect(() => {
         const fn = async evt => {
-            if (evt.source !== window.opener) {
-                console.warn("postMessage from unknown source:", evt)
-                return
-            } else if (evt.data.type !== "login") {
+            // if (evt.source !== window.opener) {
+            //     console.warn("postMessage from unknown source:", evt)
+            //     return
+            // }
+            if (evt.data.type !== "login") {
                 console.log("Unknown postMessage command:", evt.data)
                 return
             }
