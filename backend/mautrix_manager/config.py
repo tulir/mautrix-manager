@@ -48,6 +48,8 @@ class Config(BaseFileConfig):
             copy(f"bridges.{bridge}.url")
             copy(f"bridges.{bridge}.secret")
 
+        copy("bridges.mx-puppet-slack.client_id")
+
         copy("permissions")
 
         copy("logging")

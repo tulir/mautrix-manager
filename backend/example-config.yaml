@@ -38,10 +38,12 @@ bridges:
         url: http://localhost:29320/login
         secret: null
     mx-puppet-slack:
-        url: http://localhost:8434
+        url: http://localhost:8434/_matrix/provision/v1
         secret: null
+        # Slack API client ID, same as mx-puppet-slack.
+        client_id: null
     mx-puppet-instagram:
-        url: http://localhost:8434
+        url: http://localhost:8434/_matrix/provision/v1
         secret: null
 
 # Permissions for the manager.

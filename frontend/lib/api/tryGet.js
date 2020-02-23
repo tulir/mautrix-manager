@@ -17,7 +17,7 @@
 export const apiPrefix = "api"
 export const integrationPrefix = "_matrix/integrations/v1"
 
-const queryToURL = (url, query) => {
+export const queryToURL = (url, query) => {
     if (!Array.isArray(query)) {
         query = Object.entries(query)
     }
