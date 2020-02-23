@@ -22,6 +22,7 @@ import sys
 
 from .config import Config
 from .server import start as start_web, stop as stop_web, init as init_server
+from .mixpanel import init as init_mixpanel
 from .database import Database
 from . import __version__
 
@@ -55,6 +56,7 @@ signal.signal(signal.SIGINT, signal.default_int_handler)
 signal.signal(signal.SIGTERM, signal.default_int_handler)
 
 init_server(config)
+init_mixpanel(config)
 
 
 async def start():

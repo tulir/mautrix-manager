@@ -14,19 +14,28 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from aiohttp import web
+from yarl import URL
 
 from ..config import Config
-from .initable import init as init_all
-from .auth import routes as auth_routes, token_middleware, init as auth_init
-from . import (docker_proxy, generic_proxy, telegram_proxy, facebook_proxy, hangouts_proxy,
-               whatsapp_proxy, slack_proxy, tracking)
+from .initable import initializer
+from ..mixpanel import is_enabled, track
 
-integrations_app = web.Application()
-integrations_app.add_routes(auth_routes)
-
-api_app = web.Application(middlewares=[token_middleware])
+routes = web.RouteTableDef()
 
 
-def init(config: Config) -> None:
-    auth_init(config)
-    init_all(config, api_app)
+@routes.get("/track")
+async def check_track(_: web.Request) -> web.Response:
+    return web.json_response({
+        "enabled": is_enabled(),
+    })
+
+
+@initializer
+def init(cfg: Config, app: web.Application) -> None:
+    global host, secret, config, client_id
+    config = cfg
+    secret = cfg["bridges.mx-puppet-slack.secret"]
+    if secret:
+        host = URL(cfg["bridges.mx-puppet-slack.url"])
+        client_id = cfg["bridges.mx-puppet-slack.client_id"]
+    app.add_routes(routes)

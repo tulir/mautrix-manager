@@ -23,6 +23,10 @@ server:
     # Optionally, you can use another web server to serve the UI and only proxy /api to the backend.
     override_resource_path: false
 
+mixpanel:
+    # Mixpanel token for tracking user actions. Tracking is disabled if token is null.
+    token: null
+
 # Bridge API URLs and secrets. If secret is null, the bridge is disabled.
 bridges:
     mautrix-telegram:
