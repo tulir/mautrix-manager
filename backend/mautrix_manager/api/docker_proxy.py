@@ -20,6 +20,7 @@ from aiohttp import web
 from yarl import URL
 
 from ..config import Config
+from .initable import initializer
 from .errors import Error
 
 PROXY_CHUNK_SIZE = 32 * 1024
@@ -48,7 +49,8 @@ async def proxy(request: web.Request) -> web.Response:
     return web.Response(status=resp.status, headers=resp.headers, body=resp.content)
 
 
-def init(cfg: Config) -> None:
+@initializer
+def init(cfg: Config, app: web.Application) -> None:
     global http, host, config
     config = cfg
     host = cfg["docker.host"]
@@ -59,3 +61,4 @@ def init(cfg: Config) -> None:
     else:
         http = aiohttp.ClientSession(loop=asyncio.get_event_loop())
     host = URL(host)
+    app.add_routes(routes)

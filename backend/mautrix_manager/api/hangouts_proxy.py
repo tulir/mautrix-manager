@@ -18,6 +18,7 @@ from yarl import URL
 
 from ..config import Config
 from .errors import Error
+from .initable import initializer
 from .generic_proxy import proxy
 
 routes = web.RouteTableDef()
@@ -40,9 +41,11 @@ async def check_status(_: web.Request) -> web.Response:
     return web.json_response({})
 
 
-def init(cfg: Config) -> None:
+@initializer
+def init(cfg: Config, app: web.Application) -> None:
     global host, secret, config
     config = cfg
     secret = cfg["bridges.mautrix-hangouts.secret"]
     if secret:
         host = URL(cfg["bridges.mautrix-hangouts.url"])
+    app.add_routes(routes)

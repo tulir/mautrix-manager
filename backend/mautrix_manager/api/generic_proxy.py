@@ -20,6 +20,7 @@ from aiohttp import web
 from yarl import URL
 
 from .errors import Error
+from .initable import initializer
 
 http: aiohttp.ClientSession
 
@@ -48,6 +49,7 @@ async def proxy(url: URL, secret: str, request: web.Request, path_prefix: str) -
     return web.Response(status=resp.status, headers=resp.headers, body=resp.content)
 
 
-def init() -> None:
+@initializer
+def init(*_) -> None:
     global http
     http = aiohttp.ClientSession(loop=asyncio.get_event_loop())

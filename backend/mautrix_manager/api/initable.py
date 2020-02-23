@@ -13,20 +13,21 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from aiohttp import web
+from typing import Callable, List
+
+from aiohttp.web import Application
 
 from ..config import Config
-from .initable import init as init_all
-from .auth import routes as auth_routes, token_middleware, init as auth_init
-from . import (docker_proxy, generic_proxy, telegram_proxy, facebook_proxy, hangouts_proxy,
-               whatsapp_proxy)
 
-integrations_app = web.Application()
-integrations_app.add_routes(auth_routes)
-
-api_app = web.Application(middlewares=[token_middleware])
+Initializer = Callable[[Config, Application], None]
+initializers: List[Initializer] = []
 
 
-def init(config: Config) -> None:
-    auth_init(config)
-    init_all(config, api_app)
+def initializer(fn: Initializer) -> Initializer:
+    initializers.append(fn)
+    return fn
+
+
+def init(config: Config, app: Application) -> None:
+    for initer in initializers:
+        initer(config, app)
