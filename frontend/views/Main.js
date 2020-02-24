@@ -17,6 +17,7 @@ import { useEffect, useState } from "../web_modules/preact/hooks.js"
 import { html } from "../web_modules/htm/preact.js"
 import { Route, Link } from "../web_modules/wouter-preact.js"
 
+import { checkTrackingEnabled } from "../lib/api/tracking.js"
 import { makeStyles } from "../lib/theme.js"
 import SlackBridge from "./bridges/Slack.js"
 import TelegramBridge from "./bridges/Telegram.js"
@@ -43,6 +44,9 @@ const Main = () => {
     }
 
     useEffect(() => {
+        if (loggedIn) {
+            checkTrackingEnabled()
+        }
         window.addEventListener("mautrix-cookie-monster-appeared", handleExtension)
         return () => window.removeEventListener("mautrix-cookie-monster-appeared", handleExtension)
     }, [loggedIn])

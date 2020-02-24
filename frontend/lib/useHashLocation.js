@@ -2,6 +2,8 @@
 import { createRef } from "../web_modules/preact.js"
 import { useState, useEffect, useCallback } from "../web_modules/preact/hooks.js"
 
+import track from "./api/tracking.js"
+
 const parseQuery = str => Object.fromEntries(
     str.split("&")
         .map(part => part.split("="))
@@ -45,6 +47,10 @@ const useHashLocation = () => {
 
     const navigate = useCallback(to => {
         console.log("Navigating to", to)
+        track("Manager page change", {
+            prevLocation: window.location.hash,
+            newLocation: to,
+        })
         window.location.hash = to
     }, [])
 

@@ -30,7 +30,7 @@ export const logout = () => tryFetch(`${prefix}/user/me/logout`, { method: "POST
 })
 
 export const login = (endpoint, payload) => tryFetch(
-    `${prefix}/login/user/me/login/${endpoint}`,
+    `${prefix}/user/me/login/${endpoint}`,
     {
         method: "POST",
         body: JSON.stringify(payload),

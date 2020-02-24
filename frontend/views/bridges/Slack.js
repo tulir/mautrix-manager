@@ -1,5 +1,4 @@
 // mautrix-manager - A web interface for managing bridges
-import { useQuery } from "../../lib/useHashLocation.js"
 // Copyright (C) 2020 Tulir Asokan
 //
 // This program is free software: you can redistribute it and/or modify
@@ -17,6 +16,8 @@ import { useQuery } from "../../lib/useHashLocation.js"
 import { useEffect, useState } from "../../web_modules/preact/hooks.js"
 import { html } from "../../web_modules/htm/preact.js"
 
+import track from "../../lib/api/tracking.js"
+import { useQuery } from "../../lib/useHashLocation.js"
 import * as api from "../../lib/api/slack.js"
 import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
@@ -47,6 +48,7 @@ const SlackBridge = () => {
 
     useEffect(async () => {
         if (query.state === "slack-link") {
+            track("Slack link callback")
             console.log("Linking", query.code)
             setLinking(true)
             try {
@@ -69,6 +71,7 @@ const SlackBridge = () => {
 
     const unlink = id => async () => {
         try {
+            track("Slack unlink")
             await api.unlink(id)
             setBridgeState(await api.status())
         } catch (err) {
@@ -77,7 +80,9 @@ const SlackBridge = () => {
     }
 
     return html`
-        <a href=${api.makeLoginURL()} target="_blank">New link</a>
+        <a href=${api.makeLoginURL()} onClick=${() => track("Slack link")} target="_blank">
+            New link
+        </a>
         <ul>
             ${bridgeState.puppets.map(puppet => html`
                 <li>

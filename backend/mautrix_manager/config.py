@@ -37,6 +37,7 @@ class Config(BaseFileConfig):
         copy("homeserver.federation_url")
 
         copy("docker.host")
+        copy("mixpanel.token")
 
         copy("server.host")
         copy("server.port")

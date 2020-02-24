@@ -17,6 +17,7 @@ import { useEffect, useState, useRef, useLayoutEffect } from "../../web_modules/
 import { html } from "../../web_modules/htm/preact.js"
 import QR from "../../web_modules/qrcode/lib/index.js"
 
+import track from "../../lib/api/tracking.js"
 import * as api from "../../lib/api/whatsapp.js"
 import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
@@ -53,11 +54,14 @@ const WhatsAppLogin = ({ onLoggedIn }) => {
     const qrCanvas = useRef()
 
     const startLogin = async () => {
+        track("WhatsApp login", { state: "start" })
         setError(null)
         const resp = await api.login(setCode)
         if (resp.success) {
+            track("WhatsApp login", { state: "success" })
             await onLoggedIn()
         } else {
+            track("WhatsApp login", { state: "fail" })
             setError(resp.error)
             setCode(null)
         }
@@ -112,7 +116,8 @@ const WhatsAppBridge = () => {
         }
     }, [])
 
-    const call = (method) => async () => {
+    const call = (name, method) => async () => {
+        track(`WhatsApp ${name}`)
         try {
             await method()
             setBridgeState(await api.ping())
@@ -134,9 +139,12 @@ const WhatsAppBridge = () => {
         <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
         ${bridgeState.whatsapp.has_session
         ? html`<div class=${classes.buttons}>
-            <button type="button" onClick=${call(api.logout)} class=${classes.button}>Sign out</button>
-            <button type="button" onClick=${call(api.reconnect)} class=${classes.button}>Reconnect</button>
-            <button type="button" onClick=${call(api.disconnect)} class=${classes.button}>Disconnect</button>
+            <button type="button" onClick=${call("logout", api.logout)}
+                    class=${classes.button}>Sign out</button>
+            <button type="button" onClick=${call("reconnect", api.reconnect)}
+                    class=${classes.button}>Reconnect</button>
+            <button type="button" onClick=${call("disconnect", api.disconnect)}
+                    class=${classes.button}>Disconnect</button>
         </div>`
         : html`<${WhatsAppLogin} onLoggedIn=${onLoggedIn} />`}
         <${Alert} message=${error} />

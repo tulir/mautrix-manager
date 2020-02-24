@@ -30,6 +30,21 @@ async def check_track(_: web.Request) -> web.Response:
     })
 
 
+@routes.post("/track")
+async def do_track(request: web.Request) -> web.Response:
+    data = await request.json()
+    try:
+        event = data["event"]
+        props = data["properties"]
+    except KeyError:
+        return web.Response(status=400)
+    if not isinstance(event, str) or not isinstance(props, dict):
+        return web.Response(status=400)
+    await track(event=event, user_id=request["token"].user_id,
+                user_agent=request.headers["User-Agent"], **props)
+    return web.Response(status=204)
+
+
 @initializer
 def init(cfg: Config, app: web.Application) -> None:
     global host, secret, config, client_id

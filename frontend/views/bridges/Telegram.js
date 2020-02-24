@@ -16,6 +16,7 @@
 import { useEffect, useState } from "../../web_modules/preact/hooks.js"
 import { html } from "../../web_modules/htm/preact.js"
 
+import track from "../../lib/api/tracking.js"
 import * as api from "../../lib/api/telegram.js"
 import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
@@ -64,6 +65,7 @@ const TelegramLogin = ({ onLoggedIn }) => {
     const [error, setError] = useState(null)
 
     const submit = async () => {
+        track("Telegram login", { step })
         const payload = {}
         if (step === "bot_token") payload.token = botToken
         else if (step === "request_code") payload.phone = phone
@@ -181,6 +183,7 @@ const TelegramBridge = () => {
     }, [])
 
     const logout = async () => {
+        track("Telegram logout")
         try {
             await api.logout()
             setBridgeState(await api.getMe())

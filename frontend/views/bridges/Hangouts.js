@@ -16,6 +16,7 @@
 import { useEffect, useState } from "../../web_modules/preact/hooks.js"
 import { html } from "../../web_modules/htm/preact.js"
 
+import track from "../../lib/api/tracking.js"
 import * as api from "../../lib/api/hangouts.js"
 import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
@@ -69,6 +70,7 @@ const HangoutsLogin = ({ onLoggedIn }) => {
     const [error, setError] = useState(null)
 
     const handle = async data => {
+        track("Hangouts login", { status: data.status || data.next_step })
         if (data.status === "fail") {
             setError(data.error)
         } else if (data.status === "success") {
@@ -148,6 +150,7 @@ const HangoutsBridge = () => {
     }, [])
 
     const logout = async () => {
+        track("Hangouts logout")
         try {
             await api.logout()
             setBridgeState(await api.whoami())

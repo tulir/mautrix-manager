@@ -17,6 +17,7 @@ import { useEffect, useState } from "../../web_modules/preact/hooks.js"
 import { useLocation } from "../../web_modules/wouter-preact.js"
 import { html } from "../../web_modules/htm/preact.js"
 
+import track from "../../lib/api/tracking.js"
 import { makeStyles } from "../../lib/theme.js"
 import * as api from "../../lib/api/docker.js"
 import Alert from "../components/Alert.js"
@@ -81,6 +82,7 @@ const DockerControls = () => {
     }
 
     const start = async () => {
+        track("Docker start", { containerName })
         setLoading("start")
         try {
             await api.startContainer(container.Id)
@@ -91,6 +93,7 @@ const DockerControls = () => {
         await updateContainerInfo()
     }
     const stop = async () => {
+        track("Docker stop", { containerName })
         setLoading("stop")
         try {
             await api.stopContainer(container.Id)
@@ -100,7 +103,10 @@ const DockerControls = () => {
         setLoading(null)
         await updateContainerInfo()
     }
-    const viewLogs = () => openModal(Logs, { container })
+    const viewLogs = () => {
+        track("Docker logs", { containerName })
+        openModal(Logs, { container })
+    }
 
     const isNotLoading = name => loading && loading !== name
 

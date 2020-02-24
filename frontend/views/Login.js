@@ -21,11 +21,15 @@ import {
 } from "../lib/api/login.js"
 import Spinner from "./components/Spinner.js"
 import { makeStyles } from "../lib/theme.js"
+import track, { checkTrackingEnabled } from "../lib/api/tracking.js"
 
 const useStyles = makeStyles(theme => ({
     root: {
         position: "fixed",
-        inset: "0 0 0 0",
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
         backgroundColor: theme.color.primary,
         display: "flex",
         justifyContent: "space-around",
@@ -167,6 +171,7 @@ const LoginView = ({ onLoggedIn }) => {
             localStorage.mxUserID = userID
             localStorage.accessToken = integrationData.token
             localStorage.accessLevel = integrationData.level
+            checkTrackingEnabled().then(() => track("Manager login", { method: "direct" }))
             onLoggedIn()
         } catch (err) {
             setError(err.message)
@@ -189,6 +194,7 @@ const LoginView = ({ onLoggedIn }) => {
                 localStorage.mxUserID = integrationData.user_id
                 localStorage.accessToken = integrationData.token
                 localStorage.accessLevel = integrationData.level
+                checkTrackingEnabled().then(() => track("Manager login", { method: "direct" }))
                 onLoggedIn()
             } catch (err) {
                 setError(err.message)

@@ -16,6 +16,7 @@
 import { useEffect, useState, useRef } from "../../web_modules/preact/hooks.js"
 import { html } from "../../web_modules/htm/preact.js"
 
+import track from "../../lib/api/tracking.js"
 import * as api from "../../lib/api/facebook.js"
 import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
@@ -42,7 +43,7 @@ const useStyles = makeStyles(theme => ({
         maxWidth: "50%",
         padding: "0 .5rem",
         boxSizing: "border-box",
-    }
+    },
 }), { name: "facebook" })
 
 const manualInstructions = html`<ol>
@@ -81,6 +82,7 @@ const FacebookLogin = ({ onLoggedIn }) => {
     }
 
     const onSubmit = evt => {
+        track("Facebook login")
         evt.preventDefault()
         setLoading(true)
         setError(null)
@@ -147,6 +149,7 @@ const FacebookBridge = () => {
     }, [])
 
     const logout = async () => {
+        track("Facebook logout")
         try {
             await api.logout()
             setBridgeState(await api.whoami())

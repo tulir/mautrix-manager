@@ -19,6 +19,7 @@ import base64
 import json
 
 import aiohttp
+from yarl import URL
 
 from .config import Config
 
@@ -31,19 +32,25 @@ def is_enabled() -> bool:
     return bool(token)
 
 
-async def track(event: str, user_id: str, **properties: str) -> None:
+async def track(event: str, user_id: str, user_agent: str = "", **properties: str) -> None:
     if not token:
         return
-    await http.post("https://api.mixpanel.com/track/", data={
-        "data": base64.b64encode(json.dumps({
-            "event": event,
-            "properties": {
-                **properties,
-                "token": token,
-                "distinct_id": user_id,
-            }
-        }))
-    })
+    try:
+        await http.post(URL("https://api.mixpanel.com/track/").with_query({
+            "data": base64.b64encode(json.dumps({
+                "event": event,
+                "properties": {
+                    **properties,
+                    "token": token,
+                    "distinct_id": user_id,
+                }
+            }).encode("utf-8")).decode("utf-8"),
+        }), headers={
+            "User-Agent": user_agent
+        } if user_agent else {})
+        log.debug(f"Tracked {event} from {user_id}")
+    except Exception:
+        log.exception(f"Failed to track {event} from {user_id}")
 
 
 def init(config: Config) -> None:
