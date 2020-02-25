@@ -11,6 +11,7 @@ default:
 
 build frontend:
   image: node:lts-alpine
+  before_script: []
   stage: build frontend
   variables:
     NODE_ENV: "production"
@@ -27,7 +28,7 @@ build frontend:
   artifacts:
     paths:
     - frontend_build
-    expire_in: 1 day
+    expire_in: 1 hour
 
 build amd64:
   stage: build
