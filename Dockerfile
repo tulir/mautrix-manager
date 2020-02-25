@@ -5,7 +5,7 @@ WORKDIR /opt/mautrix-manager/frontend
 ENV NODE_ENV=production
 RUN yarn && yarn snowpack && rm -rf node_modules package.json yarn.lock
 
-FROM alpine:3.11
+FROM alpine:3.11 AS runtime
 
 COPY --from=frontend /opt/mautrix-manager/frontend /opt/mautrix-manager/frontend
 COPY ./backend /opt/mautrix-manager/backend
