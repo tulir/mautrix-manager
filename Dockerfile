@@ -1,4 +1,4 @@
-FROM node:lts-alpine AS builder
+FROM node:lts-alpine AS frontend
 
 COPY ./frontend /opt/mautrix-manager/frontend
 WORKDIR /opt/mautrix-manager/frontend
@@ -7,7 +7,7 @@ RUN yarn && yarn snowpack && rm -rf node_modules package.json yarn.lock
 
 FROM alpine:3.11
 
-COPY --from=builder /opt/mautrix-manager/frontend /opt/mautrix-manager/frontend
+COPY --from=frontend /opt/mautrix-manager/frontend /opt/mautrix-manager/frontend
 COPY ./backend /opt/mautrix-manager/backend
 COPY ./docker-run.sh /opt/mautrix-manager
 
