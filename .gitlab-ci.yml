@@ -10,36 +10,46 @@ default:
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
 build frontend:
+  image: node:lts-alpine
   stage: build frontend
+  variables:
+    NODE_ENV: "production"
+  cache:
+    paths:
+    - frontend/node_modules
+    - frontend/web_modules
   script:
-  - docker pull $CI_REGISTRY_IMAGE:stage-frontend || true
-  - docker build --target=frontend --pull --cache-from=$CI_REGISTRY_IMAGE:stage-frontend --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-frontend .
-  - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-frontend
-  - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-frontend $CI_REGISTRY_IMAGE:stage-frontend
-  - docker push $CI_REGISTRY_IMAGE:stage-frontend
-  - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-frontend
+  - cd frontend
+  - yarn
+  - yarn snowpack
+  - mkdir ../frontend_build
+  - cp -a index.js index.html lib res views web_modules ../frontend_build/
+  artifacts:
+    paths:
+    - frontend_build
+    expire_in: 1 day
 
 build amd64:
   stage: build
   tags:
   - amd64
   script:
+  - echo frontend >> .dockerignore
   - docker pull $CI_REGISTRY_IMAGE:latest || true
-  - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-frontend || true
-  - docker build --target=runtime --pull --cache-from=$CI_REGISTRY_IMAGE:latest --cache-from=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-frontend --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-amd64 .
+  - docker build --pull --cache-from=$CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-amd64 . -f Dockerfile.ci
   - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-amd64
-  - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-amd64 $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-frontend
+  - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-amd64
 
 build arm64:
   stage: build
   tags:
   - arm64
   script:
+  - echo frontend >> .dockerignore
   - docker pull $CI_REGISTRY_IMAGE:latest || true
-  - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-frontend || true
-  - docker build --target=runtime --pull --cache-from=$CI_REGISTRY_IMAGE:latest --cache-from=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-frontend --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-arm64 .
+  - docker build --target=runtime --pull --cache-from=$CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-arm64 . -f Dockerfile.ci
   - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-arm64
-  - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-arm64 $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-frontend
+  - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-arm64
 
 manifest:
   stage: manifest

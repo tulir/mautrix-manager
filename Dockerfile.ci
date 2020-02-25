@@ -1,16 +1,6 @@
-FROM node:lts-alpine AS frontend
-
-COPY ./frontend /opt/mautrix-manager/frontend
-WORKDIR /opt/mautrix-manager/frontend
-ENV NODE_ENV=production
-RUN yarn && yarn snowpack && rm -rf node_modules package.json yarn.lock
-
 FROM alpine:3.11
 
-COPY --from=frontend /opt/mautrix-manager/frontend /opt/mautrix-manager/frontend
 COPY ./backend /opt/mautrix-manager/backend
-COPY ./docker-run.sh /opt/mautrix-manager
-
 WORKDIR /opt/mautrix-manager/backend
 
 RUN apk add --no-cache --virtual .build-deps \
@@ -24,6 +14,8 @@ RUN apk add --no-cache --virtual .build-deps \
 	&& rm -rf /opt/mautrix-manager/backend/mautrix_manager \
 	&& apk del .build-deps
 
+COPY ./frontend_build /opt/mautrix-manager/frontend
+COPY ./docker-run.sh /opt/mautrix-manager
 ENV UID=1337 GID=1337
 VOLUME /data
 
