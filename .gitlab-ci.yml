@@ -37,7 +37,7 @@ build arm64:
   script:
   - docker pull $CI_REGISTRY_IMAGE:latest || true
   - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-frontend || true
-  - docker build --target=runtime --pull --cache-from=$CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-arm64 .
+  - docker build --target=runtime --pull --cache-from=$CI_REGISTRY_IMAGE:latest --cache-from=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-frontend --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-arm64 .
   - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-arm64
   - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-arm64 $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-frontend
 
