@@ -7,12 +7,8 @@ RUN yarn && yarn snowpack && rm -rf node_modules package.json yarn.lock
 
 FROM alpine:3.11
 
-COPY --from=frontend /opt/mautrix-manager/frontend /opt/mautrix-manager/frontend
-COPY ./backend /opt/mautrix-manager/backend
-COPY ./docker-run.sh /opt/mautrix-manager
-
+COPY ./backend/requirements.txt /opt/mautrix-manager/backend/requirements.txt
 WORKDIR /opt/mautrix-manager/backend
-
 RUN apk add --no-cache --virtual .build-deps \
         python3-dev \
         build-base \
@@ -20,10 +16,18 @@ RUN apk add --no-cache --virtual .build-deps \
     && apk add --no-cache \
 		python3 \
 		su-exec \
-	&& pip3 install . \
-	&& rm -rf /opt/mautrix-manager/backend/mautrix_manager \
+		py3-aiohttp \
+		py3-ruamel.yaml \
+		py3-attrs \
+	&& pip3 install -r requirements.txt \
 	&& apk del .build-deps
 
+COPY ./backend /opt/mautrix-manager/backend
+
+RUN pip3 install . && rm -rf /opt/mautrix-manager/backend/mautrix_manager
+
+COPY --from=frontend /opt/mautrix-manager/frontend /opt/mautrix-manager/frontend
+COPY ./docker-run.sh /opt/mautrix-manager
 ENV UID=1337 GID=1337
 VOLUME /data
 

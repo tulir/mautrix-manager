@@ -1,6 +1,6 @@
-aiohttp
-mautrix
-ruamel.yaml
-yarl
-asyncpg
-attrs
+aiohttp>=3,<4
+mautrix>=0.4,<0.5
+ruamel.yaml>=0.15.90,<0.17
+yarl>=1,<2
+asyncpg>=0.20,<0.21
+attrs>=18.1.0
