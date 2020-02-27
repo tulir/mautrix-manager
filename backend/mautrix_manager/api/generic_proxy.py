@@ -45,7 +45,7 @@ async def proxy(url: URL, secret: str, request: web.Request, path_prefix: str) -
         resp = await http.request(request.method, url, headers=headers,
                                   params=query, data=request.content)
     except aiohttp.ClientError:
-        raise web.HTTPBadGateway(text="Failed to contact Telegram bridge")
+        raise web.HTTPBadGateway(text="Failed to contact bridge")
     return web.Response(status=resp.status, headers=resp.headers, body=resp.content)
 
 
