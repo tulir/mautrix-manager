@@ -19,6 +19,7 @@ import { Route, Link } from "../web_modules/wouter-preact.js"
 
 import { checkTrackingEnabled } from "../lib/api/tracking.js"
 import { makeStyles } from "../lib/theme.js"
+import { logout } from "../lib/api/login.js"
 import SlackBridge from "./bridges/Slack.js"
 import TelegramBridge from "./bridges/Telegram.js"
 import FacebookBridge from "./bridges/Facebook.js"
@@ -57,8 +58,16 @@ const Main = () => {
         />`
     }
 
+    const handleLogout = evt => {
+        evt.preventDefault()
+        logout().catch(err => console.error("Error logging out:", err)).finally(() => {
+            localStorage.clear()
+            setLoggedIn(false)
+        })
+    }
+
     return html`
-        Logged in as ${localStorage.mxUserID}
+        Logged in as ${localStorage.mxUserID} - <a href="" onClick=${handleLogout}>Log out</a>
         <nav>
             <${Link} href="#/">Home</Link>
             —

@@ -42,7 +42,7 @@ class Token:
         return Token(**row)
 
     async def delete(self) -> None:
-        await self._db.execute("DELETE FROM access_token WHERE secret=$1")
+        await self._db.execute("DELETE FROM access_token WHERE secret=$1", self.secret)
 
     async def insert(self) -> None:
         await self._db.execute("INSERT INTO access_token (user_id, secret) VALUES ($1, $2)",

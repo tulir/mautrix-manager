@@ -90,3 +90,8 @@ export const requestIntegrationToken = tokenData => tryFetch(
         service: "mautrix-manager",
         requestType: "register",
     })
+
+export const logout = () => tryFetch(`${integrationPrefix}/account/logout`, { method: "POST" }, {
+    service: "mautrix-manager",
+    requestType: "logout",
+})

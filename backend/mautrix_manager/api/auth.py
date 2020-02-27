@@ -117,6 +117,9 @@ async def exchange_token(request: web.Request) -> web.Response:
         "user_id": user_id,
         "token": token.secret,
         "level": permissions.level,
+        "permissions": {
+            "docker": permissions.admin,
+        },
     })
 
 

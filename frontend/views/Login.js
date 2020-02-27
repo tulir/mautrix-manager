@@ -80,6 +80,10 @@ const useStyles = makeStyles(theme => ({
                 paddingRight: ".5rem",
                 borderRadius: "0 .25rem .25rem 0",
             },
+            "&:focus": {
+                // We show focus with the border width.
+                outline: "none",
+            },
         },
         "& > span": {
             userSelect: "none",
@@ -118,7 +122,7 @@ const LoginView = ({ onLoggedIn }) => {
     const serverRef = useRef()
     const passwordRef = useRef()
     const [loading, setLoading] = useState(false)
-    const [userIDFocused, setUserIDFocused] = useState(true)
+    const [userIDFocused, setUserIDFocused] = useState(false)
     const [username, setUsername] = useState("")
     const [server, setServer] = useState("")
     const [password, setPassword] = useState("")
@@ -137,7 +141,7 @@ const LoginView = ({ onLoggedIn }) => {
         }
     }
 
-    useLayoutEffect(() => usernameRef.current.addEventListener("paste", evt => {
+    const paste = evt => {
         if (usernameRef.current.value !== "" || serverRef.current.value !== "") {
             return
         }
@@ -155,8 +159,9 @@ const LoginView = ({ onLoggedIn }) => {
             serverRef.current.focus()
         }
         evt.preventDefault()
-    }), [usernameRef])
+    }
 
+    useLayoutEffect(() => usernameRef.current.focus(), [])
     const onFocus = () => setUserIDFocused(true)
     const onBlur = () => setUserIDFocused(false)
 
@@ -217,6 +222,7 @@ const LoginView = ({ onLoggedIn }) => {
     const usernameWrapperClick = evt => evt.target === usernameWrapperRef.current
         && usernameRef.current.focus()
 
+    const disableSubmit = !username || !server || !password
     return html`<main class=${classes.root}>
         <form class="${classes.loginBox} ${error ? classes.hasError : ""}" onSubmit=${onSubmit}>
             <h1 class=${classes.header}>mautrix-manager</h1>
@@ -225,7 +231,7 @@ const LoginView = ({ onLoggedIn }) => {
                 <span onClick=${() => usernameRef.current.focus()}>@</span>
                 <input type="text" placeholder="username" name="username" value=${username}
                        onChange=${evt => setUsername(evt.target.value)} ref=${usernameRef}
-                       onKeyDown=${keyDown} onFocus=${onFocus} onBlur=${onBlur} autoFocus />
+                       onKeyDown=${keyDown} onFocus=${onFocus} onBlur=${onBlur} onPaste=${paste} />
                 <span onClick=${() => serverRef.current.focus()}>:</span>
                 <input type="text" placeholder="example.com" name="server" value=${server}
                        onChange=${evt => setServer(evt.target.value)} ref=${serverRef}
@@ -234,8 +240,8 @@ const LoginView = ({ onLoggedIn }) => {
             <input type="password" placeholder="password" name="password" value=${password}
                    class="${classes.password} ${classes.input}" ref=${passwordRef}
                    onChange=${evt => setPassword(evt.target.value)} />
-            <button type="submit" class=${classes.submit}
-                    disabled=${!username || !server || !password}>
+            <button type="submit" class=${classes.submit} disabled=${disableSubmit}
+                    title=${disableSubmit && "Fill out the form before submitting"}>
                  ${loading ? html`<${Spinner} size=30 />` : "Log in"}
             </button>
             ${error && html`<div class=${classes.error}>

@@ -46,6 +46,8 @@ const theme = {
         "&:focus": {
             padding: ".75rem calc(1rem - 1px)",
             borderWidth: "2px",
+            // We show focus with the border width.
+            outline: "none",
         },
     }),
     button: ({ variant = "filled", size = "normal" } = {}) => ({
