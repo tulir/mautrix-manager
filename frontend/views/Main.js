@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { useEffect, useState } from "../web_modules/preact/hooks.js"
 import { html } from "../web_modules/htm/preact.js"
-import { Route, Link } from "../web_modules/wouter-preact.js"
+import useRoute, { Route, Link } from "../web_modules/wouter-preact.js"
 
 import { checkTrackingEnabled } from "../lib/api/tracking.js"
 import { makeStyles } from "../lib/theme.js"
@@ -25,10 +25,74 @@ import TelegramBridge from "./bridges/Telegram.js"
 import FacebookBridge from "./bridges/Facebook.js"
 import HangoutsBridge from "./bridges/Hangouts.js"
 import WhatsAppBridge from "./bridges/WhatsApp.js"
+import Button from "./components/Button.js"
 import DockerControls from "./docker/Controls.js"
 import LoginView from "./Login.js"
 
-const useStyles = makeStyles({}, { name: "main" })
+const useNavStyles = makeStyles(theme => ({
+    anchor: {
+        display: "inline-block",
+        textDecoration: "none",
+        margin: "0 .25rem",
+    },
+    button: {
+        display: "flex",
+        alignItems: "center",
+        margin: 0,
+        padding: ".25rem .5rem",
+        borderRadius: ".25rem .25rem 0 0",
+    },
+    icon: {
+        width: "2rem",
+        height: "2rem",
+        margin: "0 .25rem",
+    },
+    text: {
+        fontWeight: 600,
+    },
+    active: {
+        backgroundColor: theme.color.primaryDark,
+    },
+}), { name: "main-nav" })
+
+const NavButton = ({ href, icon, children, ...args }) => {
+    const classes = useNavStyles()
+    if (!href) {
+        return html`<${Button} size="thick" class=${classes.button} ...${args}>
+            <img class=${classes.icon} src=${icon} alt="Icon" />
+            <span class=${classes.text}>${children}</span>
+        </Button>`
+    }
+    const [isActive] = useRoute(href.substr(1))
+    return html`<${Link} href=${href}>
+        <a class=${classes.anchor}>
+            <${Button} size="thick" class="${classes.button} ${isActive ? classes.active : ""}">
+                <img class=${classes.icon} src=${icon} alt="Icon" />
+                <span class=${classes.text}>${children}</span>
+            </Button>
+        </a>
+    </Link>`
+}
+
+const useStyles = makeStyles(theme => ({
+    topbar: {
+        backgroundColor: theme.color.primary,
+        boxShadow: "0 0 .3em .3em #9A9A9B",
+    },
+    loginInfo: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        "& > span": {
+            color: theme.color.primaryContrastText,
+            fontSize: "20px",
+            margin: "0 1.25rem",
+        },
+    },
+    nav: {
+        display: "flex",
+    },
+}), { name: "main" })
 
 const Main = () => {
     const classes = useStyles()
@@ -67,20 +131,23 @@ const Main = () => {
     }
 
     return html`
-        Logged in as ${localStorage.mxUserID} - <a href="" onClick=${handleLogout}>Log out</a>
-        <nav>
-            <${Link} href="#/">Home</Link>
-            —
-            <${Link} href="#/telegram">Telegram</Link>
-            —
-            <${Link} href="#/facebook">Facebook</Link>
-            —
-            <${Link} href="#/hangouts">Hangouts</Link>
-            —
-            <${Link} href="#/whatsapp">WhatsApp</Link>
-            —
-            <${Link} href="#/slack">Slack</Link>
-        </nav>
+        <header class=${classes.topbar}>
+            <div class=${classes.loginInfo}>
+                <span>Logged in as ${localStorage.mxUserID}</span>
+                <${NavButton} onClick=${handleLogout} icon="res/logout.svg"
+                              style="border-radius: 0 0 0 .25rem;">
+                    Log out
+                </NavButton>
+            </div>
+            <nav class=${classes.nav}>
+                <${NavButton} href="#/" icon="res/home.svg">Home</NavButton>
+                <${NavButton} href="#/telegram" icon="res/logos/telegram.svg">Telegram</NavButton>
+                <${NavButton} href="#/facebook" icon="res/logos/facebook.svg">Facebook</NavButton>
+                <${NavButton} href="#/hangouts" icon="res/logos/hangouts.svg">Hangouts</NavButton>
+                <${NavButton} href="#/whatsapp" icon="res/logos/whatsapp.svg">WhatsApp</NavButton>
+                <${NavButton} href="#/slack" icon="res/logos/slack.svg">Slack</NavButton>
+            </nav>
+        </header>
 
         <${DockerControls} />
         <${Route} exact path="/">This is the home</Route>

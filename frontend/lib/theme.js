@@ -19,16 +19,23 @@ import {
 } from "../web_modules/react-jss.js"
 
 const color = {
-    primary: "#00C853",
-    primaryDark: "#009624",
-    primaryLight: "#7fca91",
+    // Material UI green 800
+    primary: "#2e7d32",
+    primaryDark: "#005005",
+    primaryLight: "#60ad5e",
+    // Material UI blue 700
+    secondary: "#1976d2",
+    secondaryDark: "#004ba0",
+    secondaryLight: "#63a4ff",
+
+    error: "#F7A9A1",
+    errorDark: "#B71C1C",
+
     primaryContrastText: "white",
     background: "white",
     text: "#212121",
     border: "#DDD",
     disabled: "#CCC",
-    error: "#F7A9A1",
-    errorDark: "#B71C1C",
 }
 
 const theme = {

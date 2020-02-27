@@ -20,22 +20,36 @@ import { html } from "../../web_modules/htm/preact.js"
 import track from "../../lib/api/tracking.js"
 import { makeStyles } from "../../lib/theme.js"
 import * as api from "../../lib/api/docker.js"
-import Alert from "../components/Alert.js"
 import Button from "../components/Button.js"
 import Spinner from "../components/Spinner.js"
 import useModal from "../Modal.js"
 import Logs from "./Logs.js"
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     root: {
-        margin: "1rem 0",
+        backgroundColor: `${theme.color.primary}66`,
+        border: `.25rem solid ${theme.color.primary}`,
+        borderRadius: ".25rem",
+        margin: "2rem 4rem",
+        padding: "1rem",
+        boxShadow: ".3em .3em .3em #9A9A9B",
+    },
+    error: {
+        backgroundColor: theme.color.error,
+        border: `.25rem solid ${theme.color.errorDark}`,
     },
     button: {
         paddingLeft: "1.5rem",
         paddingRight: "1.5rem",
         marginRight: ".5rem",
     },
-}, { name: "docker" })
+    containerState: {
+        maxHeight: "30rem",
+        overflow: "auto",
+        scrollbarWidth: "thin",
+        scrollbarColor: `${theme.color.primaryDark} ${theme.color.primary}33`,
+    },
+}), { name: "docker" })
 
 const nameMap = {
     "/telegram": "mautrix-telegram",
@@ -75,9 +89,11 @@ const DockerControls = () => {
         return null
     } else if (!container) {
         if (error) {
-            return html`<${Alert} message=${error} />`
+            return html`<section class="${classes.root} ${classes.error}">${error}</section>`
         } else {
-            return html`<${Spinner} green noCenter />`
+            return html`<section class=${classes.root}>
+                <${Spinner} noCenter />
+            </section>`
         }
     }
 
@@ -111,7 +127,7 @@ const DockerControls = () => {
     const isNotLoading = name => loading && loading !== name
 
     return html`
-        <div class=${classes.root}>
+        <section class=${classes.root}>
             Docker status for ${container.Names[0].substr(1)}: ${container.Status}
             <div>
                 <${Button} disabled=${isNotLoading("start") || container.State === "running"}
@@ -129,9 +145,11 @@ const DockerControls = () => {
             </div>
             <details>
                 <summary>Container state</summary>
-                <pre>${JSON.stringify(container, null, "  ")}</pre>
+                <pre className=${classes.containerState}>
+                    ${JSON.stringify(container, null, "  ")}
+                </pre>
             </details>
-        </div>
+        </section>
     `
 }
 

@@ -20,7 +20,6 @@ import { makeStyles } from "../../lib/theme.js"
 const useStyles = makeStyles(theme => ({
     root: {
         cursor: "pointer",
-        height: "2.5rem",
         margin: ".5rem 0",
         borderRadius: ".25rem",
         fontSize: "1rem",
@@ -32,6 +31,9 @@ const useStyles = makeStyles(theme => ({
     },
     thick: {
         height: "3rem",
+    },
+    normal: {
+        height: "2.5rem",
     },
     thin: {
         height: "2rem",
@@ -45,6 +47,7 @@ const useStyles = makeStyles(theme => ({
         },
         "&:disabled": {
             backgroundColor: theme.color.disabled,
+            color: theme.color.text,
         },
     },
     outlined: {
@@ -59,22 +62,23 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: theme.color.background,
             borderColor: theme.color.disabled,
         },
-    }
+    },
 }), { name: "button" })
 
 const Button = ({
-    type = "button", class: className, children,
+    type = "button", class: className = "", children,
     variant = "filled", size = "normal",
-    ...props
+    ...customProps
 }) => {
     const classes = useStyles({
         variant,
         size,
     })
-    return html`<button class="${classes.root} ${classes[variant]} ${classes[size]} ${className}"
-                        type=${type} ...${props}>
-        ${children}
-    </button>`
+    const props = {
+        class: `${classes.root} ${classes[variant]} ${classes[size]} ${className}`,
+        type, ...customProps,
+    }
+    return html`<button ...${props}>${children}</button>`
 }
 
 export default Button
