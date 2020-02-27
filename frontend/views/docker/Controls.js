@@ -21,21 +21,21 @@ import track from "../../lib/api/tracking.js"
 import { makeStyles } from "../../lib/theme.js"
 import * as api from "../../lib/api/docker.js"
 import Alert from "../components/Alert.js"
+import Button from "../components/Button.js"
 import Spinner from "../components/Spinner.js"
 import useModal from "../Modal.js"
 import Logs from "./Logs.js"
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
     root: {
         margin: "1rem 0",
     },
     button: {
-        ...theme.button(),
         paddingLeft: "1.5rem",
         paddingRight: "1.5rem",
         marginRight: ".5rem",
     },
-}), { name: "docker" })
+}, { name: "docker" })
 
 const nameMap = {
     "/telegram": "mautrix-telegram",
@@ -114,18 +114,18 @@ const DockerControls = () => {
         <div class=${classes.root}>
             Docker status for ${container.Names[0].substr(1)}: ${container.Status}
             <div>
-                <button disabled=${isNotLoading("start") || container.State === "running"}
-                        class=${classes.button} onClick=${start}>
+                <${Button} disabled=${isNotLoading("start") || container.State === "running"}
+                           class=${classes.button} onClick=${start}>
                     ${loading === "start" ? html`<${Spinner} size=20 />` : "Start"}
-                </button>
-                <button disabled=${isNotLoading("stop") || container.State === "exited"}
-                        class=${classes.button} onClick=${stop}>
+                </Button>
+                <${Button} disabled=${isNotLoading("stop") || container.State === "exited"}
+                           class=${classes.button} onClick=${stop}>
                     ${loading === "stop" ? html`<${Spinner} size=20 />` : "Stop"}
-                </button>
-                <button class=${classes.button} onClick=${viewLogs}
-                        disabled=${container.State !== "running"}>
+                </Button>
+                <${Button} class=${classes.button} onClick=${viewLogs}
+                           disabled=${container.State !== "running"}>
                     Logs
-                </button>
+                </Button>
             </div>
             <details>
                 <summary>Container state</summary>

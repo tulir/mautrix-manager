@@ -50,34 +50,16 @@ const theme = {
             outline: "none",
         },
     }),
-    button: ({ variant = "filled", size = "normal" } = {}) => ({
-        backgroundColor: variant === "filled" ? color.primary : color.background,
-        cursor: "pointer",
-        height: size === "thick" ? "3rem" : size === "normal" ? "2.5rem" : "2rem",
-        margin: ".5rem 0",
-        borderRadius: ".25rem",
-        border: variant === "outlined" ? `2px solid ${color.primary}` : "none",
-        color: variant === "outlined" ? color.primary : color.primaryContrastText,
-        fontSize: "1rem",
-        boxSizing: "border-box",
-        padding: 0,
-        "&:hover": {
-            backgroundColor: variant === "outlined" ? color.primaryLight : color.primaryDark,
-            color: color.primaryContrastText,
-        },
-        "&:disabled": {
-            backgroundColor: variant === "filled" ? color.disabled : color.background,
-            borderColor: variant === "outlined" ? color.disabled : undefined,
-            cursor: "default",
-        },
-    }),
 }
 
 export const makeStyles = (style, options) => {
     const useStyles = createUseStyles(style, options)
     return (...props) => {
         const theme = useTheme()
-        return useStyles({ ...props, theme })
+        return useStyles({
+            ...props,
+            theme,
+        })
     }
 }
 

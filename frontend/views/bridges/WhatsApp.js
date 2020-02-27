@@ -21,9 +21,10 @@ import track from "../../lib/api/tracking.js"
 import * as api from "../../lib/api/whatsapp.js"
 import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
+import Button from "../components/Button.js"
 import Spinner from "../components/Spinner.js"
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
     root: {
         display: "flex",
         flexDirection: "column",
@@ -33,14 +34,11 @@ const useStyles = makeStyles(theme => ({
         margin: "0 auto",
         padding: "0 1rem",
     },
-    button: {
-        ...theme.button(),
-    },
     qrWrapper: {
         display: "flex",
         justifyContent: "space-around",
     },
-}), { name: "whatsapp" })
+}, { name: "whatsapp" })
 
 // eslint-disable-next-line max-len
 const MenuIcon = () => html`<svg height="24px" viewBox="0 0 24 24" width="24px"><rect fill="#f2f2f2" height="24" rx="3" width="24"></rect><path d="m12 15.5c.825 0 1.5.675 1.5 1.5s-.675 1.5-1.5 1.5-1.5-.675-1.5-1.5.675-1.5 1.5-1.5zm0-2c-.825 0-1.5-.675-1.5-1.5s.675-1.5 1.5-1.5 1.5.675 1.5 1.5-.675 1.5-1.5 1.5zm0-5c-.825 0-1.5-.675-1.5-1.5s.675-1.5 1.5-1.5 1.5.675 1.5 1.5-.675 1.5-1.5 1.5z" fill="#818b90"></path></svg>`
@@ -89,22 +87,14 @@ const WhatsAppLogin = ({ onLoggedIn }) => {
                     <canvas ref=${qrCanvas} />
                 </div>
             ` : html`
-                <button class=${classes.button} onClick=${startLogin}>Start</button>
+                <${Button} onClick=${startLogin}>Start</Button>
             `}
             <${Alert} message=${error} />
         </div>
     `
 }
 
-const useMainStyles = makeStyles(theme => ({
-    button: {
-        ...theme.button(),
-        width: "10rem",
-    },
-}))
-
 const WhatsAppBridge = () => {
-    const classes = useMainStyles()
     const [bridgeState, setBridgeState] = useState(null)
     const [error, setError] = useState(null)
 
@@ -139,12 +129,9 @@ const WhatsAppBridge = () => {
         <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
         ${bridgeState.whatsapp.has_session
         ? html`<div class=${classes.buttons}>
-            <button type="button" onClick=${call("logout", api.logout)}
-                    class=${classes.button}>Sign out</button>
-            <button type="button" onClick=${call("reconnect", api.reconnect)}
-                    class=${classes.button}>Reconnect</button>
-            <button type="button" onClick=${call("disconnect", api.disconnect)}
-                    class=${classes.button}>Disconnect</button>
+            <${Button} onClick=${call("logout", api.logout)}>Sign out</Button>
+            <${Button} onClick=${call("reconnect", api.reconnect)}>Reconnect</Button>
+            <${Button} onClick=${call("disconnect", api.disconnect)}>Disconnect</Button>
         </div>`
         : html`<${WhatsAppLogin} onLoggedIn=${onLoggedIn} />`}
         <${Alert} message=${error} />

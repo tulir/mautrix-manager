@@ -23,12 +23,7 @@ import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
 import Spinner from "../components/Spinner.js"
 
-const useStyles = makeStyles(theme => ({
-    button: {
-        ...theme.button(),
-        width: "10rem",
-    },
-}))
+const useStyles = makeStyles(theme => ({}), { name: "slack" })
 
 const SlackBridge = () => {
     const classes = useStyles()

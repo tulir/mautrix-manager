@@ -20,6 +20,7 @@ import track from "../../lib/api/tracking.js"
 import * as api from "../../lib/api/facebook.js"
 import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
+import Button from "../components/Button.js"
 import Spinner from "../components/Spinner.js"
 
 const useStyles = makeStyles(theme => ({
@@ -35,9 +36,6 @@ const useStyles = makeStyles(theme => ({
     input: {
         ...theme.input(),
         width: "100%",
-    },
-    submit: {
-        ...theme.button(),
     },
     addonIcon: {
         maxWidth: "50%",
@@ -120,23 +118,15 @@ const FacebookLogin = ({ onLoggedIn }) => {
                    onChange=${evt => setUser(evt.target.value)} onKeyDown=${onUserKeyDown} />
             <input type="string" value=${xs} placeholder="xs cookie" class=${classes.input}
                    onChange=${evt => setXS(evt.target.value)} ref=${xsRef} />
-            <button class=${classes.submit} type="submit" disabled=${!user || !xs}>
+            <${Button} type="submit" disabled=${!user || !xs}>
                 ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
-            </button>
+            </Button>
             <${Alert} message=${error} />
         </form>
     `
 }
 
-const useMainStyles = makeStyles(theme => ({
-    button: {
-        ...theme.button(),
-        width: "10rem",
-    },
-}))
-
 const FacebookBridge = () => {
-    const classes = useMainStyles()
     const [bridgeState, setBridgeState] = useState(null)
     const [error, setError] = useState(null)
 
@@ -170,7 +160,7 @@ const FacebookBridge = () => {
     return html`
         <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
         ${bridgeState.facebook
-        ? html`<button type="button" onClick=${logout} class=${classes.button}>Sign out</button>`
+        ? html`<${Button} onClick=${logout}>Sign out</Button>`
         : html`<${FacebookLogin} onLoggedIn=${onLoggedIn} />`}
         <${Alert} message=${error} />
     `

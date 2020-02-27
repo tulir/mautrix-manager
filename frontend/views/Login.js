@@ -19,6 +19,7 @@ import { html } from "../web_modules/htm/preact.js"
 import {
     resolveWellKnown, loginMatrix, requestOpenIDToken, requestIntegrationToken,
 } from "../lib/api/login.js"
+import Button from "./components/Button.js"
 import Spinner from "./components/Spinner.js"
 import { makeStyles } from "../lib/theme.js"
 import track, { checkTrackingEnabled } from "../lib/api/tracking.js"
@@ -96,9 +97,6 @@ const useStyles = makeStyles(theme => ({
     },
     password: {
         ...theme.input(),
-    },
-    submit: {
-        ...theme.button({ size: "thick" }),
     },
     error: {
         padding: "1rem",
@@ -240,10 +238,10 @@ const LoginView = ({ onLoggedIn }) => {
             <input type="password" placeholder="password" name="password" value=${password}
                    class="${classes.password} ${classes.input}" ref=${passwordRef}
                    onChange=${evt => setPassword(evt.target.value)} />
-            <button type="submit" class=${classes.submit} disabled=${disableSubmit}
-                    title=${disableSubmit && "Fill out the form before submitting"}>
+            <${Button} type="submit" disabled=${disableSubmit}
+                       title=${disableSubmit && "Fill out the form before submitting"}>
                  ${loading ? html`<${Spinner} size=30 />` : "Log in"}
-            </button>
+            </Button>
             ${error && html`<div class=${classes.error}>
                 ${error}
             </div>`}

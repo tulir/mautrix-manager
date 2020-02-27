@@ -20,6 +20,7 @@ import track from "../../lib/api/tracking.js"
 import * as api from "../../lib/api/telegram.js"
 import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
+import Button from "../components/Button.js"
 import Spinner from "../components/Spinner.js"
 
 const useStyles = makeStyles(theme => ({
@@ -35,12 +36,6 @@ const useStyles = makeStyles(theme => ({
     input: {
         ...theme.input(),
         width: "100%",
-    },
-    submit: {
-        ...theme.button(),
-    },
-    rightButton: {
-        ...theme.button({ variant: "outlined" }),
     },
     buttonGroup: {
         display: "flex",
@@ -95,13 +90,12 @@ const TelegramLogin = ({ onLoggedIn }) => {
             <input type="tel" value=${phone} placeholder="Phone number" class=${classes.input}
                    onChange=${evt => setPhone(evt.target.value)} />
             <div class=${classes.buttonGroup}>
-                <button class=${classes.submit} type="submit" disabled=${!phone}>
+                <${Button} type="submit" disabled=${!phone}>
                     ${loading ? html`<${Spinner} size=20 />` : "Request code"}
-                </button>
-                <button class=${classes.rightButton} type="button"
-                        onClick=${() => setStep("bot_token")}>
+                </Button>
+                <${Button} variant="outlined" onClick=${() => setStep("bot_token")}>
                     Use bot token
-                </button>
+                </Button>
             </div>
         `
     } else if (step === "bot_token") {
@@ -113,13 +107,12 @@ const TelegramLogin = ({ onLoggedIn }) => {
             <input type="text" value=${botToken} placeholder="Bot token" class=${classes.input}
                    onChange=${evt => setBotToken(evt.target.value)} />
             <div class=${classes.buttonGroup}>
-                <button class=${classes.submit} type="submit" disabled=${!botToken}>
+                <${Button} type="submit" disabled=${!botToken}>
                     ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
-                </button>
-                <button class=${classes.rightButton} type="button"
-                        onClick=${() => setStep("request_code")}>
+                </Button>
+                <${Button} variant="outlined" onClick=${() => setStep("request_code")}>
                     Use phone number
-                </button>
+                </Button>
             </div>
         `
     } else if (step === "send_code") {
@@ -127,9 +120,9 @@ const TelegramLogin = ({ onLoggedIn }) => {
             <p>Sign-in code sent. Please enter the code here.</p>
             <input type="number" value=${phoneCode} placeholder="Phone code" class=${classes.input}
                    onChange=${evt => setPhoneCode(evt.target.value)} />
-            <button class=${classes.submit} type="submit" disabled=${!phoneCode}>
+            <${Button} disabled=${!phoneCode}>
                 ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
-            </button>
+            </Button>
         `
     } else if (step === "send_password") {
         content = html`
@@ -139,9 +132,9 @@ const TelegramLogin = ({ onLoggedIn }) => {
             </p>
             <input type="password" value=${password} placeholder="Password" class=${classes.input}
                    onChange=${evt => setPassword(evt.target.value)} />
-            <button class=${classes.submit} type="submit" disabled=${!password}>
+            <${Button} disabled=${!password}>
                 ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
-            </button>
+            </Button>
         `
     }
 
@@ -162,15 +155,7 @@ const TelegramLogin = ({ onLoggedIn }) => {
     </form>`
 }
 
-const useMainStyles = makeStyles(theme => ({
-    button: {
-        ...theme.button(),
-        width: "10rem",
-    },
-}))
-
 const TelegramBridge = () => {
-    const classes = useMainStyles()
     const [bridgeState, setBridgeState] = useState(null)
     const [error, setError] = useState(null)
 
@@ -204,7 +189,7 @@ const TelegramBridge = () => {
     return html`
         <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
         ${bridgeState.telegram
-        ? html`<button type="button" onClick=${logout} class=${classes.button}>Sign out</button>`
+        ? html`<${Button} onClick=${logout} style="width: 10rem;">Sign out</Button>`
         : html`<${TelegramLogin} onLoggedIn=${onLoggedIn} />`}
         <${Alert} message=${error} />
     `
