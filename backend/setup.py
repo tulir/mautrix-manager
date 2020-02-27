@@ -2,6 +2,9 @@ import setuptools
 
 from mautrix_manager import __version__
 
+with open("requirements.txt", "r") as reqs:
+    install_requires = reqs.read().splitlines()
+
 try:
     long_desc = open("../README.md").read()
 except IOError:
@@ -21,14 +24,7 @@ setuptools.setup(
 
     packages=setuptools.find_packages(),
 
-    install_requires=[
-        "aiohttp>=3,<4",
-        "mautrix>=0.4,<0.5",
-        "ruamel.yaml>=0.15.90,<0.17",
-        "yarl>=1,<2",
-        "asyncpg>=0.20,<0.21",
-        "attrs>=18.1.0",
-    ],
+    install_requires=install_requires,
     python_requires="~=3.6",
 
     classifiers=[
