@@ -128,11 +128,11 @@ const WhatsAppBridge = () => {
     return html`
         <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
         ${bridgeState.whatsapp.has_session
-        ? html`<div class=${classes.buttons}>
+        ? html`
             <${Button} onClick=${call("logout", api.logout)}>Sign out</Button>
             <${Button} onClick=${call("reconnect", api.reconnect)}>Reconnect</Button>
             <${Button} onClick=${call("disconnect", api.disconnect)}>Disconnect</Button>
-        </div>`
+        `
         : html`<${WhatsAppLogin} onLoggedIn=${onLoggedIn} />`}
         <${Alert} message=${error} />
     `
