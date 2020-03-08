@@ -58,6 +58,7 @@ const nameMap = {
     "/whatsapp": "mautrix-whatsapp",
     "/slack": "mx-puppet-slack",
     "/twitter": "mx-puppet-twitter",
+    "/instagram": "mx-puppet-instagram",
 }
 
 const DockerControls = () => {

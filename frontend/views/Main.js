@@ -20,6 +20,7 @@ import { useRoute, Route, Link } from "../web_modules/wouter-preact.js"
 import { checkTrackingEnabled } from "../lib/api/tracking.js"
 import { makeStyles } from "../lib/theme.js"
 import { logout } from "../lib/api/login.js"
+import InstagramBridge from "./bridges/Instagram.js"
 import SlackBridge from "./bridges/Slack.js"
 import TelegramBridge from "./bridges/Telegram.js"
 import FacebookBridge from "./bridges/Facebook.js"
@@ -74,6 +75,10 @@ const NavButton = ({ href, icon, children, ...args }) => {
         </a>
     </Link>`
 }
+
+const BridgeButton = ({ bridge, children }) => NavButton({
+    href: `#/${bridge}`, icon: `res/logos/${bridge}.svg`, children,
+})
 
 const useStyles = makeStyles(theme => ({
     topbar: {
@@ -142,12 +147,13 @@ const Main = () => {
             </div>
             <nav class=${classes.nav}>
                 <${NavButton} href="#/" icon="res/home.svg">Home</NavButton>
-                <${NavButton} href="#/telegram" icon="res/logos/telegram.svg">Telegram</NavButton>
-                <${NavButton} href="#/facebook" icon="res/logos/facebook.svg">Facebook</NavButton>
-                <${NavButton} href="#/hangouts" icon="res/logos/hangouts.svg">Hangouts</NavButton>
-                <${NavButton} href="#/whatsapp" icon="res/logos/whatsapp.svg">WhatsApp</NavButton>
-                <${NavButton} href="#/slack" icon="res/logos/slack.svg">Slack</NavButton>
-                <${NavButton} href="#/twitter" icon="res/logos/twitter.svg">Twitter</NavButton>
+                <${BridgeButton} bridge="telegram">Telegram</BridgeButton>
+                <${BridgeButton} bridge="facebook">Facebook</BridgeButton>
+                <${BridgeButton} bridge="hangouts">Hangouts</BridgeButton>
+                <${BridgeButton} bridge="whatsapp">WhatsApp</BridgeButton>
+                <${BridgeButton} bridge="slack">Slack</BridgeButton>
+                <${BridgeButton} bridge="twitter">Twitter</BridgeButton>
+                <${BridgeButton} bridge="instagram">Instagram</BridgeButton>
             </nav>
         </header>
 
@@ -159,6 +165,7 @@ const Main = () => {
         <${Route} path="/whatsapp" component=${WhatsAppBridge} />
         <${Route} path="/slack" component=${SlackBridge} />
         <${Route} path="/twitter" component=${TwitterBridge} />
+        <${Route} path="/instagram" component=${InstagramBridge} />
     `
 }
 

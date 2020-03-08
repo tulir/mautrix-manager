@@ -42,7 +42,7 @@ bridges:
         url: http://localhost:29320/login
         secret: null
     mx-puppet-slack:
-        url: http://localhost:8434/_matrix/provision/v1
+        url: http://localhost:8432/_matrix/provision/v1
         secret: null
         # Slack API client ID, same as in the mx-puppet-slack config.
         client_id: null
