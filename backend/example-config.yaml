@@ -44,8 +44,11 @@ bridges:
     mx-puppet-slack:
         url: http://localhost:8434/_matrix/provision/v1
         secret: null
-        # Slack API client ID, same as mx-puppet-slack.
+        # Slack API client ID, same as in the mx-puppet-slack config.
         client_id: null
+    mx-puppet-twitter:
+        url: http://localhost:6000/_matrix/provision/v1
+        secret: null
     mx-puppet-instagram:
         url: http://localhost:8434/_matrix/provision/v1
         secret: null

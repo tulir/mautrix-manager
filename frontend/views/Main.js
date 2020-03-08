@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import { useEffect, useState } from "../web_modules/preact/hooks.js"
 import { html } from "../web_modules/htm/preact.js"
-import useRoute, { Route, Link } from "../web_modules/wouter-preact.js"
+import { useRoute, Route, Link } from "../web_modules/wouter-preact.js"
 
 import { checkTrackingEnabled } from "../lib/api/tracking.js"
 import { makeStyles } from "../lib/theme.js"
@@ -24,6 +24,7 @@ import SlackBridge from "./bridges/Slack.js"
 import TelegramBridge from "./bridges/Telegram.js"
 import FacebookBridge from "./bridges/Facebook.js"
 import HangoutsBridge from "./bridges/Hangouts.js"
+import TwitterBridge from "./bridges/Twitter.js"
 import WhatsAppBridge from "./bridges/WhatsApp.js"
 import Button from "./components/Button.js"
 import DockerControls from "./docker/Controls.js"
@@ -146,6 +147,7 @@ const Main = () => {
                 <${NavButton} href="#/hangouts" icon="res/logos/hangouts.svg">Hangouts</NavButton>
                 <${NavButton} href="#/whatsapp" icon="res/logos/whatsapp.svg">WhatsApp</NavButton>
                 <${NavButton} href="#/slack" icon="res/logos/slack.svg">Slack</NavButton>
+                <${NavButton} href="#/twitter" icon="res/logos/twitter.svg">Twitter</NavButton>
             </nav>
         </header>
 
@@ -156,6 +158,7 @@ const Main = () => {
         <${Route} path="/hangouts" component=${HangoutsBridge} />
         <${Route} path="/whatsapp" component=${WhatsAppBridge} />
         <${Route} path="/slack" component=${SlackBridge} />
+        <${Route} path="/twitter" component=${TwitterBridge} />
     `
 }
 

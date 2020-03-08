@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "../web_modules/preact/hooks.js
 
 import track from "./api/tracking.js"
 
-const parseQuery = str => Object.fromEntries(
+export const parseQuery = str => Object.fromEntries(
     str.split("&")
         .map(part => part.split("="))
         .map(([key, value = ""]) => [key, value]))
@@ -13,7 +13,7 @@ const setQuery = query => {
     const [start] = window.location.hash.split("?", 1)
     const str = new URLSearchParams(query).toString()
     if (str.length > 0) {
-        window.location.hash = `start?${str}`
+        window.location.hash = `${start}?${str}`
     } else {
         window.location.hash = start
     }

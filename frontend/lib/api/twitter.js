@@ -14,43 +14,38 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { tryFetch, apiPrefix, queryToURL } from "./tryGet.js"
+import { tryFetch, apiPrefix } from "./tryGet.js"
 
-const service = "Slack bridge"
-const prefix = `${apiPrefix}/mx-puppet-slack`
-let clientID = null
+const service = "Twitter bridge"
+const prefix = `${apiPrefix}/mx-puppet-twitter`
 
 export const status = () => tryFetch(`${prefix}/status`, {}, {
     service,
     requestType: "status",
 })
 
-export const initClientInfo = async () => {
-    if (!clientID) {
-        const resp = await tryFetch(prefix, {}, {
-            service,
-            requestType: "bridge status",
-        })
-        clientID = resp.client_id
-    }
-    return clientID
-}
-
-export const makeLoginURL = () => queryToURL("https://slack.com/oauth/authorize", {
-    // eslint-disable-next-line camelcase
-    client_id: clientID,
-    // eslint-disable-next-line camelcase
-    redirect_uri: window.location.href.replace(window.location.hash, "#/slack"),
-    scope: "client",
-    state: "slack-link",
-})
-
-export const link = code => tryFetch(`${prefix}/oauth/link`, {
+export const makeLoginURL = () => tryFetch(`${prefix}/oauth/request`, {
     method: "POST",
     body: JSON.stringify({
-        code,
         // eslint-disable-next-line camelcase
-        redirect_uri: window.location.href.replace(window.location.hash, "#/slack"),
+        oauth_callback: window.location.href.replace(window.location.hash, "#/twitter"),
+    }),
+    headers: {
+        "Content-Type": "application/json",
+    },
+}, {
+    service: "Twitter API",
+    requestType: "login request",
+})
+
+export const link = (token, secret, verifier) => tryFetch(`${prefix}/oauth/link`, {
+    method: "POST",
+    body: JSON.stringify({
+        /* eslint-disable camelcase */
+        oauth_token: token,
+        oauth_secret: secret,
+        oauth_verifier: verifier,
+        /* eslint-enable camelcase */
     }),
     headers: {
         "Content-Type": "application/json",
