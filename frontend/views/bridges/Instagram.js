@@ -84,7 +84,7 @@ const InstagramLogin = ({ onLoggedIn }) => {
                    onChange=${evt => setPassword(evt.target.value)} />
             <div class=${classes.buttonGroup}>
                 <${Button} type="submit" disabled=${!username || !password}>
-                    ${loading ? html`<${Spinner} size=20 />` : "Request code"}
+                    ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
                 </Button>
                 <${Button} variant="outlined" onClick=${() => setStep("/login/cookie")}>
                     Use cookie login
