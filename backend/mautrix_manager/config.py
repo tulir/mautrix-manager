@@ -51,6 +51,7 @@ class Config(BaseFileConfig):
             copy(f"bridges.{bridge}.secret")
 
         copy("bridges.mx-puppet-slack.client_id")
+        copy("bridges.mx-puppet-slack.custom_oauth_redirect")
 
         copy("permissions")
 

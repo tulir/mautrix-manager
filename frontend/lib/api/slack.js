@@ -19,6 +19,7 @@ import { tryFetch, apiPrefix, queryToURL } from "./tryGet.js"
 const service = "Slack bridge"
 const prefix = `${apiPrefix}/mx-puppet-slack`
 let clientID = null
+let customRedirectURI = null
 
 export const status = () => tryFetch(`${prefix}/status`, {}, {
     service,
@@ -32,6 +33,7 @@ export const initClientInfo = async () => {
             requestType: "bridge status",
         })
         clientID = resp.client_id
+        customRedirectURI = resp.custom_redirect_uri
     }
     return clientID
 }
@@ -40,7 +42,8 @@ export const makeLoginURL = () => queryToURL("https://slack.com/oauth/authorize"
     // eslint-disable-next-line camelcase
     client_id: clientID,
     // eslint-disable-next-line camelcase
-    redirect_uri: window.location.href.replace(window.location.hash, "#/slack"),
+    redirect_uri: customRedirectURI ||
+        window.location.href.replace(window.location.hash, "#/slack"),
     scope: "client",
     state: "slack-link",
 })
@@ -50,7 +53,8 @@ export const link = code => tryFetch(`${prefix}/oauth/link`, {
     body: JSON.stringify({
         code,
         // eslint-disable-next-line camelcase
-        redirect_uri: window.location.href.replace(window.location.hash, "#/slack"),
+        redirect_uri: customRedirectURI ||
+            window.location.href.replace(window.location.hash, "#/slack"),
     }),
     headers: {
         "Content-Type": "application/json",
