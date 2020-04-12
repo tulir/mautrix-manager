@@ -43,6 +43,9 @@ const SlackBridge = () => {
 
     useEffect(async () => {
         if (query.state === "slack-link") {
+            // Make sure the client info is initialized before calling api.link()
+            // This may result in two calls to the info endpoint, but whatever
+            await api.initClientInfo()
             track("Slack link callback")
             console.log("Linking", query.code)
             setLinking(true)
