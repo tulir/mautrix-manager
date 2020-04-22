@@ -97,6 +97,7 @@ const useStyles = makeStyles(theme => ({
     },
     nav: {
         display: "flex",
+        flexWrap: "wrap",
     },
 }), { name: "main" })
 
