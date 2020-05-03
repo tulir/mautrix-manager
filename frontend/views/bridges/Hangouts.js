@@ -24,7 +24,6 @@ import Button from "../components/Button.js"
 import Spinner from "../components/Spinner.js"
 
 const bridgeOpts = {
-    url: 'https://facebook.com',
     domain: 'accounts.google.com',
     cookies_keys: ['oauth_code'],
 }
@@ -138,7 +137,7 @@ const HangoutsLogin = ({ onLoggedIn, useDesktopLogin = false }) => {
         const onStartOAuthClick = () => {
             window.parent.postMessage({
                 type: 'start-oauth',
-                payload: bridgeOpts,
+                payload: { ...bridgeOpts, url: authURL },
             }, '*');
         };
 
