@@ -31,7 +31,6 @@ import Button from "./components/Button.js"
 import DockerControls from "./docker/Controls.js"
 import LoginView from "./Login.js"
 
-
 const useNavStyles = makeStyles(theme => ({
     anchor: {
         display: "inline-block",
@@ -105,7 +104,7 @@ const useStyles = makeStyles(theme => ({
 const Main = () => {
     const classes = useStyles()
     const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.accessToken))
-    const [useDesktopLogin, setUseDesktopLogin] = useState(false);
+    const [useDesktopLogin, setUseDesktopLogin] = useState(false)
 
     const handleExtension = () => {
         window.dispatchEvent(new CustomEvent("mautrix-cookie-monster-response"), {
@@ -140,7 +139,7 @@ const Main = () => {
         }
         window.addEventListener("message", fn)
         return () => window.removeEventListener("message", fn)
-    }, []);
+    }, [])
 
     const handleLogout = evt => {
         evt.preventDefault()
@@ -188,4 +187,3 @@ const Main = () => {
 }
 
 export default Main
-

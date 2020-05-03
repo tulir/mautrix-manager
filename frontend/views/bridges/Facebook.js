@@ -24,9 +24,9 @@ import Button from "../components/Button.js"
 import Spinner from "../components/Spinner.js"
 
 const bridgeOpts = {
-    url: 'https://facebook.com',
-    domain: 'facebook.com',
-    cookies_keys: ['xs', 'c_user'],
+    url: "https://facebook.com",
+    domain: "facebook.com",
+    cookies_keys: ["xs", "c_user"],
 }
 
 const useStyles = makeStyles(theme => ({
@@ -74,29 +74,29 @@ const DesktopLogin = ({ onLoggedIn }) => {
                 return
             }
 
-            const { domain, cookies } = evt.data.payload;
+            const { domain, cookies } = evt.data.payload
             if (domain !== bridgeOpts.domain) {
-                return;
+                return
             }
-            track("Facebook login");
+            track("Facebook login")
             setLoading(true)
             setError(null)
             api.login(cookies)
                 .then(() => onLoggedIn())
                 .catch(err => setError(err.message))
                 .finally(() => setLoading(false))
-            ;
+
         }
         window.addEventListener("message", fn)
         return () => window.removeEventListener("message", fn)
-    }, []);
+    }, [])
 
     const onStartOAuthClick = () => {
         window.parent.postMessage({
-            type: 'start-oauth',
+            type: "start-oauth",
             payload: bridgeOpts,
-        }, '*');
-    };
+        }, "*")
+    }
 
     return html`
         <div class=${classes.root}>
@@ -220,12 +220,11 @@ const FacebookBridge = ({ useDesktopLogin = false }) => {
         ? html`<${Button} onClick=${logout}>Sign out</Button>`
         : html`
             ${useDesktopLogin
-            ? html`<${DesktopLogin} onLoggedIn=${onLoggedIn} />`
-            : html`<${BrowserLogin} onLoggedIn=${onLoggedIn} />`}
+        ? html`<${DesktopLogin} onLoggedIn=${onLoggedIn} />`
+        : html`<${BrowserLogin} onLoggedIn=${onLoggedIn} />`}
         `}
         <${Alert} message=${error} />
     `
 }
 
 export default FacebookBridge
-

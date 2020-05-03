@@ -24,8 +24,8 @@ import Button from "../components/Button.js"
 import Spinner from "../components/Spinner.js"
 
 const bridgeOpts = {
-    domain: 'accounts.google.com',
-    cookies_keys: ['oauth_code'],
+    domain: "accounts.google.com",
+    cookies_keys: ["oauth_code"],
 }
 
 const useStyles = makeStyles(theme => ({
@@ -116,30 +116,30 @@ const HangoutsLogin = ({ onLoggedIn, useDesktopLogin = false }) => {
                     return
                 }
 
-                const { domain, cookies } = evt.data.payload;
+                const { domain, cookies } = evt.data.payload
                 if (domain !== bridgeOpts.domain) {
-                    return;
+                    return
                 }
-                track("Hangouts login");
+                track("Hangouts login")
                 setLoading(true)
                 setError(null)
-                const cookieName = bridgeOpts.cookies_keys[0];
-                setCookie(cookies[cookieName]);
+                const cookieName = bridgeOpts.cookies_keys[0]
+                setCookie(cookies[cookieName])
                 submit()
                     .catch(err => setError(err.message))
                     .finally(() => setLoading(false))
-                ;
+
             }
             window.addEventListener("message", fn)
             return () => window.removeEventListener("message", fn)
-        }, []);
+        }, [])
 
         const onStartOAuthClick = () => {
             window.parent.postMessage({
-                type: 'start-oauth',
+                type: "start-oauth",
                 payload: { ...bridgeOpts, url: authURL },
-            }, '*');
-        };
+            }, "*")
+        }
 
         return html`
             <div class=${classes.root}>
@@ -154,7 +154,7 @@ const HangoutsLogin = ({ onLoggedIn, useDesktopLogin = false }) => {
                 ` : html`<${Button} onClick=${call(start)}>Start</Button>`}
                 <${Alert} message=${error} />
             </div>
-        `;
+        `
     }
 
     return html`
@@ -221,4 +221,3 @@ const HangoutsBridge = ({ useDesktopLogin }) => {
 }
 
 export default HangoutsBridge
-
