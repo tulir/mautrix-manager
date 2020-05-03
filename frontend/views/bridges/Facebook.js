@@ -23,6 +23,12 @@ import Alert from "../components/Alert.js"
 import Button from "../components/Button.js"
 import Spinner from "../components/Spinner.js"
 
+const bridgeOpts = {
+    url: 'https://facebook.com',
+    domain: 'facebook.com',
+    cookies_keys: ['xs', 'c_user'],
+}
+
 const useStyles = makeStyles(theme => ({
     root: {
         display: "flex",
@@ -56,7 +62,57 @@ const manualInstructions = html`<ol>
     <li>Copy the values of both rows into the appropriate input fields below.</li>
 </ol>`
 
-const FacebookLogin = ({ onLoggedIn }) => {
+const DesktopLogin = ({ onLoggedIn }) => {
+    const classes = useStyles()
+    const [error, setError] = useState(null)
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        const fn = async evt => {
+            if (evt.data.type !== "finish-oauth") {
+                console.log("Unknown postMessage command:", evt.data)
+                return
+            }
+
+            const { domain, cookies } = evt.data.payload;
+            if (domain !== bridgeOpts.domain) {
+                return;
+            }
+            track("Facebook login");
+            setLoading(true)
+            setError(null)
+            api.login(cookies)
+                .then(() => onLoggedIn())
+                .catch(err => setError(err.message))
+                .finally(() => setLoading(false))
+            ;
+        }
+        window.addEventListener("message", fn)
+        return () => window.removeEventListener("message", fn)
+    }, []);
+
+    const onStartOAuthClick = () => {
+        window.parent.postMessage({
+            type: 'start-oauth',
+            payload: bridgeOpts,
+        }, '*');
+    };
+
+    return html`
+        <div class=${classes.root}>
+            <h2>Sign into Facebook</h2>
+            <p>
+                To start using the Matrix-Facebook Messenger bridge, please sign in with your Facebook account.
+            </p>
+            <${Button} onClick=${onStartOAuthClick}>
+                ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
+            </Button>
+            <${Alert} message=${error} />
+        </div>
+    `
+}
+
+const BrowserLogin = ({ onLoggedIn }) => {
     const classes = useStyles()
     const [loading, setLoading] = useState(false)
     const [xs, setXS] = useState("")
@@ -88,6 +144,7 @@ const FacebookLogin = ({ onLoggedIn }) => {
             .catch(err => setError(err.message))
             .finally(() => setLoading(false))
     }
+
     return html`
         <form class=${classes.root} onSubmit=${onSubmit}>
             <h2>Sign into Facebook</h2>
@@ -126,7 +183,7 @@ const FacebookLogin = ({ onLoggedIn }) => {
     `
 }
 
-const FacebookBridge = () => {
+const FacebookBridge = ({ useDesktopLogin = false }) => {
     const [bridgeState, setBridgeState] = useState(null)
     const [error, setError] = useState(null)
 
@@ -161,9 +218,14 @@ const FacebookBridge = () => {
         <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
         ${bridgeState.facebook
         ? html`<${Button} onClick=${logout}>Sign out</Button>`
-        : html`<${FacebookLogin} onLoggedIn=${onLoggedIn} />`}
+        : html`
+            ${useDesktopLogin
+            ? html`<${DesktopLogin} onLoggedIn=${onLoggedIn} />`
+            : html`<${BrowserLogin} onLoggedIn=${onLoggedIn} />`}
+        `}
         <${Alert} message=${error} />
     `
 }
 
 export default FacebookBridge
+
