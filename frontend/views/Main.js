@@ -31,6 +31,7 @@ import Button from "./components/Button.js"
 import DockerControls from "./docker/Controls.js"
 import LoginView from "./Login.js"
 
+
 const useNavStyles = makeStyles(theme => ({
     anchor: {
         display: "inline-block",
@@ -104,6 +105,7 @@ const useStyles = makeStyles(theme => ({
 const Main = () => {
     const classes = useStyles()
     const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.accessToken))
+    const [useDesktopLogin, setUseDesktopLogin] = useState(false);
 
     const handleExtension = () => {
         window.dispatchEvent(new CustomEvent("mautrix-cookie-monster-response"), {
@@ -128,6 +130,17 @@ const Main = () => {
             onLoggedIn=${() => setLoggedIn(Boolean(localStorage.accessToken))}
         />`
     }
+
+    useEffect(() => {
+        const fn = async evt => {
+            if (evt.data.type !== "use-desktop-login") {
+                return
+            }
+            setUseDesktopLogin(true)
+        }
+        window.addEventListener("message", fn)
+        return () => window.removeEventListener("message", fn)
+    }, []);
 
     const handleLogout = evt => {
         evt.preventDefault()
@@ -161,8 +174,12 @@ const Main = () => {
         <${DockerControls} />
         <${Route} exact path="/">This is the home</Route>
         <${Route} path="/telegram" component=${TelegramBridge} />
-        <${Route} path="/facebook" component=${FacebookBridge} />
-        <${Route} path="/hangouts" component=${HangoutsBridge} />
+        <${Route} path="/facebook">
+            <${FacebookBridge} useDesktopLogin=${useDesktopLogin} />
+        </Route>
+        <${Route} path="/hangouts">
+            <${HangoutsBridge} useDesktopLogin=${useDesktopLogin} />
+        </Route>
         <${Route} path="/whatsapp" component=${WhatsAppBridge} />
         <${Route} path="/slack" component=${SlackBridge} />
         <${Route} path="/twitter" component=${TwitterBridge} />
@@ -171,3 +188,4 @@ const Main = () => {
 }
 
 export default Main
+

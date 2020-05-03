@@ -120,7 +120,7 @@ const TelegramLogin = ({ onLoggedIn }) => {
             <p>Sign-in code sent. Please enter the code here.</p>
             <input type="number" value=${phoneCode} placeholder="Phone code" class=${classes.input}
                    onChange=${evt => setPhoneCode(evt.target.value)} />
-            <${Button} disabled=${!phoneCode}>
+            <${Button} type="submit" disabled=${!phoneCode}>
                 ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
             </Button>
         `
@@ -132,7 +132,7 @@ const TelegramLogin = ({ onLoggedIn }) => {
             </p>
             <input type="password" value=${password} placeholder="Password" class=${classes.input}
                    onChange=${evt => setPassword(evt.target.value)} />
-            <${Button} disabled=${!password}>
+            <${Button} type="submit" disabled=${!password}>
                 ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
             </Button>
         `
@@ -196,3 +196,4 @@ const TelegramBridge = () => {
 }
 
 export default TelegramBridge
+

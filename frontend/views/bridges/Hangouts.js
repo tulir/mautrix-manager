@@ -23,6 +23,11 @@ import Alert from "../components/Alert.js"
 import Button from "../components/Button.js"
 import Spinner from "../components/Spinner.js"
 
+const bridgeOpts = {
+    domain: 'accounts.google.com',
+    cookies_keys: ['oauth_code'],
+}
+
 const useStyles = makeStyles(theme => ({
     root: {
         display: "flex",
@@ -60,7 +65,7 @@ const LoginInstructions = ({ url }) => html`<ol>
     </li>
 </ol>`
 
-const HangoutsLogin = ({ onLoggedIn }) => {
+const HangoutsLogin = ({ onLoggedIn, useDesktopLogin = false }) => {
     const classes = useStyles()
     const [loading, setLoading] = useState(false)
     const [authURL, setAuthURL] = useState(null)
@@ -102,6 +107,56 @@ const HangoutsLogin = ({ onLoggedIn }) => {
             .catch(err => setError(err.message))
             .finally(() => setLoading(false))
     }
+
+    if (useDesktopLogin) {
+        useEffect(() => {
+            const fn = async evt => {
+                if (evt.data.type !== "finish-oauth") {
+                    console.log("Unknown postMessage command:", evt.data)
+                    return
+                }
+
+                const { domain, cookies } = evt.data.payload;
+                if (domain !== bridgeOpts.domain) {
+                    return;
+                }
+                track("Hangouts login");
+                setLoading(true)
+                setError(null)
+                const cookieName = bridgeOpts.cookies_keys[0];
+                setCookie(cookies[cookieName]);
+                submit()
+                    .catch(err => setError(err.message))
+                    .finally(() => setLoading(false))
+                ;
+            }
+            window.addEventListener("message", fn)
+            return () => window.removeEventListener("message", fn)
+        }, []);
+
+        const onStartOAuthClick = () => {
+            window.parent.postMessage({
+                type: 'start-oauth',
+                payload: { ...bridgeOpts, url: authURL },
+            }, '*');
+        };
+
+        return html`
+            <div class=${classes.root}>
+                <h2>Sign into Hangouts</h2>
+                <p>
+                To start using the Matrix-Hangouts bridge, please sign in with your Google account.
+                </p>
+                ${authURL ? html`
+                    <${Button} onClick=${onStartOAuthClick}>
+                        ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
+                    </Button>
+                ` : html`<${Button} onClick=${call(start)}>Start</Button>`}
+                <${Alert} message=${error} />
+            </div>
+        `;
+    }
+
     return html`
         <form class=${classes.root} onSubmit=${call(submit)}>
             <h2>Sign into Hangouts</h2>
@@ -125,7 +180,7 @@ const HangoutsLogin = ({ onLoggedIn }) => {
     `
 }
 
-const HangoutsBridge = () => {
+const HangoutsBridge = ({ useDesktopLogin }) => {
     const [bridgeState, setBridgeState] = useState(null)
     const [error, setError] = useState(null)
 
@@ -160,9 +215,10 @@ const HangoutsBridge = () => {
         <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
         ${bridgeState.hangouts
         ? html`<${Button} onClick=${logout}>Sign out</Button>`
-        : html`<${HangoutsLogin} onLoggedIn=${onLoggedIn} />`}
+        : html`<${HangoutsLogin} onLoggedIn=${onLoggedIn} useDesktopLogin=${useDesktopLogin} />`}
         <${Alert} message=${error} />
     `
 }
 
 export default HangoutsBridge
+
