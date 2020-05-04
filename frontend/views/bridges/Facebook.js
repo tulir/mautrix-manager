@@ -81,11 +81,15 @@ const DesktopLogin = ({ onLoggedIn }) => {
             track("Facebook login")
             setLoading(true)
             setError(null)
-            api.login(cookies)
-                .then(() => onLoggedIn())
-                .catch(err => setError(err.message))
-                .finally(() => setLoading(false))
-
+            try {
+                await api.login(cookies)
+                await onLoggedIn()
+                window.open(bridgeOpts.url)
+            } catch (err) {
+                setError(err.message)
+            } finally {
+                setLoading(false)
+            }
         }
         window.addEventListener("message", fn)
         return () => window.removeEventListener("message", fn)
