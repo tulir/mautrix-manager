@@ -121,14 +121,19 @@ const HangoutsLogin = ({ onLoggedIn, useDesktopLogin = false }) => {
                     return
                 }
                 track("Hangouts login")
-                setLoading(true)
-                setError(null)
-                const cookieName = bridgeOpts.cookies_keys[0]
-                setCookie(cookies[cookieName])
-                submit()
-                    .catch(err => setError(err.message))
-                    .finally(() => setLoading(false))
-
+                try {
+                    setLoading(true)
+                    setError(null)
+                    const cookieName = bridgeOpts.cookies_keys[0]
+                    // setCookie is async and does not have callback, so we call request directly
+                    await handle(await api.loginStep("authorization", {
+                        authorization: cookies[cookieName],
+                    }))
+                } catch (err) {
+                    setError(err.message)
+                } finally {
+                    setLoading(false)
+                }
             }
             window.addEventListener("message", fn)
             return () => window.removeEventListener("message", fn)
