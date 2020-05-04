@@ -124,12 +124,6 @@ const Main = () => {
         return () => window.removeEventListener("mautrix-cookie-monster-appeared", handleExtension)
     }, [loggedIn])
 
-    if (!loggedIn) {
-        return html`<${LoginView}
-            onLoggedIn=${() => setLoggedIn(Boolean(localStorage.accessToken))}
-        />`
-    }
-
     useEffect(() => {
         const fn = async evt => {
             if (evt.data.type !== "use-desktop-login") {
@@ -140,6 +134,12 @@ const Main = () => {
         window.addEventListener("message", fn)
         return () => window.removeEventListener("message", fn)
     }, [])
+
+    if (!loggedIn) {
+        return html`<${LoginView}
+            onLoggedIn=${() => setLoggedIn(Boolean(localStorage.accessToken))}
+        />`
+    }
 
     const handleLogout = evt => {
         evt.preventDefault()
