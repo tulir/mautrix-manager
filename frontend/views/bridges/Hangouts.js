@@ -95,9 +95,11 @@ const HangoutsLogin = ({ onLoggedIn, useDesktopLogin = false }) => {
         await handle(await api.loginStart(true))
     }
 
-    const submit = async () => await handle(await api.loginStep("authorization", {
-        authorization: cookie,
+    const tryLogin = async (value) => await handle(await api.loginStep("authorization", {
+        authorization: value,
     }))
+
+    const submit = async () => await tryLogin(cookie)
 
     const call = method => evt => {
         evt.preventDefault()
@@ -125,10 +127,7 @@ const HangoutsLogin = ({ onLoggedIn, useDesktopLogin = false }) => {
                     setLoading(true)
                     setError(null)
                     const cookieName = bridgeOpts.cookies_keys[0]
-                    // setCookie is async and does not have callback, so we call request directly
-                    await handle(await api.loginStep("authorization", {
-                        authorization: cookies[cookieName],
-                    }))
+                    await tryLogin(cookies[cookieName])
                 } catch (err) {
                     setError(err.message)
                 } finally {
