@@ -24,9 +24,9 @@ const loginError = document.getElementById("login-error")
 
 const bridgeType = {
 	"net.maunium.facebook": {
-		url: "https://facebook.com",
+		url: "https://messenger.com",
 		name: "Facebook Messenger",
-		urlPrefix: "https://www.facebook.com/",
+		urlPrefix: "https://www.messenger.com/",
 		cookies: ["xs", "c_user"],
 	},
 	"net.maunium.hangouts": {

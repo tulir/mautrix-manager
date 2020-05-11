@@ -24,8 +24,8 @@ import Button from "../components/Button.js"
 import Spinner from "../components/Spinner.js"
 
 const bridgeOpts = {
-    url: "https://facebook.com",
-    domain: "facebook.com",
+    url: "https://messenger.com",
+    domain: "messenger.com",
     cookies_keys: ["xs", "c_user"],
 }
 
@@ -51,13 +51,13 @@ const useStyles = makeStyles(theme => ({
 }), { name: "facebook" })
 
 const manualInstructions = html`<ol>
-    <li>Open <a href="https://facebook.com">facebook.com</a> in a new tab and log in normally.</li>
+    <li>Open <a href="https://messenger.com">messenger.com</a> in a new tab and log in normally.</li>
     <li>
       While in Facebook tab, open browser developer tools: <kbd>F12</kbd> on Windows/Linux
       or <kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>I</kbd> on macOS.
     </li>
     <li>Select the "Application" (Chrome) or "Storage" (Firefox) tab.</li>
-    <li>In the sidebar, expand "Cookies" and select <code>https://www.facebook.com</code>.</li>
+    <li>In the sidebar, expand "Cookies" and select <code>https://www.messenger.com</code>.</li>
     <li>In the cookie list, find the <code>c_user</code> and <code>xs</code> rows.</li>
     <li>Copy the values of both rows into the appropriate input fields below.</li>
 </ol>`

@@ -15,7 +15,7 @@
     }
   },
   "permissions": [
-    "*://*.facebook.com/*",
+    "*://*.messenger.com/*",
     "*://accounts.google.com/*",
     "cookies",
     "activeTab"
