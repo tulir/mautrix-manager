@@ -101,7 +101,7 @@ const TwitterBridge = () => {
     }
 
     return html`
-        <${Button} onClick=${link}>New link</Button>
+        <${Button} onClick=${link}>Set up Twitter connection</Button>
         <ul>
             ${bridgeState.puppets.map(puppet => html`
                 <li>

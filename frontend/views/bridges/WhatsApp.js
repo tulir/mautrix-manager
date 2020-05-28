@@ -38,6 +38,14 @@ const useStyles = makeStyles({
         display: "flex",
         justifyContent: "space-around",
     },
+    buttonGroup: {
+        "& > button": {
+            padding: "0 8px"
+        },
+        "& > button:not(:first-of-type)": {
+            marginLeft: "8px",
+        },
+    },
 }, { name: "whatsapp" })
 
 // eslint-disable-next-line max-len
@@ -97,6 +105,7 @@ const WhatsAppLogin = ({ onLoggedIn }) => {
 const WhatsAppBridge = () => {
     const [bridgeState, setBridgeState] = useState(null)
     const [error, setError] = useState(null)
+    const classes = useStyles()
 
     useEffect(async () => {
         try {
@@ -129,9 +138,11 @@ const WhatsAppBridge = () => {
         <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
         ${bridgeState.whatsapp.has_session
         ? html`
-            <${Button} onClick=${call("logout", api.logout)}>Sign out</Button>
-            <${Button} onClick=${call("reconnect", api.reconnect)}>Reconnect</Button>
-            <${Button} onClick=${call("disconnect", api.disconnect)}>Disconnect</Button>
+            <div class=${classes.buttonGroup}>
+                <${Button} onClick=${call("logout", api.logout)}>Sign out</Button>
+                <${Button} onClick=${call("reconnect", api.reconnect)}>Reconnect</Button>
+                <${Button} onClick=${call("disconnect", api.disconnect)}>Disconnect</Button>
+            </div>
         `
         : html`<${WhatsAppLogin} onLoggedIn=${onLoggedIn} />`}
         <${Alert} message=${error} />

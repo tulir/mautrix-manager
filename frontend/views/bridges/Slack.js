@@ -79,7 +79,7 @@ const SlackBridge = () => {
 
     return html`
         <a href=${api.makeLoginURL()} onClick=${() => track("Slack link")} target="_blank">
-            New link
+            Set up Slack connection
         </a>
         <ul>
             ${bridgeState.puppets.map(puppet => html`

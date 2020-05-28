@@ -151,13 +151,13 @@ const Main = () => {
 
     return html`
         <header class=${classes.topbar}>
-            <div class=${classes.loginInfo}>
+            ${!useDesktopLogin && html`<div class=${classes.loginInfo}>
                 <span>Logged in as ${localStorage.mxUserID}</span>
                 <${NavButton} onClick=${handleLogout} icon="res/logout.svg"
                               style="border-radius: 0 0 0 .25rem;">
                     Log out
                 </NavButton>
-            </div>
+            </div>`}
             <nav class=${classes.nav}>
                 <${NavButton} href="#/" icon="res/home.svg">Home</NavButton>
                 <${BridgeButton} bridge="telegram">Telegram</BridgeButton>
