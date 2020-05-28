@@ -182,7 +182,10 @@ const Main = () => {
         <${Route} path="/slack" component=${SlackBridge} />
         <${Route} path="/twitter" component=${TwitterBridge} />
         <${Route} path="/instagram" component=${InstagramBridge} />
-        <${DockerControls} />
+        <details>
+            <summary>Docker controls</summary>
+            <${DockerControls} />
+        </details>
     `
 }
 
