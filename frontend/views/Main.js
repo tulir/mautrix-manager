@@ -84,6 +84,7 @@ const useStyles = makeStyles(theme => ({
     topbar: {
         backgroundColor: theme.color.primary,
         boxShadow: "0 0 .3em .3em #9A9A9B",
+        marginBottom: "1rem",
     },
     loginInfo: {
         display: "flex",
@@ -169,7 +170,6 @@ const Main = () => {
             </nav>
         </header>
 
-        <${DockerControls} />
         <${Route} exact path="/">Use the navigation bar above to view bridge settings</Route>
         <${Route} path="/telegram" component=${TelegramBridge} />
         <${Route} path="/facebook">
@@ -182,6 +182,7 @@ const Main = () => {
         <${Route} path="/slack" component=${SlackBridge} />
         <${Route} path="/twitter" component=${TwitterBridge} />
         <${Route} path="/instagram" component=${InstagramBridge} />
+        <${DockerControls} />
     `
 }
 
