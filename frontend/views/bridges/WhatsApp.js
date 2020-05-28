@@ -135,9 +135,9 @@ const WhatsAppBridge = () => {
     const onLoggedIn = async () => setBridgeState(await api.ping())
 
     return html`
-        <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
         ${bridgeState.whatsapp.has_session
         ? html`
+            Signed in as +${bridgeState.whatsapp.jid.replace("@s.whatsapp.net", "")}.
             <div class=${classes.buttonGroup}>
                 <${Button} onClick=${call("logout", api.logout)}>Sign out</Button>
                 <${Button} onClick=${call("reconnect", api.reconnect)}>Reconnect</Button>
@@ -146,6 +146,10 @@ const WhatsAppBridge = () => {
         `
         : html`<${WhatsAppLogin} onLoggedIn=${onLoggedIn} />`}
         <${Alert} message=${error} />
+        <details>
+            <summary>Internal bridge state</summary>
+            <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
+        </details>
     `
 }
 

@@ -187,11 +187,16 @@ const TelegramBridge = () => {
     const onLoggedIn = async () => setBridgeState(await api.getMe())
 
     return html`
-        <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
-        ${bridgeState.telegram
-        ? html`<${Button} onClick=${logout} style="width: 10rem;">Sign out</Button>`
-        : html`<${TelegramLogin} onLoggedIn=${onLoggedIn} />`}
+        ${bridgeState.telegram ? html`
+            Signed in as ${bridgeState.telegram.first_name} ${bridgeState.telegram.last_name}
+            ${bridgeState.telegram.username && ` (@${bridgeState.telegram.username})`}
+            <${Button} onClick=${logout} style="display: block; width: 10rem;">Sign out</Button>
+        ` : html`<${TelegramLogin} onLoggedIn=${onLoggedIn} />`}
         <${Alert} message=${error} />
+        <details>
+            <summary>Internal bridge state</summary>
+            <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
+        </details>
     `
 }
 

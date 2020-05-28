@@ -216,11 +216,15 @@ const HangoutsBridge = ({ useDesktopLogin }) => {
     const onLoggedIn = async () => setBridgeState(await api.whoami())
 
     return html`
-        <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
-        ${bridgeState.hangouts
-        ? html`<${Button} onClick=${logout}>Sign out</Button>`
-        : html`<${HangoutsLogin} onLoggedIn=${onLoggedIn} useDesktopLogin=${useDesktopLogin} />`}
+        ${bridgeState.hangouts ? html`
+            Signed in as ${bridgeState.hangouts.name}
+            <${Button} onClick=${logout} style="display: block; width: 10rem;">Sign out</Button>
+        ` : html`<${HangoutsLogin} onLoggedIn=${onLoggedIn} useDesktopLogin=${useDesktopLogin} />`}
         <${Alert} message=${error} />
+        <details>
+            <summary>Internal bridge state</summary>
+            <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
+        </details>
     `
 }
 

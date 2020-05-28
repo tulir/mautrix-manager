@@ -219,15 +219,21 @@ const FacebookBridge = ({ useDesktopLogin = false }) => {
     const onLoggedIn = async () => setBridgeState(await api.whoami())
 
     return html`
-        <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
-        ${bridgeState.facebook
-        ? html`<${Button} onClick=${logout}>Sign out</Button>`
-        : html`
-            ${useDesktopLogin
-        ? html`<${DesktopLogin} onLoggedIn=${onLoggedIn} />`
-        : html`<${BrowserLogin} onLoggedIn=${onLoggedIn} />`}
+        ${bridgeState.facebook ? html`
+            Signed in as ${bridgeState.facebook.name}
+            <${Button} onClick=${logout} style="display: block; width: 10rem;">Sign out</Button>
+        ` : html`
+            ${useDesktopLogin ? html`
+                <${DesktopLogin} onLoggedIn=${onLoggedIn} />
+            ` : html`
+                <${BrowserLogin} onLoggedIn=${onLoggedIn} />
+            `}
         `}
         <${Alert} message=${error} />
+        <details>
+            <summary>Internal bridge state</summary>
+            <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
+        </details>
     `
 }
 
