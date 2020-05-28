@@ -159,7 +159,6 @@ const Main = () => {
                 </NavButton>
             </div>`}
             <nav class=${classes.nav}>
-                <${NavButton} href="#/" icon="res/home.svg">Home</NavButton>
                 <${BridgeButton} bridge="telegram">Telegram</BridgeButton>
                 <${BridgeButton} bridge="facebook">Facebook</BridgeButton>
                 <${BridgeButton} bridge="hangouts">Hangouts</BridgeButton>
@@ -171,7 +170,7 @@ const Main = () => {
         </header>
 
         <${DockerControls} />
-        <${Route} exact path="/">This is the home</Route>
+        <${Route} exact path="/">Use the navigation bar above to view bridge settings</Route>
         <${Route} path="/telegram" component=${TelegramBridge} />
         <${Route} path="/facebook">
             <${FacebookBridge} useDesktopLogin=${useDesktopLogin} />
