@@ -80,7 +80,7 @@ class _ErrorMeta:
 
     @property
     def bridge_disabled(self) -> web.HTTPException:
-        return web.HTTPNotImplemented(**self._make_error("NET_MAUNIUM_BRIDGE_DISABLED",
+        return web.HTTPNotImplemented(**self._make_error("NET.MAUNIUM.BRIDGE_DISABLED",
                                                          "This bridge is disabled in the manager"))
 
     @property
