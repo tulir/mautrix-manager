@@ -19,14 +19,16 @@ from ..config import Config
 from .initable import init as init_all
 from .auth import routes as auth_routes, token_middleware, init as auth_init
 from . import (docker_proxy, generic_proxy, telegram_proxy, facebook_proxy, hangouts_proxy,
-               whatsapp_proxy, slack_proxy, twitter_proxy, instagram_proxy, tracking)
+               whatsapp_proxy, slack_proxy, twitter_proxy, instagram_proxy, tracking,
+               slack_link)
 
 integrations_app = web.Application()
 integrations_app.add_routes(auth_routes)
 
 api_app = web.Application(middlewares=[token_middleware])
+ui_app = web.Application()
 
 
 def init(config: Config) -> None:
     auth_init(config)
-    init_all(config, api_app)
+    init_all(config, api_app, ui_app)

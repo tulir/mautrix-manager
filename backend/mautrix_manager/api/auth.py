@@ -66,10 +66,7 @@ async def get_token(request: web.Request) -> Token:
         try:
             auth = request.query["access_token"]
         except KeyError:
-            try:
-                auth = request.cookies["mautrix-manager-token"]
-            except KeyError:
-                raise Error.missing_auth_header
+            raise Error.missing_auth_header
     token = await Token.get(auth)
     if not token:
         raise Error.invalid_auth_token
@@ -80,9 +77,7 @@ async def get_token(request: web.Request) -> Token:
 async def token_middleware(request: web.Request, handler: Handler) -> web.Response:
     token = await get_token(request)
     request["token"] = token
-    resp = await handler(request)
-    resp.set_cookie("mautrix-manager-token", token.secret, secure=True, httponly=True)
-    return resp
+    return await handler(request)
 
 
 @routes.get("/account")

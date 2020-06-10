@@ -16,7 +16,7 @@
 from pkg_resources import resource_filename
 from aiohttp import web
 
-from .api import api_app, integrations_app, init as init_api
+from .api import api_app, ui_app, integrations_app, init as init_api
 from .static import StaticResource
 from .config import Config
 
@@ -30,6 +30,7 @@ def init(config: Config) -> None:
 
     app.add_subapp("/_matrix/integrations/v1", integrations_app)
     app.add_subapp("/api", api_app)
+    app.add_subapp("/ui", ui_app)
 
     resource_path = (config["server.override_resource_path"]
                      or resource_filename("mautrix_manager", "frontend"))
