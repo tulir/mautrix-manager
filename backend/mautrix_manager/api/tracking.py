@@ -24,7 +24,7 @@ routes = web.RouteTableDef()
 cors_headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "OPTIONS, GET, POST",
-    "Access-Control-Allow-Headers": "Authorization",
+    "Access-Control-Allow-Headers": "Authorization, Content-Type",
 }
 
 

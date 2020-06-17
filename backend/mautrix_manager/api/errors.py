@@ -34,7 +34,7 @@ class _ErrorMeta:
             "headers": {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "OPTIONS, GET, POST, PUT, DELETE, HEAD",
-                "Access-Control-Allow-Headers": "Authorization",
+                "Access-Control-Allow-Headers": "Authorization, Content-Type",
             }
         }
 
