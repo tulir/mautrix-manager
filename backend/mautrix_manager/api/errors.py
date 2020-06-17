@@ -31,6 +31,11 @@ class _ErrorMeta:
                 "errcode": errcode,
             }),
             "content_type": "application/json",
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS, GET, POST, PUT, DELETE, HEAD",
+                "Access-Control-Allow-Headers": "Authorization",
+            }
         }
 
     @property

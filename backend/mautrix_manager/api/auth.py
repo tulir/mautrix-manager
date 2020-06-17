@@ -18,7 +18,7 @@ import json
 
 from mautrix.client import Client
 from mautrix.types import UserID
-from aiohttp import web, ClientSession, ClientError
+from aiohttp import web, hdrs, ClientSession, ClientError
 from yarl import URL
 
 from ..database import Token
@@ -80,10 +80,17 @@ async def token_middleware(request: web.Request, handler: Handler) -> web.Respon
     return await handler(request)
 
 
+account_cors_headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "OPTIONS, GET, POST",
+    "Access-Control-Allow-Headers": "Authorization",
+}
+
+
 @routes.get("/account")
 async def get_auth(request: web.Request) -> web.Response:
     token = await get_token(request)
-    return web.json_response({"user_id": token.user_id})
+    return web.json_response({"user_id": token.user_id}, headers=account_cors_headers)
 
 
 async def check_openid_token(token: str) -> UserID:
@@ -91,6 +98,13 @@ async def check_openid_token(token: str) -> UserID:
         async with sess.get(userinfo_url.with_query({"access_token": token})) as resp:
             data: OpenIDResponse = await resp.json()
             return UserID(data["sub"])
+
+
+@routes.route(hdrs.METH_OPTIONS, "/account/register")
+@routes.route(hdrs.METH_OPTIONS, "/account/logout")
+@routes.route(hdrs.METH_OPTIONS, "/account")
+async def cors_token(_: web.Request) -> web.Response:
+    return web.Response(status=200, headers=account_cors_headers)
 
 
 @routes.post("/account/register")
@@ -120,14 +134,14 @@ async def exchange_token(request: web.Request) -> web.Response:
         "permissions": {
             "docker": permissions.admin,
         },
-    })
+    }, headers=account_cors_headers)
 
 
 @routes.post("/account/logout")
 async def logout(request: web.Request) -> web.Response:
     token = await get_token(request)
     await token.delete()
-    return web.json_response({}, status=204)
+    return web.json_response({}, status=204, headers=account_cors_headers)
 
 
 def init(cfg: Config) -> None:
