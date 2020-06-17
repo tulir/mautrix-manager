@@ -75,6 +75,8 @@ async def get_token(request: web.Request) -> Token:
 
 @web.middleware
 async def token_middleware(request: web.Request, handler: Handler) -> web.Response:
+    if request.method == hdrs.METH_OPTIONS:
+        return await handler(request)
     token = await get_token(request)
     request["token"] = token
     return await handler(request)
