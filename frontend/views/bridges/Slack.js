@@ -19,14 +19,14 @@ import { html } from "../../web_modules/htm/preact.js"
 import track from "../../lib/api/tracking.js"
 import { useQuery } from "../../lib/useHashLocation.js"
 import * as api from "../../lib/api/slack.js"
-import { makeStyles } from "../../lib/theme.js"
+// import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
 import Spinner from "../components/Spinner.js"
 
-const useStyles = makeStyles(theme => ({}), { name: "slack" })
+// const useStyles = makeStyles(theme => ({}), { name: "slack" })
 
 const SlackBridge = () => {
-    const classes = useStyles()
+    // const classes = useStyles()
     const [bridgeState, setBridgeState] = useState(null)
     const [linking, setLinking] = useState(false)
     const [error, setError] = useState(null)

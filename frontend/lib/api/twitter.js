@@ -18,17 +18,29 @@ import { tryFetch, apiPrefix } from "./tryGet.js"
 
 const service = "Twitter bridge"
 const prefix = `${apiPrefix}/mx-puppet-twitter`
+let customRedirectURI = null
 
 export const status = () => tryFetch(`${prefix}/status`, {}, {
     service,
     requestType: "status",
 })
 
+export const initClientInfo = async () => {
+    if (!customRedirectURI) {
+        const resp = await tryFetch(prefix, {}, {
+            service,
+            requestType: "bridge status",
+        })
+        customRedirectURI = resp.custom_redirect_uri
+    }
+}
+
 export const makeLoginURL = () => tryFetch(`${prefix}/oauth/request`, {
     method: "POST",
     body: JSON.stringify({
         // eslint-disable-next-line camelcase
-        oauth_callback: window.location.href.replace(window.location.hash, "#/twitter"),
+        oauth_callback: customRedirectURI ||
+            window.location.href.replace(window.location.hash, "#/twitter"),
     }),
     headers: {
         "Content-Type": "application/json",

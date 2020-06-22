@@ -17,36 +17,38 @@ import { useEffect, useState } from "../../web_modules/preact/hooks.js"
 import { html } from "../../web_modules/htm/preact.js"
 
 import track from "../../lib/api/tracking.js"
-import { parseQuery } from "../../lib/useHashLocation.js"
+import { parseQuery, useQuery } from "../../lib/useHashLocation.js"
 import * as api from "../../lib/api/twitter.js"
-import { makeStyles } from "../../lib/theme.js"
+// import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
 import Button from "../components/Button.js"
 import Spinner from "../components/Spinner.js"
 
-const useStyles = makeStyles(theme => ({}), { name: "twitter" })
+// const useStyles = makeStyles(theme => ({}), { name: "twitter" })
 
 const TwitterBridge = () => {
-    const classes = useStyles()
+    // const classes = useStyles()
     const [bridgeState, setBridgeState] = useState(null)
     const [linking, setLinking] = useState(false)
     const [error, setError] = useState(null)
+    const [hashQuery] = useQuery()
 
     useEffect(async () => {
         try {
+            await api.initClientInfo()
             setBridgeState(await api.status())
         } catch (err) {
             setError(err.message)
         }
     }, [])
 
-    const query = parseQuery(window.location.search.substr(1))
+    const query = Object.assign({}, hashQuery, parseQuery(window.location.search.substr(1)))
 
     useEffect(async () => {
         if (query.oauth_token && query.oauth_verifier) {
-            const url = `${location.protocol}//${location.host}${location.pathname}${location.hash}`
+            const [hashStart] = location.hash.split("?", 1)
+            const url = `${location.protocol}//${location.host}${location.pathname}${hashStart}`
             const data = JSON.parse(localStorage.twitterLinking)
-            console.log(data, query)
             if (data.token !== query.oauth_token) {
                 setError("Mismatching OAuth token in localstorage")
                 window.history.replaceState({}, "", url)

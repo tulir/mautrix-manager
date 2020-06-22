@@ -52,6 +52,11 @@ bridges:
     mx-puppet-twitter:
         url: http://localhost:6000/_matrix/provision/v1
         secret: null
+        # Custom OAuth redirect URI format. If set to null, the manager URL is used as-is.
+        # {localpart} and {homeserver} are replaced with the corresponding values from the user ID.
+        # Note that Twitter requires the path to match exactly, so use query params if you want to
+        # store extra info in the URL.
+        custom_oauth_redirect: null
     mx-puppet-instagram:
         url: http://localhost:8434/_matrix/provision/v1
         secret: null
