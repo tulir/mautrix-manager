@@ -64,7 +64,7 @@ async def link_static(request: web.Request) -> web.Response:
                      "Make sure the bridge is running and reachable.")
     if 200 <= resp.status < 300:
         return reply(resp.status, page_title, "Successfully linked Slack account",
-                     "Your Slack account is now bridged to Matrix."
+                     "Your Slack account is now bridged to Matrix. "
                      "You can close this page and return to the app.")
     else:
         return await handle_error_response(page_title, "Failed to link Slack account", resp)
