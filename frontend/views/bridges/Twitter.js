@@ -75,8 +75,23 @@ const TwitterBridge = () => {
         return html`<${Spinner} size=80 green />`
     }
 
-    const link = async () => {
-        track("Twitter link")
+    const getStaticLinkURL = () => {
+        const query = new URLSearchParams({
+            // eslint-disable-next-line camelcase
+            manager_token: api.staticLinkStartToken,
+        }).toString()
+        let path = location.pathname
+        if (path.endsWith("/")) {
+            path = path.slice(0, -1)
+        }
+        path += "/ui/twitter-link/start"
+        if (!path.startsWith("/")) {
+            path = `/${path}`
+        }
+        return `${location.origin}${path}?${query}`
+    }
+
+    const getManagerLinkURL = async () => {
         let data
         try {
             data = await api.makeLoginURL()
@@ -89,7 +104,13 @@ const TwitterBridge = () => {
             token: data.oauth_token,
             secret: data.oauth_secret,
         })
-        window.open(data.url, "_blank")
+        return data.url
+    }
+
+    const link = async () => {
+        track("Twitter link")
+        const url = api.useStaticLinking ? getStaticLinkURL() : await getManagerLinkURL()
+        window.open(url, "_blank")
     }
 
     const unlink = id => async () => {

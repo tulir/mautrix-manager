@@ -20,7 +20,7 @@ from .initable import init as init_all
 from .auth import routes as auth_routes, token_middleware, init as auth_init
 from . import (docker_proxy, generic_proxy, telegram_proxy, facebook_proxy, hangouts_proxy,
                whatsapp_proxy, slack_proxy, twitter_proxy, instagram_proxy, tracking,
-               slack_link)
+               slack_link, twitter_link)
 
 integrations_app = web.Application()
 integrations_app.add_routes(auth_routes)

@@ -53,6 +53,7 @@ class Config(BaseFileConfig):
         copy("bridges.mx-puppet-slack.client_id")
         copy("bridges.mx-puppet-slack.custom_oauth_redirect")
         copy("bridges.mx-puppet-twitter.custom_oauth_redirect")
+        copy("bridges.mx-puppet-twitter.static_linking_page")
 
         copy("permissions")
 

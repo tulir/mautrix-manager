@@ -57,6 +57,9 @@ bridges:
         # Note that Twitter requires the path to match exactly, so use query params if you want to
         # store extra info in the URL.
         custom_oauth_redirect: null
+        # Whether or not to use a separate static linking page.
+        # If this is enabled, custom_oauth_redirect should point to /ui/twitter-link/callback
+        static_linking_page: false
     mx-puppet-instagram:
         url: http://localhost:8434/_matrix/provision/v1
         secret: null

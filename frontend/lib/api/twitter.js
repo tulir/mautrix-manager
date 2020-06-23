@@ -19,6 +19,8 @@ import { tryFetch, apiPrefix } from "./tryGet.js"
 const service = "Twitter bridge"
 const prefix = `${apiPrefix}/mx-puppet-twitter`
 let customRedirectURI = null
+export let useStaticLinking = false
+export let staticLinkStartToken = null
 
 export const status = () => tryFetch(`${prefix}/status`, {}, {
     service,
@@ -32,6 +34,8 @@ export const initClientInfo = async () => {
             requestType: "bridge status",
         })
         customRedirectURI = resp.custom_redirect_uri
+        useStaticLinking = resp.static_linking_page
+        staticLinkStartToken = resp.link_start_token
     }
 }
 
