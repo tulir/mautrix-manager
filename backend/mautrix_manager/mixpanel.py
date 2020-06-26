@@ -52,6 +52,22 @@ async def track(event: str, user_id: str, user_agent: str = "", **properties: st
     except Exception:
         log.exception(f"Failed to track {event} from {user_id}")
 
+async def engage(user_id: str, user_agent: str = "", **properties: str) -> None:
+    if not token:
+        return
+    try:
+        await http.post(URL("https://api.mixpanel.com/engage/").with_query({
+            "data": base64.b64encode(json.dumps({
+                **properties,
+                "token": token,
+                "distinct_id": user_id,
+            }).encode("utf-8")).decode("utf-8"),
+        }), headers={
+            "User-Agent": user_agent
+        } if user_agent else {})
+        log.debug(f"Update user's profile for {user_id}")
+    except Exception:
+        log.exception(f"Failed to update user's profile for {user_id}")
 
 def init(config: Config) -> None:
     global token, http

@@ -17,7 +17,7 @@ from aiohttp import web, hdrs
 
 from ..config import Config
 from .initable import initializer
-from ..mixpanel import is_enabled, track
+from ..mixpanel import is_enabled, track, engage
 
 routes = web.RouteTableDef()
 
@@ -29,6 +29,7 @@ cors_headers = {
 
 
 @routes.route(hdrs.METH_OPTIONS, "/track")
+@routes.route(hdrs.METH_OPTIONS, "/engage")
 async def cors_track(_: web.Request) -> web.Response:
     return web.Response(status=200, headers=cors_headers)
 
@@ -54,6 +55,14 @@ async def do_track(request: web.Request) -> web.Response:
                 user_agent=request.headers["User-Agent"], **props)
     return web.Response(status=204, headers=cors_headers)
 
+@routes.post("/engage")
+async def do_engage(request: web.Request) -> web.Response:
+    data = await request.json()
+    if not isinstance(data, dict):
+        return web.Response(status=400, headers=cors_headers)
+    await engage(user_id=request["token"].user_id,
+                user_agent=request.headers["User-Agent"], **props)
+    return web.Response(status=204, headers=cors_headers)
 
 @initializer
 def init(_: Config, app: web.Application) -> None:
