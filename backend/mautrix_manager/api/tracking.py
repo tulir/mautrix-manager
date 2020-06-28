@@ -68,7 +68,7 @@ async def do_track(request: web.Request) -> web.Response:
         return web.Response(status=400, headers=cors_headers)
     ip = get_remote_ip(request)
     if ip:
-        props["$ip"] = ip
+        props["ip"] = ip
     await track(event=event, user_id=request["token"].user_id,
                 user_agent=request.headers["User-Agent"], **props)
     return web.Response(status=204, headers=cors_headers)
