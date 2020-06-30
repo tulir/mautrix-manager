@@ -77,12 +77,8 @@ const InstagramLogin = ({ onLoggedIn, hasSessions }) => {
 
     let content
     if (step === "/login/password") {
-        const text = hasSessions
-            ? "You're already using the Instagram bridge. If you want to bridge more accounts, " +
-            "you can enter the username and password of another account below."
-            : "Please enter your username and password to sign into the Instagram bridge."
         content = html`
-            <p>${text}</p>
+            <p>Please enter your username and password to sign into the Instagram bridge.</p>
             <input type="text" value=${username} placeholder="Username" class=${classes.input}
                    onChange=${evt => setUsername(evt.target.value)} />
             <input type="password" value=${password} placeholder="Password" class=${classes.input}
@@ -152,11 +148,13 @@ const InstagramLogin = ({ onLoggedIn, hasSessions }) => {
             .finally(() => setLoading(false))
     }
 
+    const text = hasSessions
+        ? "You're already using the Instagram bridge. If you want to bridge more accounts, " +
+        "you can sign in again below."
+        : "To start using the Matrix-Instagram bridge, sign in with your Instagram account below."
     return html`<form class=${classes.root} onSubmit=${onSubmit}>
         <h2>Sign into Instagram</h2>
-        <p>
-            To start using the Matrix-Instagram bridge, sign in with your Instagram account below.
-        </p>
+        <p>${text}</p>
         ${content}
         <${Alert} message=${error} />
     </form>`
