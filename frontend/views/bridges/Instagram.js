@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
     },
 }), { name: "instagram" })
 
-const InstagramLogin = ({ onLoggedIn }) => {
+const InstagramLogin = ({ onLoggedIn, hasSessions }) => {
     const classes = useStyles()
     const [loading, setLoading] = useState(false)
     const [step, setStep] = useState("/login/password")
@@ -71,13 +71,18 @@ const InstagramLogin = ({ onLoggedIn }) => {
             setStep(resp.next_step)
         } else {
             await onLoggedIn(resp.puppet_id)
+            setStep("/login/done")
         }
     }
 
     let content
     if (step === "/login/password") {
+        const text = hasSessions
+            ? "You're already using the Instagram bridge. If you want to bridge more accounts, " +
+            "you can enter the username and password of another account below."
+            : "Please enter your username and password to sign into the Instagram bridge."
         content = html`
-            <p>Please enter your username and password to sign into the Instagram bridge.</p>
+            <p>${text}</p>
             <input type="text" value=${username} placeholder="Username" class=${classes.input}
                    onChange=${evt => setUsername(evt.target.value)} />
             <input type="password" value=${password} placeholder="Password" class=${classes.input}
@@ -86,9 +91,10 @@ const InstagramLogin = ({ onLoggedIn }) => {
                 <${Button} type="submit" disabled=${!username || !password}>
                     ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
                 </Button>
+                ${/*This is hidden until it has instructions and is confirmed to work
                 <${Button} variant="outlined" onClick=${() => setStep("/login/cookie")}>
                     Use cookie login
-                </Button>
+                </Button>*/ null}
             </div>
         `
     } else if (step === "/login/cookie") {
@@ -130,6 +136,10 @@ const InstagramLogin = ({ onLoggedIn }) => {
             <${Button} type="submit">
                 ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
             </Button>
+        `
+    } else if (step === "/login/done") {
+        content = html`
+            <p>Logged in successfully!</p>
         `
     }
 
@@ -193,7 +203,7 @@ const InstagramBridge = () => {
             `)}
         </ul>
         <${Alert} message=${error} />
-        <${InstagramLogin} onLoggedIn=${onLoggedIn} />
+        <${InstagramLogin} onLoggedIn=${onLoggedIn} hasSessions=${bridgeState.puppets.length > 0} />
         <details>
             <summary>Internal bridge state</summary>
             <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
