@@ -18,6 +18,7 @@ import { html } from "../../web_modules/htm/preact.js"
 
 import track from "../../lib/api/tracking.js"
 import * as api from "../../lib/api/instagram.js"
+import * as config from "../../lib/api/config.js"
 import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
 import Button from "../components/Button.js"
@@ -202,10 +203,10 @@ const InstagramBridge = () => {
         </ul>
         <${Alert} message=${error} />
         <${InstagramLogin} onLoggedIn=${onLoggedIn} hasSessions=${bridgeState.puppets.length > 0} />
-        <details>
+        ${config.internalBridgeInfo && html`<details>
             <summary>Internal bridge state</summary>
             <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
-        </details>
+        </details>`}
     `
 }
 

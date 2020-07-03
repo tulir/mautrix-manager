@@ -13,22 +13,24 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+from typing import Dict
+
 from aiohttp import web
 
 from ..config import Config
-from .initable import init as init_all
-from .auth import routes as auth_routes, token_middleware, init as auth_init
-from . import (docker_proxy, generic_proxy, telegram_proxy, facebook_proxy, hangouts_proxy,
-               whatsapp_proxy, slack_proxy, twitter_proxy, instagram_proxy, tracking,
-               slack_link, twitter_link, manager_config)
+from .initable import initializer
 
-integrations_app = web.Application()
-integrations_app.add_routes(auth_routes)
-
-api_app = web.Application(middlewares=[token_middleware])
-ui_app = web.Application()
+routes = web.RouteTableDef()
+features: Dict[str, bool]
 
 
-def init(config: Config) -> None:
-    auth_init(config)
-    init_all(config, api_app, ui_app)
+@routes.get("/manager/config")
+async def check_status(_: web.Request) -> web.Response:
+    return web.json_response(features)
+
+
+@initializer
+def init(cfg: Config, app: web.Application) -> None:
+    global features
+    features = cfg["features"]
+    app.add_routes(routes)

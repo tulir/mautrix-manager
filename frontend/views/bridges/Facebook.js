@@ -18,6 +18,7 @@ import { html } from "../../web_modules/htm/preact.js"
 
 import track from "../../lib/api/tracking.js"
 import * as api from "../../lib/api/facebook.js"
+import * as config from "../../lib/api/config.js"
 import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
 import Button from "../components/Button.js"
@@ -51,10 +52,12 @@ const useStyles = makeStyles(theme => ({
 }), { name: "facebook" })
 
 const manualInstructions = html`<ol>
-    <li>Open <a href="https://messenger.com">messenger.com</a> in a new tab and log in normally.</li>
     <li>
-      While in Facebook tab, open browser developer tools: <kbd>F12</kbd> on Windows/Linux
-      or <kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>I</kbd> on macOS.
+        Open <a href="https://messenger.com">messenger.com</a> in a new tab and log in normally.
+    </li>
+    <li>
+        While in Facebook tab, open browser developer tools: <kbd>F12</kbd> on Windows/Linux
+        or <kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>I</kbd> on macOS.
     </li>
     <li>Select the "Application" (Chrome) or "Storage" (Firefox) tab.</li>
     <li>In the sidebar, expand "Cookies" and select <code>https://www.messenger.com</code>.</li>
@@ -106,7 +109,8 @@ const DesktopLogin = ({ onLoggedIn }) => {
         <div class=${classes.root}>
             <h2>Sign into Facebook</h2>
             <p>
-                To start using the Matrix-Facebook Messenger bridge, please sign in with your Facebook account.
+                To start using the Matrix-Facebook Messenger bridge,
+                please sign in with your Facebook account.
             </p>
             <${Button} onClick=${onStartOAuthClick}>
                 ${loading ? html`<${Spinner} size=20 />` : "Sign in"}
@@ -153,27 +157,8 @@ const BrowserLogin = ({ onLoggedIn }) => {
         <form class=${classes.root} onSubmit=${onSubmit}>
             <h2>Sign into Facebook</h2>
             <p>
-                To start using the Matrix-Facebook Messenger bridge, please use one of the options
-                below to sign in with your Facebook account.
+                To start using the Matrix-Facebook Messenger bridge, please sign in below.
             </p>
-            <h3>Browser extension (easy way)</h3>
-            <p>Coming soon</p>
-            <!--<p>
-                To log in the easy way, install the browser extension, open it while on this page,
-                then follow the instructions in the extension. Alternatively, you may extract the
-                authentication cookies manually using the instructions below.
-            </p>
-            <p>
-                <a href="javascript:alert('Not yet implemented')">
-                    <img class=${classes.addonIcon} src="/res/firefox.png"
-                         alt="Extension for Firefox" />
-                </a>
-                <a href="javascript:alert('Not yet implemented')">
-                    <img class=${classes.addonIcon} src="/res/chrome.png"
-                         alt="Extension for Chrome" />
-                </a>
-            </p>-->
-            <h3>Manual login (hard way)</h3>
             ${manualInstructions}
             <input type="number" value=${user} placeholder="c_user cookie" class=${classes.input}
                    onChange=${evt => setUser(evt.target.value)} onKeyDown=${onUserKeyDown} />
@@ -230,10 +215,10 @@ const FacebookBridge = ({ useDesktopLogin = false }) => {
             `}
         `}
         <${Alert} message=${error} />
-        <details>
+        ${config.internalBridgeInfo && html`<details>
             <summary>Internal bridge state</summary>
             <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
-        </details>
+        </details>`}
     `
 }
 

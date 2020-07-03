@@ -29,6 +29,7 @@ cors_headers = {
     "Access-Control-Allow-Headers": "Authorization, Content-Type",
 }
 
+
 def get_remote_ip(request: web.Request) -> str:
     try:
         if "Forwarded" in request.headers:
@@ -40,8 +41,9 @@ def get_remote_ip(request: web.Request) -> str:
             addr = request.remote
         ip_address(addr)
         return addr
-    except:
+    except Exception:
         return ""
+
 
 @routes.route(hdrs.METH_OPTIONS, "/track")
 @routes.route(hdrs.METH_OPTIONS, "/engage")

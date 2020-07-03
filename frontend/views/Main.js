@@ -20,6 +20,7 @@ import { useRoute, Route, Link } from "../web_modules/wouter-preact.js"
 import { checkTrackingEnabled } from "../lib/api/tracking.js"
 import { makeStyles } from "../lib/theme.js"
 import { logout } from "../lib/api/login.js"
+import * as config from "../lib/api/config.js"
 import InstagramBridge from "./bridges/Instagram.js"
 import SlackBridge from "./bridges/Slack.js"
 import TelegramBridge from "./bridges/Telegram.js"
@@ -105,6 +106,7 @@ const useStyles = makeStyles(theme => ({
 const Main = () => {
     const classes = useStyles()
     const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.accessToken))
+    const [dockerControls, setDockerControls] = useState(config.dockerControls)
     const [useDesktopLogin, setUseDesktopLogin] = useState(false)
 
     const handleExtension = () => {
@@ -120,6 +122,7 @@ const Main = () => {
     useEffect(() => {
         if (loggedIn) {
             checkTrackingEnabled()
+            config.update().then(res => setDockerControls(res.docker_controls))
         }
         window.addEventListener("mautrix-cookie-monster-appeared", handleExtension)
         return () => window.removeEventListener("mautrix-cookie-monster-appeared", handleExtension)
@@ -182,10 +185,10 @@ const Main = () => {
         <${Route} path="/slack" component=${SlackBridge} />
         <${Route} path="/twitter" component=${TwitterBridge} />
         <${Route} path="/instagram" component=${InstagramBridge} />
-        <details>
+        ${dockerControls && html`<details>
             <summary>Docker controls</summary>
             <${DockerControls} />
-        </details>
+        </details>`}
     `
 }
 

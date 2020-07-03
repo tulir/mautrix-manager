@@ -11,6 +11,11 @@ docker:
     # Docker API socket.
     host: unix:///run/docker.sock
 
+# Which UI features should be enabled?
+features:
+    docker_controls: true
+    internal_bridge_info: true
+
 # mautrix-manager server settings
 server:
     # Hostname and port where mautrix-manager should listen.

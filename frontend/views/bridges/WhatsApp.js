@@ -19,6 +19,7 @@ import QR from "../../web_modules/qrcode/lib/index.js"
 
 import track from "../../lib/api/tracking.js"
 import * as api from "../../lib/api/whatsapp.js"
+import * as config from "../../lib/api/config.js"
 import { makeStyles } from "../../lib/theme.js"
 import Alert from "../components/Alert.js"
 import Button from "../components/Button.js"
@@ -146,10 +147,10 @@ const WhatsAppBridge = () => {
         `
         : html`<${WhatsAppLogin} onLoggedIn=${onLoggedIn} />`}
         <${Alert} message=${error} />
-        <details>
+        ${config.internalBridgeInfo && html`<details>
             <summary>Internal bridge state</summary>
             <pre>${JSON.stringify(bridgeState, null, "  ")}</pre>
-        </details>
+        </details>`}
     `
 }
 
