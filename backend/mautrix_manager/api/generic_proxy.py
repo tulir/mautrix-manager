@@ -14,8 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
-
 import aiohttp
+import logging.config
+
 from aiohttp import web
 from yarl import URL
 
@@ -24,6 +25,7 @@ from .initable import initializer
 
 http: aiohttp.ClientSession
 
+log = logging.getLogger("mau.manager.init")
 
 async def proxy(url: URL, secret: str, request: web.Request, path_prefix: str) -> web.Response:
     if not secret:
@@ -32,7 +34,6 @@ async def proxy(url: URL, secret: str, request: web.Request, path_prefix: str) -
     query["user_id"] = request["token"].user_id
     headers = request.headers.copy()
     headers["Authorization"] = f"Bearer {secret}"
-    del headers["Host"]
 
     if path_prefix:
         url /= path_prefix
@@ -44,8 +45,10 @@ async def proxy(url: URL, secret: str, request: web.Request, path_prefix: str) -
     try:
         resp = await http.request(request.method, url, headers=headers,
                                   params=query, data=request.content)
-    except aiohttp.ClientError:
+    except aiohttp.ClientError as e:
+        log.fatal("Failed to proxy request, error:", e)
         raise web.HTTPBadGateway(text="Failed to contact bridge")
+
     return web.Response(status=resp.status, headers=resp.headers, body=resp.content)
 
 

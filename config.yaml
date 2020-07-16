@@ -1,0 +1,81 @@
+# Homeserver details.
+homeserver:
+  # The server name of the homeserver.
+  domain: nova.chat
+  # Client-server API URL.
+  client_url: https://matrix.nova.chat
+  # Federation API URL. This is used for verifying OpenID tokens received from clients.
+  federation_url: https://matrix.nova.chat:8448
+docker:
+  # Docker API socket.
+  host: unix:///run/docker.sock
+# mautrix-manager server settings
+server:
+  # Hostname and port where mautrix-manager should listen.
+  host: 0.0.0.0
+  port: 4000
+  # Database URI. Currently only supports postgres://user:password@host/dbname
+  database: postgres://${POSTGRES_USER}:$(POSTGRES_PASSWORD)@postgres/${POSTGRES_DB}
+  # Override path from where to load UI resources.
+  # Set to false to using pkg_resources to find the path.
+  # Optionally, you can use another web server to serve the UI and only proxy /api to the backend.
+  override_resource_path: /opt/mautrix-manager/frontend
+# # Bridge API URLs and secrets. If secret is null, the bridge is disabled.
+bridges: {mautrix-whatsapp: {url: 'http://mautrix-whatsapp:4000/_matrix/provision/v1'}}
+#     mautrix-telegram:
+#         url: http://localhost:29317/_matrix/provision/v1
+#         secret: $(telegramsharedSecret)
+#     mautrix-whatsapp:
+#         url: http://localhost:29318/_matrix/provision/v1
+#         secret: $(whatsappsharedSecret)
+#     mautrix-facebook:
+#         url: http://localhost:29319/public
+#         secret: $(facebooksharedSecret)
+#     mautrix-hangouts:
+#         url: http://localhost:29320/login
+#         secret: $(hangoutssharedSecret)
+#     mx-puppet-slack:
+#         url: http://localhost:29321/_matrix/provision/v1
+#         secret: $(slacksharedSecret)
+#         client_id: '204029641062.887798583382'
+#         custom_oauth_redirect: http://slack.novabridge.xyz/$(user)/oauth
+#     mx-puppet-instagram:
+#         url: http://localhost:29323/_matrix/provision/v1
+#         secret: $(instagramsharedSecret)
+#     mx-puppet-twitter:
+#         url: https://twitter.nova.chat/_matrix/provision/v1
+#         secret: $(twitter_newtoken)
+#         custom_oauth_redirect:  http://twitter.novabridge.xyz/oauth?user={localpart}
+#         static_linking_page: true
+
+# Permissions for the manager.
+# Currently only the `admin` role exists.
+# Permission keys may be user IDs or server names
+permissions:
+  '@$(user):nova.chat': admin
+logging:
+  version: 1
+  formatters:
+    colored:
+      (): mautrix.util.color_log.ColorFormatter
+      format: '[%(asctime)s] [%(levelname)s@%(name)s] %(message)s'
+    normal:
+      format: '[%(asctime)s] [%(levelname)s@%(name)s] %(message)s'
+  handlers:
+    file:
+      class: logging.handlers.RotatingFileHandler
+      formatter: normal
+      filename: /logs/mautrix-manager.log
+      maxBytes: 10485760
+      backupCount: 10
+    console:
+      class: logging.StreamHandler
+      formatter: colored
+  loggers:
+    mau:
+      level: DEBUG
+    aiohttp:
+      level: INFO
+  root:
+    level: DEBUG
+    handlers: [file, console]
