@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euf -o pipefail
 
-yq w -i /data/config.yaml server.database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-"postgres"}/${POSTGRES_DB}
+yq w -i /data/config.yaml server.database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-"novachat-postgres"}/${POSTGRES_DB}
 
 BRIDGES=("whatsapp" "facebook" "telegram" "hangouts" "hangouts2" "whatsapp2")
 MXBRIDGES=( "slack" "instagram" "skype" "discord")
