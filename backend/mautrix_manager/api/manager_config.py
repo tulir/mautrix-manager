@@ -32,5 +32,9 @@ async def check_status(_: web.Request) -> web.Response:
 @initializer
 def init(cfg: Config, app: web.Application) -> None:
     global features
-    features = cfg["features"]
+    features = {
+        **cfg["features"],
+        "bridges": {bridge: bool(data["url"] and data["secret"])
+                    for bridge, data in cfg["bridges"].items()}
+    }
     app.add_routes(routes)

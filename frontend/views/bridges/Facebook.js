@@ -27,6 +27,7 @@ import Spinner from "../components/Spinner.js"
 const bridgeOpts = {
     url: "https://messenger.com",
     domain: "messenger.com",
+    // eslint-disable-next-line camelcase
     cookies_keys: ["xs", "c_user"],
 }
 
@@ -53,16 +54,18 @@ const useStyles = makeStyles(theme => ({
 
 const manualInstructions = html`<ol>
     <li>
-        Open <a href="https://messenger.com">messenger.com</a> in a new tab and log in normally.
+        Open <a href="https://messenger.com">messenger.com</a> in a private/incognito window
+        and log in normally.
     </li>
     <li>
-        While in Facebook tab, open browser developer tools: <kbd>F12</kbd> on Windows/Linux
+        While in the Facebook tab, open browser developer tools: <kbd>F12</kbd> on Windows/Linux
         or <kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>I</kbd> on macOS.
     </li>
     <li>Select the "Application" (Chrome) or "Storage" (Firefox) tab.</li>
     <li>In the sidebar, expand "Cookies" and select <code>https://www.messenger.com</code>.</li>
     <li>In the cookie list, find the <code>c_user</code> and <code>xs</code> rows.</li>
     <li>Copy the values of both rows into the appropriate input fields below.</li>
+    <li>Before submitting, close the private windowe without logging out.</li>
 </ol>`
 
 const DesktopLogin = ({ onLoggedIn }) => {

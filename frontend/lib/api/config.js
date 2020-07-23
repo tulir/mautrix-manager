@@ -19,6 +19,7 @@ import { tryFetch, apiPrefix } from "./tryGet.js"
 let configFetched = false
 export let dockerControls = undefined
 export let internalBridgeInfo = undefined
+export let bridges = {}
 
 export const update = () => {
     if (configFetched) {
@@ -37,6 +38,7 @@ const asyncUpdate = async () => {
     configFetched = true
     dockerControls = resp.docker_controls
     internalBridgeInfo = resp.internal_bridge_info
+    bridges = resp.bridges
     console.log(dockerControls, internalBridgeInfo)
     return resp
 }

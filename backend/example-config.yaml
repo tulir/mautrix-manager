@@ -46,6 +46,9 @@ bridges:
     mautrix-hangouts:
         url: http://localhost:29320/login
         secret: null
+    mautrix-twitter:
+        url: http://localhost:29327/_matrix/provision/v1
+        secret: null
     mx-puppet-slack:
         url: http://localhost:8432/_matrix/provision/v1
         secret: null

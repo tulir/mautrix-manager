@@ -69,7 +69,7 @@ const DockerControls = () => {
     const [path] = useLocation()
     const { openModal } = useModal()
 
-    const containerName = nameMap[path]
+    const containerName = path.substr(1)
 
     const updateContainerInfo = async () => {
         try {

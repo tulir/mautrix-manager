@@ -17,61 +17,26 @@
 import { tryFetch, apiPrefix } from "./tryGet.js"
 
 const service = "Twitter bridge"
-const prefix = `${apiPrefix}/mx-puppet-twitter`
-let customRedirectURI = null
-export let useStaticLinking = false
-export let staticLinkStartToken = null
+const prefix = `${apiPrefix}/mautrix-twitter`
 
-export const status = () => tryFetch(`${prefix}/status`, {}, {
+export const whoami = () => tryFetch(`${prefix}/whoami`, {}, {
     service,
-    requestType: "status",
+    requestType: "user info",
 })
 
-export const initClientInfo = async () => {
-    if (!customRedirectURI) {
-        const resp = await tryFetch(prefix, {}, {
-            service,
-            requestType: "bridge status",
-        })
-        customRedirectURI = resp.custom_redirect_uri
-        useStaticLinking = resp.static_linking_page
-        staticLinkStartToken = resp.link_start_token
-    }
-}
-
-export const makeLoginURL = () => tryFetch(`${prefix}/oauth/request`, {
-    method: "POST",
-    body: JSON.stringify({
-        // eslint-disable-next-line camelcase
-        oauth_callback: customRedirectURI ||
-            window.location.href.replace(window.location.hash, "#/twitter"),
-    }),
-    headers: {
-        "Content-Type": "application/json",
-    },
-}, {
-    service: "Twitter API",
-    requestType: "login request",
+export const logout = () => tryFetch(`${prefix}/logout`, { method: "POST" }, {
+    service,
+    requestType: "logout",
 })
 
-export const link = (token, secret, verifier) => tryFetch(`${prefix}/oauth/link`, {
+export const login = payload => tryFetch(`${prefix}/login`, {
     method: "POST",
-    body: JSON.stringify({
-        /* eslint-disable camelcase */
-        oauth_token: token,
-        oauth_secret: secret,
-        oauth_verifier: verifier,
-        /* eslint-enable camelcase */
-    }),
+    body: JSON.stringify(payload),
     headers: {
+        Authorization: `Bearer ${localStorage.accessToken}`,
         "Content-Type": "application/json",
     },
 }, {
     service,
     requestType: "login",
-})
-
-export const unlink = id => tryFetch(`${prefix}/${id}/unlink`, { method: "POST" }, {
-    service,
-    requestType: "logout",
 })

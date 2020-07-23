@@ -49,8 +49,8 @@ class Config(BaseFileConfig):
         copy("server.override_resource_path")
 
         for bridge in ("mautrix-telegram", "mautrix-whatsapp", "mautrix-facebook",
-                       "mautrix-hangouts", "mx-puppet-slack", "mx-puppet-twitter",
-                       "mx-puppet-instagram"):
+                       "mautrix-hangouts", "mautrix-twitter", "mx-puppet-slack",
+                       "mx-puppet-twitter", "mx-puppet-instagram"):
             copy(f"bridges.{bridge}.url")
             copy(f"bridges.{bridge}.secret")
 

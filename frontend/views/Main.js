@@ -27,6 +27,7 @@ import TelegramBridge from "./bridges/Telegram.js"
 import FacebookBridge from "./bridges/Facebook.js"
 import HangoutsBridge from "./bridges/Hangouts.js"
 import TwitterBridge from "./bridges/Twitter.js"
+import MxPuppetTwitterBridge from "./bridges/MxPuppetTwitter.js"
 import WhatsAppBridge from "./bridges/WhatsApp.js"
 import Button from "./components/Button.js"
 import DockerControls from "./docker/Controls.js"
@@ -77,9 +78,13 @@ const NavButton = ({ href, icon, children, ...args }) => {
     </Link>`
 }
 
-const BridgeButton = ({ bridge, children }) => NavButton({
-    href: `#/${bridge}`, icon: `res/logos/${bridge}.svg`, children,
-})
+const BridgeButton = ({ bridge, iconName, children }) => {
+    if (config.bridges && !config.bridges[bridge]) {
+        return null
+    }
+    iconName = iconName || bridge.split("-").pop()
+    return NavButton({ href: `#/${bridge}`, icon: `res/logos/${iconName}.svg`, children })
+}
 
 const useStyles = makeStyles(theme => ({
     topbar: {
@@ -163,28 +168,30 @@ const Main = () => {
                 </NavButton>
             </div>`}
             <nav class=${classes.nav}>
-                <${BridgeButton} bridge="telegram">Telegram</BridgeButton>
-                <${BridgeButton} bridge="facebook">Facebook</BridgeButton>
-                <${BridgeButton} bridge="hangouts">Hangouts</BridgeButton>
-                <${BridgeButton} bridge="whatsapp">WhatsApp</BridgeButton>
-                <${BridgeButton} bridge="slack">Slack</BridgeButton>
-                <${BridgeButton} bridge="twitter">Twitter</BridgeButton>
-                <${BridgeButton} bridge="instagram">Instagram</BridgeButton>
+                <${BridgeButton} bridge="mautrix-telegram">Telegram</BridgeButton>
+                <${BridgeButton} bridge="mautrix-facebook">Facebook</BridgeButton>
+                <${BridgeButton} bridge="mautrix-hangouts">Hangouts</BridgeButton>
+                <${BridgeButton} bridge="mautrix-whatsapp">WhatsApp</BridgeButton>
+                <${BridgeButton} bridge="mautrix-twitter">Twitter</BridgeButton>
+                <${BridgeButton} bridge="mx-puppet-slack">Slack</BridgeButton>
+                <${BridgeButton} bridge="mx-puppet-twitter">Twitter</BridgeButton>
+                <${BridgeButton} bridge="mx-puppet-instagram">Instagram</BridgeButton>
             </nav>
         </header>
 
         <${Route} exact path="/">Use the navigation bar above to view bridge settings</Route>
-        <${Route} path="/telegram" component=${TelegramBridge} />
-        <${Route} path="/facebook">
+        <${Route} path="/mautrix-telegram" component=${TelegramBridge} />
+        <${Route} path="/mautrix-facebook">
             <${FacebookBridge} useDesktopLogin=${useDesktopLogin} />
         </Route>
-        <${Route} path="/hangouts">
+        <${Route} path="/mautrix-hangouts">
             <${HangoutsBridge} useDesktopLogin=${useDesktopLogin} />
         </Route>
-        <${Route} path="/whatsapp" component=${WhatsAppBridge} />
-        <${Route} path="/slack" component=${SlackBridge} />
-        <${Route} path="/twitter" component=${TwitterBridge} />
-        <${Route} path="/instagram" component=${InstagramBridge} />
+        <${Route} path="/mautrix-whatsapp" component=${WhatsAppBridge} />
+        <${Route} path="/mautrix-twitter" component=${TwitterBridge} />
+        <${Route} path="/mx-puppet-slack" component=${SlackBridge} />
+        <${Route} path="/mx-puppet-twitter" component=${MxPuppetTwitterBridge} />
+        <${Route} path="/mx-puppet-instagram" component=${InstagramBridge} />
         ${dockerControls && html`<details>
             <summary>Docker controls</summary>
             <${DockerControls} />
