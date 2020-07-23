@@ -29,9 +29,14 @@ export const logout = () => tryFetch(`${prefix}/logout`, { method: "POST" }, {
     requestType: "logout",
 })
 
-export const login = payload => tryFetch(`${prefix}/login`, {
+export const login = (authToken, csrfToken) => tryFetch(`${prefix}/login`, {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+        // eslint-disable-next-line camelcase
+        auth_token: authToken,
+        // eslint-disable-next-line camelcase
+        csrf_token: csrfToken,
+    }),
     headers: {
         Authorization: `Bearer ${localStorage.accessToken}`,
         "Content-Type": "application/json",

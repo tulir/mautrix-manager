@@ -88,7 +88,7 @@ const DesktopLogin = ({ onLoggedIn }) => {
             setLoading(true)
             setError(null)
             try {
-                await api.login(cookies)
+                await api.login(cookies.auth_token, cookies.ct0)
                 await onLoggedIn()
                 window.open(bridgeOpts.url)
             } catch (err) {
@@ -138,11 +138,7 @@ const BrowserLogin = ({ onLoggedIn }) => {
     }
 
     const submit = async () => {
-        await api.login({
-            // eslint-disable-next-line camelcase
-            auth_token: authToken,
-            csrf_token: csrfToken,
-        })
+        await api.login(authToken, csrfToken)
         await onLoggedIn()
     }
 
