@@ -1,4 +1,4 @@
 # mautrix-manager
 A web interface for managing bridges.
 
-This is not yet ready. It also might not do anything useful even when it is ready.
+This does some things. You might be able to use it to get fancy web-based login for mautrix- and mx-puppet-bridges. Setup instructions don't exist yet :(
