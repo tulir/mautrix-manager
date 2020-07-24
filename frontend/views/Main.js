@@ -188,7 +188,9 @@ const Main = () => {
             <${HangoutsBridge} useDesktopLogin=${useDesktopLogin} />
         </Route>
         <${Route} path="/mautrix-whatsapp" component=${WhatsAppBridge} />
-        <${Route} path="/mautrix-twitter" component=${TwitterBridge} />
+        <${Route} path="/mautrix-twitter" >
+            <${TwitterBridge} useDesktopLogin=${useDesktopLogin} />
+        </Route>
         <${Route} path="/mx-puppet-slack" component=${SlackBridge} />
         <${Route} path="/mx-puppet-twitter" component=${MxPuppetTwitterBridge} />
         <${Route} path="/mx-puppet-instagram" component=${InstagramBridge} />
