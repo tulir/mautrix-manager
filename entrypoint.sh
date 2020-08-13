@@ -12,8 +12,8 @@ do
     sharedSecret=$(curl -s -H 'Authorization: Bearer '$ASMUXBEARER \
     -d "{\"address\": \"${NOVA_DOMAIN}/${BRIDGE_NAME}\"}" \
     -X PUT https://asmux.nova.chat/_matrix/asmux/appservice/$NOVA_USERNAME/$BRIDGE_NAME | jq -r '.login_shared_secret')
-
-    yq w -i /data/config.yaml bridges.mautrix-$BRIDGE_NAME.url ${NOVA_DOMAIN}/${BRIDGE_NAME}/_matrix/provision/v1
+    URL_PATH=$(yq r /data/config.yaml bridges.mautrix-$BRIDGE_NAME.url_path)
+    yq w -i /data/config.yaml bridges.mautrix-$BRIDGE_NAME.url ${NOVA_DOMAIN}/${BRIDGE_NAME}${URL_PATH}
     yq w -i /data/config.yaml bridges.mautrix-$BRIDGE_NAME.secret $sharedSecret
 done
 
