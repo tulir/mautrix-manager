@@ -25,7 +25,8 @@ from .initable import initializer
 
 http: aiohttp.ClientSession
 
-log = logging.getLogger("mau.manager.init")
+log = logging.getLogger("mau.manager.proxy")
+
 
 async def proxy(url: URL, secret: str, request: web.Request, path_prefix: str) -> web.Response:
     if not secret:
@@ -45,18 +46,14 @@ async def proxy(url: URL, secret: str, request: web.Request, path_prefix: str) -
     try:
         resp = await http.request(request.method, url, headers=headers,
                                   params=query, data=request.content)
-    except aiohttp.ClientError as e:
-        log.fatal("Failed to proxy request, error:", e)
+    except aiohttp.ClientError:
+        log.debug("Failed to proxy request", exc_info=True)
         raise web.HTTPBadGateway(text="Failed to contact bridge")
 
-    resp_headers = resp.headers.copy()
-    if "content-encoding" in resp_headers:
-        del resp_headers["content-encoding"]
-    # resp_body = await resp.read()
-    return web.Response(status=resp.status, headers=resp_headers, body=resp.content)
+    return web.Response(status=resp.status, headers=resp.headers, body=resp.content)
 
 
 @initializer
 def init(*_) -> None:
     global http
-    http = aiohttp.ClientSession(loop=asyncio.get_event_loop())
+    http = aiohttp.ClientSession(loop=asyncio.get_event_loop(), auto_decompress=False)
