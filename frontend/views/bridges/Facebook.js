@@ -24,13 +24,6 @@ import Alert from "../components/Alert.js"
 import Button from "../components/Button.js"
 import Spinner from "../components/Spinner.js"
 
-const bridgeOpts = {
-    url: "https://messenger.com",
-    domain: "messenger.com",
-    // eslint-disable-next-line camelcase
-    cookies_keys: ["xs", "c_user"],
-}
-
 const useStyles = makeStyles(theme => ({
     root: {
         display: "flex",
@@ -52,17 +45,23 @@ const useStyles = makeStyles(theme => ({
     },
 }), { name: "facebook" })
 
-const manualInstructions = html`<ol>
+const domainToName = {
+    "messenger.com": "Messenger",
+    "facebook.com": "Facebook",
+}
+
+const ManualInstructions = ({ domain }) => html`<ol>
     <li>
-        Open <a href="https://messenger.com">messenger.com</a> in a private/incognito window
-        and log in normally.
+        Open <a href="https://www.${domain}">${domainToName[domain] || domain}</a> in
+        a private/incognito window and log in normally.
     </li>
     <li>
-        While in the Facebook tab, open browser developer tools: <kbd>F12</kbd> on Windows/Linux
-        or <kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>I</kbd> on macOS.
+        While in the ${domainToName[domain] || domain} tab, open browser developer tools:
+        <kbd>F12</kbd> on Windows/Linux or <kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>I</kbd> on
+        macOS.
     </li>
     <li>Select the "Application" (Chrome) or "Storage" (Firefox) tab.</li>
-    <li>In the sidebar, expand "Cookies" and select <code>https://www.messenger.com</code>.</li>
+    <li>In the sidebar, expand "Cookies" and select <code>https://www.${domain}</code>.</li>
     <li>In the cookie list, find the <code>c_user</code> and <code>xs</code> rows.</li>
     <li>Copy the values of both rows into the appropriate input fields below.</li>
     <li>Before submitting, close the private windowe without logging out.</li>
@@ -72,6 +71,13 @@ const DesktopLogin = ({ onLoggedIn }) => {
     const classes = useStyles()
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
+
+    const bridgeOpts = {
+        url: `https://www.${api.domain}`,
+        domain: api.domain,
+        // eslint-disable-next-line camelcase
+        cookie_keys: ["xs", "c_user"],
+    }
 
     useEffect(() => {
         const fn = async evt => {
@@ -142,6 +148,7 @@ const BrowserLogin = ({ onLoggedIn }) => {
             // eslint-disable-next-line camelcase
             c_user: user,
             xs,
+            domain: api.domain,
         })
         await onLoggedIn()
     }
@@ -162,7 +169,7 @@ const BrowserLogin = ({ onLoggedIn }) => {
             <p>
                 To start using the Matrix-Facebook Messenger bridge, please sign in below.
             </p>
-            ${manualInstructions}
+            <${ManualInstructions} domain=${api.domain} />
             <input type="number" value=${user} placeholder="c_user cookie" class=${classes.input}
                    onChange=${evt => setUser(evt.target.value)} onKeyDown=${onUserKeyDown} />
             <input type="string" value=${xs} placeholder="xs cookie" class=${classes.input}
@@ -181,6 +188,7 @@ const FacebookBridge = ({ useDesktopLogin = false }) => {
 
     useEffect(async () => {
         try {
+            await api.initClientInfo()
             setBridgeState(await api.whoami())
         } catch (err) {
             setError(err.message)

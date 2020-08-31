@@ -18,6 +18,17 @@ import { tryFetch, apiPrefix } from "./tryGet.js"
 
 const service = "Facebook bridge"
 const prefix = `${apiPrefix}/mautrix-facebook`
+export let domain = null
+
+export const initClientInfo = async () => {
+    if (!domain) {
+        const resp = await tryFetch(prefix, {}, {
+            service,
+            requestType: "bridge status",
+        })
+        domain = resp.domain
+    }
+}
 
 export const whoami = () => tryFetch(`${prefix}/whoami`, {}, {
     service,

@@ -43,6 +43,8 @@ bridges:
     mautrix-facebook:
         url: http://localhost:29319/public
         secret: null
+        # This can be changed to facebook.com if you want to use that instead
+        domain: messenger.com
     mautrix-hangouts:
         url: http://localhost:29320/login
         secret: null
