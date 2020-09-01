@@ -94,7 +94,10 @@ const DesktopLogin = ({ onLoggedIn }) => {
             setLoading(true)
             setError(null)
             try {
-                await api.login(cookies)
+                await api.login({
+                    ...cookies,
+                    domain,
+                })
                 await onLoggedIn()
                 window.open(bridgeOpts.url)
             } catch (err) {

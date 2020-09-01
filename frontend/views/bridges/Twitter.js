@@ -28,7 +28,7 @@ const bridgeOpts = {
     url: "https://twitter.com",
     domain: "twitter.com",
     // eslint-disable-next-line camelcase
-    cookies_keys: ["auth_token", "ct0"],
+    cookie_keys: ["auth_token", "ct0"],
 }
 
 const useStyles = makeStyles(theme => ({

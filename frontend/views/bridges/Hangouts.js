@@ -26,7 +26,8 @@ import Spinner from "../components/Spinner.js"
 
 const bridgeOpts = {
     domain: "accounts.google.com",
-    cookies_keys: ["oauth_code"],
+    // eslint-disable-next-line camelcase
+    cookie_keys: ["oauth_code"],
 }
 
 const useStyles = makeStyles(theme => ({
@@ -127,7 +128,7 @@ const HangoutsLogin = ({ onLoggedIn, useDesktopLogin = false }) => {
                 try {
                     setLoading(true)
                     setError(null)
-                    const cookieName = bridgeOpts.cookies_keys[0]
+                    const cookieName = bridgeOpts.cookie_keys[0]
                     await tryLogin(cookies[cookieName])
                 } catch (err) {
                     setError(err.message)
