@@ -25,6 +25,7 @@ routes = web.RouteTableDef()
 config: Config
 host: URL
 secret: str
+allow_bot_login: bool
 
 
 @routes.view("/mautrix-telegram/user/{user_id}")
@@ -60,14 +61,15 @@ async def proxy_bridge(request: web.Request) -> web.Response:
 async def check_status(_: web.Request) -> web.Response:
     if not secret:
         raise Error.bridge_disabled
-    return web.json_response({})
+    return web.json_response({"allow_bot_login": allow_bot_login})
 
 
 @initializer
 def init(cfg: Config, app: web.Application) -> None:
-    global host, secret, config
+    global host, secret, config, allow_bot_login
     config = cfg
     secret = cfg["bridges.mautrix-telegram.secret"]
     if secret:
         host = URL(cfg["bridges.mautrix-telegram.url"])
+        allow_bot_login = cfg["bridges.mautrix-telegram.allow_bot_login"]
     app.add_routes(routes)

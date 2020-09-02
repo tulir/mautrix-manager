@@ -18,6 +18,17 @@ import { tryFetch, apiPrefix } from "./tryGet.js"
 
 const service = "Telegram bridge"
 const prefix = `${apiPrefix}/mautrix-telegram`
+export let allowBotLogin = null
+
+export const initClientInfo = async () => {
+    if (allowBotLogin === null) {
+        const resp = await tryFetch(prefix, {}, {
+            service,
+            requestType: "bridge status",
+        })
+        allowBotLogin = resp.allow_bot_login
+    }
+}
 
 export const getMe = () => tryFetch(`${prefix}/user/me`, {}, {
     service,

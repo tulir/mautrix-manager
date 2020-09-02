@@ -94,9 +94,11 @@ const TelegramLogin = ({ onLoggedIn }) => {
                 <${Button} type="submit" disabled=${!phone}>
                     ${loading ? html`<${Spinner} size=20 />` : "Request code"}
                 </Button>
-                <${Button} variant="outlined" onClick=${() => setStep("bot_token")}>
-                    Use bot token
-                </Button>
+                ${api.allowBotLogin && html`
+                    <${Button} variant="outlined" onClick=${() => setStep("bot_token")}>
+                        Use bot token
+                    </Button>
+                `}
             </div>
         `
     } else if (step === "bot_token") {
@@ -162,6 +164,7 @@ const TelegramBridge = () => {
 
     useEffect(async () => {
         try {
+            await api.initClientInfo()
             setBridgeState(await api.getMe())
         } catch (err) {
             setError(err.message)

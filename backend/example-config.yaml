@@ -37,6 +37,8 @@ bridges:
     mautrix-telegram:
         url: http://localhost:29317/_matrix/provision/v1
         secret: null
+        # Whether or not to allow logging in with a bot token
+        allow_bot_login: true
     mautrix-whatsapp:
         url: http://localhost:29318/_matrix/provision/v1
         secret: null
