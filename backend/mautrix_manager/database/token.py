@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import ClassVar
+from typing import ClassVar, Optional
 import random
 import string
 
@@ -36,9 +36,11 @@ class Token:
                      user_id=user_id)
 
     @classmethod
-    async def get(cls, secret: str) -> 'Token':
+    async def get(cls, secret: str) -> Optional['Token']:
         row: asyncpg.Record = await cls._db.fetchrow("SELECT user_id, secret "
                                                      "FROM access_token WHERE secret=$1", secret)
+        if row is None:
+            return None
         return Token(**row)
 
     async def delete(self) -> None:
