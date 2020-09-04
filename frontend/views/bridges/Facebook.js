@@ -43,6 +43,15 @@ const useStyles = makeStyles(theme => ({
         padding: "0 .5rem",
         boxSizing: "border-box",
     },
+    buttonGroup: {
+        display: "flex",
+        "& > button": {
+            padding: "0 8px",
+        },
+        "& > button:not(:first-of-type)": {
+            marginLeft: "8px",
+        },
+    },
 }), { name: "facebook" })
 
 const domainToName = {
@@ -186,7 +195,9 @@ const BrowserLogin = ({ onLoggedIn }) => {
 }
 
 const FacebookBridge = ({ useDesktopLogin = false }) => {
+    const classes = useStyles()
     const [bridgeState, setBridgeState] = useState(null)
+    const [isRefreshing, setIsRefreshing] = useState(false)
     const [error, setError] = useState(null)
 
     useEffect(async () => {
@@ -208,6 +219,18 @@ const FacebookBridge = ({ useDesktopLogin = false }) => {
         }
     }
 
+    const refresh = async () => {
+        track("Facebook refresh")
+        try {
+            setIsRefreshing(true)
+            await api.refresh()
+        } catch (err) {
+            setError(err.message)
+        } finally {
+            setIsRefreshing(false)
+        }
+    }
+
     if (!bridgeState) {
         if (error) {
             return html`Error: ${error}`
@@ -220,7 +243,12 @@ const FacebookBridge = ({ useDesktopLogin = false }) => {
     return html`
         ${bridgeState.facebook ? html`
             Signed in as ${bridgeState.facebook.name}
-            <${Button} onClick=${logout} style="display: block; width: 10rem;">Sign out</Button>
+            <div class=${classes.buttonGroup}>
+                <${Button} onClick=${logout} style="width: 80px">Sign out</Button>
+                <${Button} onClick=${refresh} style="width: 80px">
+                    ${isRefreshing ? html`<${Spinner} size=20 />` : "Refresh"}
+                </Button>
+            </div>
         ` : html`
             ${useDesktopLogin ? html`
                 <${DesktopLogin} onLoggedIn=${onLoggedIn} />

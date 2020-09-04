@@ -40,6 +40,11 @@ export const logout = () => tryFetch(`${prefix}/logout`, { method: "POST" }, {
     requestType: "logout",
 })
 
+export const refresh = () => tryFetch(`${prefix}/refresh`, { method: "POST" }, {
+    service,
+    requestType: "refresh",
+})
+
 export const login = payload => tryFetch(`${prefix}/login`, {
     method: "POST",
     body: JSON.stringify(payload),
