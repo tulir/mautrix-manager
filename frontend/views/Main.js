@@ -110,7 +110,9 @@ const useStyles = makeStyles(theme => ({
 
 const Main = () => {
     const classes = useStyles()
-    const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.accessToken))
+    // TODO re-enable localStorage for desktop login after nova.chat database issues are solved
+    const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.accessToken)
+        && localStorage.desktopLogin !== "true")
     const [dockerControls, setDockerControls] = useState(config.dockerControls)
     const [useDesktopLogin, setUseDesktopLogin] = useState(false)
 
@@ -139,6 +141,7 @@ const Main = () => {
                 return
             }
             setUseDesktopLogin(true)
+            localStorage.desktopLogin = true
         }
         window.addEventListener("message", fn)
         return () => window.removeEventListener("message", fn)
