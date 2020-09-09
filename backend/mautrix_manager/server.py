@@ -20,31 +20,32 @@ from .api import api_app, ui_app, integrations_app, init as init_api
 from .static import StaticResource
 from .config import Config
 
-runner: web.AppRunner
 
+class Server:
+    config: Config
+    runner: web.AppRunner
+    app: web.Application
+    site: web.TCPSite
 
-def init(config: Config) -> None:
-    init_api(config)
+    def __init__(self, config: Config) -> None:
+        init_api(config)
+        self.config = config
+        self.app = web.Application()
+        self.app.add_subapp("/_matrix/integrations/v1", integrations_app)
+        self.app.add_subapp("/api", api_app)
+        self.app.add_subapp("/ui", ui_app)
 
-    app = web.Application()
+        resource_path = (config["server.override_resource_path"]
+                         or resource_filename("mautrix_manager", "frontend"))
+        self.app.router.register_resource(StaticResource("/", resource_path, name="frontend"))
 
-    app.add_subapp("/_matrix/integrations/v1", integrations_app)
-    app.add_subapp("/api", api_app)
-    app.add_subapp("/ui", ui_app)
+        self.runner = web.AppRunner(self.app)
 
-    resource_path = (config["server.override_resource_path"]
-                     or resource_filename("mautrix_manager", "frontend"))
-    app.router.register_resource(StaticResource("/", resource_path, name="frontend"))
+    async def start(self) -> None:
+        await self.runner.setup()
+        self.site = web.TCPSite(self.runner, self.config["server.host"],
+                                self.config["server.port"])
+        await self.site.start()
 
-    global runner
-    runner = web.AppRunner(app)
-
-
-async def start(config: Config) -> None:
-    await runner.setup()
-    site = web.TCPSite(runner, config["server.host"], config["server.port"])
-    await site.start()
-
-
-async def stop() -> None:
-    await runner.cleanup()
+    async def stop(self) -> None:
+        await self.runner.cleanup()

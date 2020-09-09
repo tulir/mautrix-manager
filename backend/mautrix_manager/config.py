@@ -43,6 +43,9 @@ class Config(BaseFileConfig):
 
         copy("mixpanel.token")
 
+        copy("metrics.enabled")
+        copy("metrics.listen_port")
+
         copy("server.host")
         copy("server.port")
         copy("server.database")

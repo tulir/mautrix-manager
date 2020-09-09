@@ -52,6 +52,7 @@ async def track(event: str, user_id: str, user_agent: str = "", **properties: st
     except Exception:
         log.exception(f"Failed to track {event} from {user_id}")
 
+
 async def engage(user_id: str, user_agent: str = "", **properties: str) -> None:
     if not token:
         return
@@ -68,6 +69,7 @@ async def engage(user_id: str, user_agent: str = "", **properties: str) -> None:
         log.debug(f"Update user's profile for {user_id}")
     except Exception:
         log.exception(f"Failed to update user's profile for {user_id}")
+
 
 def init(config: Config) -> None:
     global token, http

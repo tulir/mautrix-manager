@@ -13,85 +13,43 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import logging.config
-import argparse
-import asyncio
-import signal
-import copy
-import sys
+from mautrix.util.program import Program
+from mautrix.util.async_db import Database
 
 from .config import Config
-from .server import start as start_web, stop as stop_web, init as init_server
+from .server import Server
 from .mixpanel import init as init_mixpanel
-from .database import Database
+from .database import upgrade_table, Base
 from . import __version__
 
-parser = argparse.ArgumentParser(description="A web interface for managing bridges",
-                                 prog="python -m mautrix_manager")
-parser.add_argument("-c", "--config", type=str, default="config.yaml",
-                    metavar="<path>", help="the path to your config file")
-parser.add_argument("-b", "--base-config", type=str, default="example-config.yaml",
-                    metavar="<path>", help="the path to the example config "
-                                           "(for automatic config updates)")
-args = parser.parse_args()
 
-config = Config(args.config, args.base_config)
-config.load()
-config.update()
+class MautrixManager(Program):
+    module = "mautrix_manager"
+    name = "mautrix-manager"
+    version = __version__
+    command = "python -m mautrix_manager"
+    description = "A web interface for managing bridges"
 
-logging.config.dictConfig(copy.deepcopy(config["logging"]))
+    config_class = Config
 
-log = logging.getLogger("mau.manager.init")
-log.info(f"Initializing maubot {__version__}")
+    config: Config
+    server: Server
+    database: Database
 
-try:
-    db = Database(config["server.database"])
-except ValueError as e:
-    log.fatal(f"Failed to initialize database: {e}")
-    sys.exit(10)
+    async def start(self) -> None:
+        self.database = Database(url=self.config["server.database"], upgrade_table=upgrade_table)
+        Base.db = self.database
+        init_mixpanel(self.config)
+        self.server = Server(self.config)
 
-loop = asyncio.get_event_loop()
+        await self.database.start()
+        await self.server.start()
 
-signal.signal(signal.SIGINT, signal.default_int_handler)
-signal.signal(signal.SIGTERM, signal.default_int_handler)
+        await super().start()
 
-init_server(config)
-init_mixpanel(config)
+    async def stop(self) -> None:
+        await super().stop()
+        await self.server.stop()
 
 
-async def start():
-    log.debug("Connecting to database")
-    await db.start()
-    await db.create_tables()
-    log.debug("Starting up web server")
-    await start_web(config)
-
-
-async def stop():
-    log.debug("Cleaning up web server")
-    await stop_web()
-    log.debug("Closing database connection")
-    await db.stop()
-
-
-try:
-    loop.run_until_complete(start())
-except Exception:
-    log.fatal("Fatal error during startup actions", exc_info=True)
-    sys.exit(11)
-
-log.info("Startup actions complete, running forever")
-
-try:
-    loop.run_forever()
-except KeyboardInterrupt:
-    # TODO cleanup
-    log.info("Received interrupt, stopping...")
-    loop.run_until_complete(stop())
-    log.debug("Closing event loop")
-    loop.close()
-    log.debug("Everything stopped, shutting down")
-    sys.exit(0)
-except Exception:
-    log.fatal("Fatal error in main loop", exc_info=True)
-    sys.exit(20)
+MautrixManager().run()

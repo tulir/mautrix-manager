@@ -43,11 +43,6 @@ setuptools.setup(
     """,
     package_data={"mautrix_manager": [
         "frontend/index.*", "frontend/views/*", "frontend/lib/*", "frontend/res/*",
-        "frontend/web_modules/**/*"
+        "frontend/web_modules/**/*", "example-config.yaml",
     ]},
-    data_files=[
-        (".", ["example-config.yaml"]),
-#        ("alembic", ["alembic/env.py"]),
-#        ("alembic/versions", glob.glob("alembic/versions/*.py"))
-    ],
 )

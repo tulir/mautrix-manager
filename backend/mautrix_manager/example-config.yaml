@@ -32,6 +32,11 @@ mixpanel:
     # Mixpanel token for tracking user actions. Tracking is disabled if token is null.
     token: null
 
+# Prometheus telemetry config. Requires prometheus-client to be installed.
+metrics:
+    enabled: false
+    listen_port: 8000
+
 # Bridge API URLs and secrets. If secret is null, the bridge is disabled.
 bridges:
     mautrix-telegram:

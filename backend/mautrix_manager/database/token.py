@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import ClassVar, Optional
+from typing import Optional
 import random
 import string
 
@@ -22,11 +22,11 @@ import asyncpg
 
 from mautrix.types import UserID
 
+from .base import Base
+
 
 @dataclass
-class Token:
-    _db: ClassVar[asyncpg.pool.Pool]
-
+class Token(Base):
     user_id: UserID
     secret: str
 
@@ -37,19 +37,15 @@ class Token:
 
     @classmethod
     async def get(cls, secret: str) -> Optional['Token']:
-        row: asyncpg.Record = await cls._db.fetchrow("SELECT user_id, secret "
-                                                     "FROM access_token WHERE secret=$1", secret)
+        row: asyncpg.Record = await cls.db.fetchrow("SELECT user_id, secret "
+                                                    "FROM access_token WHERE secret=$1", secret)
         if row is None:
             return None
         return Token(**row)
 
     async def delete(self) -> None:
-        await self._db.execute("DELETE FROM access_token WHERE secret=$1", self.secret)
+        await self.db.execute("DELETE FROM access_token WHERE secret=$1", self.secret)
 
     async def insert(self) -> None:
-        await self._db.execute("INSERT INTO access_token (user_id, secret) VALUES ($1, $2)",
-                               self.user_id, self.secret)
-
-    @classmethod
-    def init(cls, db: asyncpg.pool.Pool) -> None:
-        cls._db = db
+        await self.db.execute("INSERT INTO access_token (user_id, secret) VALUES ($1, $2)",
+                              self.user_id, self.secret)
