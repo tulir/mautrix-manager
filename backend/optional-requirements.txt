@@ -1,0 +1,5 @@
+# Format: #/name defines a new extras_require group called name
+# Uncommented lines after the group definition insert things into that group.
+
+#/metrics
+prometheus_client>=0.6,<0.9

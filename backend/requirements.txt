@@ -1,5 +1,5 @@
 aiohttp>=3,<4
-mautrix>=0.7,<0.8
+mautrix>=0.7.1,<0.8
 ruamel.yaml>=0.15.90,<0.17
 yarl>=1,<2
 asyncpg>=0.20,<0.22

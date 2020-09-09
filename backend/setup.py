@@ -1,18 +1,40 @@
 import setuptools
 
-from mautrix_manager import __version__
+from mautrix_manager.get_version import git_tag, git_revision, version, linkified_version
 
-with open("requirements.txt", "r") as reqs:
+with open("requirements.txt") as reqs:
     install_requires = reqs.read().splitlines()
+
+with open("optional-requirements.txt") as reqs:
+    extras_require = {}
+    current = []
+    for line in reqs.read().splitlines():
+        if line.startswith("#/"):
+            extras_require[line[2:]] = current = []
+        elif not line or line.startswith("#"):
+            continue
+        else:
+            current.append(line)
+
+extras_require["all"] = list({dep for deps in extras_require.values() for dep in deps})
 
 try:
     long_desc = open("../README.md").read()
 except IOError:
     long_desc = "Failed to read README.md"
 
+with open("mautrix_manager/version.py", "w") as version_file:
+    version_file.write(f"""# Generated in setup.py
+
+git_tag = {git_tag!r}
+git_revision = {git_revision!r}
+version = {version!r}
+linkified_version = {linkified_version!r}
+""")
+
 setuptools.setup(
     name="mautrix-manager",
-    version=__version__,
+    version=version,
     url="https://github.com/tulir/mautrix-manager",
 
     author="Tulir Asokan",
