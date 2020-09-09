@@ -49,6 +49,12 @@ async def proxy(url: URL, secret: str, request: web.Request, path_prefix: str) -
     except aiohttp.ClientError:
         log.debug("Failed to proxy request", exc_info=True)
         raise web.HTTPBadGateway(text="Failed to contact bridge")
+    except CancelledError:
+        log.debug(f"Proxying request to {url} was cancelled before it responded")
+        raise
+    except Exception:
+        log.warning(f"Proxying request to {url} threw unhandled exception", exc_info=True)
+        raise
 
     return web.Response(status=resp.status, headers=resp.headers, body=resp.content)
 
