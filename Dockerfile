@@ -5,7 +5,7 @@ WORKDIR /opt/mautrix-manager/frontend
 ENV NODE_ENV=production
 RUN yarn && yarn snowpack && rm -rf node_modules package.json yarn.lock
 
-FROM alpine:3.11
+FROM alpine:3.12
 ARG TARGETARCH=amd64
 
 RUN apk add --no-cache \
@@ -30,7 +30,9 @@ RUN apk add --no-cache --virtual .build-deps \
 	&& apk del .build-deps
 
 COPY ./backend /opt/mautrix-manager/backend
-RUN pip3 install .
+RUN apk add git && pip3 install . && apk del git \
+  # This doesn't make the image smaller, but it's needed so that the `version` command works properly
+  && cp mautrix_manager/example-config.yaml . && rm -rf mautrix_manager
 
 COPY --from=frontend /opt/mautrix-manager/frontend /opt/mautrix-manager/frontend
 COPY ./docker-run.sh /opt/mautrix-manager

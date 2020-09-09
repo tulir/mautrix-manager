@@ -20,13 +20,13 @@ from .config import Config
 from .server import Server
 from .mixpanel import init as init_mixpanel
 from .database import upgrade_table, Base
-from . import __version__
+from .version import version
 
 
 class MautrixManager(Program):
     module = "mautrix_manager"
     name = "mautrix-manager"
-    version = __version__
+    version = version
     command = "python -m mautrix_manager"
     description = "A web interface for managing bridges"
 
